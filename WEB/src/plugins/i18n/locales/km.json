@@ -2125,5 +2125,9 @@
   "Check my answers": "ពិនិត្យចម្លើយរបស់ខ្ញុំ",
   "Start again": "ចាប់ផ្តើមម្តងទៀត",
   "Your sentence": "ប្រយោគរបស់អ្នក",
-  "Tap the words in the right order": "ចុចពាក្យតាមលំដាប់ត្រឹមត្រូវ"
+  "Tap the words in the right order": "ចុចពាក្យតាមលំដាប់ត្រឹមត្រូវ",
+  "New Quiz": "តេស្តថ្មី",
+  "Every lesson already has a quiz.": "មេរៀនទាំងអស់មានតេស្តរួចហើយ។",
+  "Each lesson has one quiz. Only lessons without a quiz are shown.": "មេរៀននីមួយៗមានតេស្តមួយ។ បង្ហាញតែមេរៀនដែលមិនទាន់មានតេស្ត។",
+  "Create the lesson first, then add examples and a quiz.": "បង្កើតមេរៀនជាមុនសិន បន្ទាប់មកបន្ថែមឧទាហរណ៍ និងតេស្ត។"
 }

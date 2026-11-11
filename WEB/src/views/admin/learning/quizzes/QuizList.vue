@@ -2,11 +2,14 @@
 import { useI18n } from "vue-i18n";
 import { getCourses, getLevels } from "@/services/dataService";
 import StatusChip from "@/components/learning/StatusChip.vue";
+import AddQuizDialog from "@/views/admin/learning/quizzes/AddQuizDialog.vue";
 
-// Every lesson quiz. A quiz is edited on its lesson page (Quiz tab).
+// Every lesson quiz. A quiz is built on its lesson page (Quiz tab);
+// "Add" picks a lesson without a quiz and opens that tab.
 const { t } = useI18n();
 const router = useRouter();
 const isLoading = ref(false);
+const isAddVisible = ref(false);
 const levels = ref([]);
 const courses = ref([]);
 const filter = ref({ search: null, level_id: null, course_id: null });
@@ -33,7 +36,10 @@ const openQuiz = (quiz) =>
 </script>
 
 <template>
+  <AddQuizDialog v-model:is-dialog-visible="isAddVisible" />
+
   <AppCardTable
+    v-model:is-dialog-create-visible="isAddVisible"
     v-model:loading="isLoading"
     v-model:filters="filter"
     title="Quizzes"
@@ -43,6 +49,8 @@ const openQuiz = (quiz) =>
     save-header-name="header-quizzes-list"
     enable-mobile-card
     is-filter
+    create-dialog
+    can-create="edit-quizzes"
     is-edit
     can-edit="edit-quizzes"
     :is-back="false"

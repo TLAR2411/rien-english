@@ -88,3 +88,11 @@ export const UPLOAD_ACCEPT = {
 export const RECOMMENDED_EXAMPLES = { min: 8, max: 10 };
 
 export const findOption = (list, value) => list.find((item) => item.value === value);
+
+// Tabs of the lesson page next to "Lesson". Each part saves on its own,
+// so they open once the lesson is saved.
+export const LESSON_TABS = [
+  { value: "examples", title: "Examples", icon: "tabler-message-2" },
+  { value: "quiz", title: "Quiz", icon: "tabler-checklist" },
+  { value: "preview", title: "Preview", icon: "tabler-eye" },
+];

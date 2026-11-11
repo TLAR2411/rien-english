@@ -27,6 +27,7 @@ class LessonController extends AdminController
             ->when($this->filter($request, 'course_id'), fn ($q, $courseId) => $q->where('course_id', $courseId))
             ->when($this->filter($request, 'skill'), fn ($q, $skill) => $q->where('skill', $skill))
             ->when($this->filter($request, 'status'), fn ($q, $status) => $q->where('status', $status))
+            ->when($this->filter($request, 'without_quiz'), fn ($q) => $q->doesntHave('quiz'))
             ->when($this->filter($request, 'search'), fn ($q, $search) => $q->where(
                 fn ($q) => $q->where('title_en', 'like', "%{$search}%")->orWhere('title_km', 'like', "%{$search}%")
             ))

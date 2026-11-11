@@ -1,8 +1,7 @@
 <script setup>
-import { api } from "@/utils/api";
-import LessonView from "@/components/learning/student/LessonView.vue";
-import QuizView from "@/components/learning/student/QuizView.vue";
+import LessonPreview from "@/views/admin/learning/lessons/preview/LessonPreview.vue";
 import StatusChip from "@/components/learning/StatusChip.vue";
+import hasPermission from "@/utils/hasPermission";
 
 definePage({
   meta: {
@@ -14,31 +13,19 @@ definePage({
   },
 });
 
-// The lesson and its quiz exactly as a student gets them (also drafts).
+// For people who can see lessons but not edit them.
+// Editors see the same preview in the "Preview" tab of the lesson page.
 const route = useRoute();
-const lesson = ref(null);
 const status = ref(null);
-const isLoading = ref(true);
-
-onMounted(async () => {
-  try {
-    const [preview, saved] = await Promise.all([
-      api.get(`admin/lessons/${route.params.id}/preview`),
-      api.get(`admin/lessons/${route.params.id}`),
-    ]);
-    lesson.value = preview.data.data;
-    status.value = saved.data.data.status;
-  } finally {
-    isLoading.value = false;
-  }
-});
+const canEdit = hasPermission("edit-lessons");
 </script>
 
 <template>
-  <AppCard title="Preview" title-icon="tabler-eye" :loading="isLoading">
+  <AppCard title="Preview" title-icon="tabler-eye">
     <template #card-header>
       <StatusChip v-if="status" :status="status" class="me-2" />
       <IconBtn
+        v-if="canEdit"
         rounded
         size="30"
         class="mr-1"
@@ -50,22 +37,6 @@ onMounted(async () => {
       </IconBtn>
     </template>
 
-    <VAlert type="info" variant="tonal" density="compact" icon="tabler-eye" class="mb-6">
-      {{ $t("Preview — this is what students see.") }}
-    </VAlert>
-
-    <div v-if="lesson" class="preview-page__body">
-      <LessonView :lesson="lesson">
-        <div v-if="lesson.quiz?.questions?.length" class="mt-12">
-          <QuizView :quiz="lesson.quiz" preview />
-        </div>
-      </LessonView>
-    </div>
+    <LessonPreview :lesson-id="route.params.id" @loaded="(saved) => (status = saved.status)" />
   </AppCard>
 </template>
-
-<style scoped>
-.preview-page__body {
-  padding: clamp(0.5rem, 4vw, 2.5rem) clamp(0rem, 3vw, 1.5rem);
-}
-</style>

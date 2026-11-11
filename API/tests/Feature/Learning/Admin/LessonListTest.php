@@ -51,6 +51,15 @@ class LessonListTest extends TestCase
         $this->assertSame([$grammar->id], $this->listIds('filter[search]=present'));
     }
 
+    public function test_filters_lessons_without_a_quiz(): void
+    {
+        $withQuiz = Lesson::factory()->create();
+        Quiz::factory()->for($withQuiz)->create();
+        $withoutQuiz = Lesson::factory()->create();
+
+        $this->assertSame([$withoutQuiz->id], $this->listIds('filter[without_quiz]=1'));
+    }
+
     public function test_list_is_paginated(): void
     {
         Lesson::factory()->count(3)->create();

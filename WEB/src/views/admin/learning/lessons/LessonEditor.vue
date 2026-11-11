@@ -4,8 +4,13 @@ import { api } from "@/utils/api";
 import { useCrud } from "@/composables/useCrud";
 import { getCourses } from "@/services/dataService";
 import { requiredValidator } from "@/@core/utils/validators";
-import { PUBLISH_STATUSES, SKILLS } from "@/constants/learning";
-import { GRAMMAR_SECTIONS, GRAMMAR_TEMPLATE_EN, GRAMMAR_TEMPLATE_KM, headingsIn } from "@/constants/lessonTemplates";
+import { LESSON_TABS, PUBLISH_STATUSES, SKILLS } from "@/constants/learning";
+import {
+  GRAMMAR_SECTIONS,
+  GRAMMAR_TEMPLATE_EN,
+  GRAMMAR_TEMPLATE_KM,
+  headingsIn,
+} from "@/constants/lessonTemplates";
 import { uploadImage } from "@/services/uploads";
 import AudioField from "@/components/learning/AudioField.vue";
 import RichTextEditor from "@/components/learning/RichTextEditor.vue";
@@ -13,13 +18,14 @@ import StatusChip from "@/components/learning/StatusChip.vue";
 
 /**
  * Create (no lessonId) or edit a lesson.
- * Parts saved on their own (examples, quiz) are extra tabs: pass
- * `tabs` = [{ value, title, icon }] and a `tab-<value>` slot for each.
- * They are only shown once the lesson exists. The open tab is kept in ?tab=.
+ * Parts saved on their own (examples, quiz, preview) are extra tabs
+ * (`tabs` = [{ value, title, icon }]) with a `tab-<value>` slot for each.
+ * They are always visible, but open only once the lesson is saved.
+ * The open tab is kept in ?tab=.
  */
 const props = defineProps({
   lessonId: { type: [Number, String], default: null },
-  tabs: { type: Array, default: () => [] },
+  tabs: { type: Array, default: () => LESSON_TABS },
 });
 
 const { t } = useI18n();
@@ -28,7 +34,10 @@ const route = useRoute();
 
 const tab = computed({
   get: () => route.query.tab || "lesson",
-  set: (value) => router.replace({ query: { ...route.query, tab: value === "lesson" ? undefined : value } }),
+  set: (value) =>
+    router.replace({
+      query: { ...route.query, tab: value === "lesson" ? undefined : value },
+    }),
 });
 
 const emptyForm = () => ({
@@ -92,7 +101,10 @@ const onSubmit = async (validation) => {
   const { valid } = (await validation) || { valid: true };
   if (!valid) return;
 
-  const saved = await save({ ...form.value, audio_url: form.value.audio_url || null });
+  const saved = await save({
+    ...form.value,
+    audio_url: form.value.audio_url || null,
+  });
   if (!saved) return;
 
   if (!isEdit.value) {
@@ -106,16 +118,34 @@ const onSubmit = async (validation) => {
 
 <template>
   <div>
-    <!-- Tabs for a saved lesson: Lesson · Examples · Quiz -->
-    <VTabs v-if="isEdit && tabs.length" v-model="tab" class="mb-4">
-      <VTab value="lesson" prepend-icon="tabler-notebook">{{ t("Lesson") }}</VTab>
-      <VTab v-for="item in tabs" :key="item.value" :value="item.value" :prepend-icon="item.icon">
-        {{ t(item.title) }}
-      </VTab>
-    </VTabs>
+    <!-- Lesson · Examples · Quiz · Preview (the others open once the lesson is saved) -->
+    <div v-if="tabs.length" class="d-flex align-center flex-wrap gap-x-4 mb-4">
+      <VTabs v-model="tab">
+        <VTab value="lesson" prepend-icon="tabler-notebook">{{
+          t("Lesson")
+        }}</VTab>
+        <VTab
+          v-for="item in tabs"
+          :key="item.value"
+          :value="item.value"
+          :prepend-icon="item.icon"
+          :disabled="!isEdit"
+        >
+          {{ t(item.title) }}
+        </VTab>
+      </VTabs>
+      <span v-if="!isEdit" class="text-body-2 text-medium-emphasis">
+        <VIcon icon="tabler-info-circle" size="16" class="me-1" />
+        {{ t("Create the lesson first, then add examples and a quiz.") }}
+      </span>
+    </div>
 
     <template v-for="item in tabs" :key="item.value">
-      <slot v-if="isEdit && tab === item.value" :name="`tab-${item.value}`" :lesson="form" />
+      <slot
+        v-if="isEdit && tab === item.value"
+        :name="`tab-${item.value}`"
+        :lesson="form"
+      />
     </template>
 
     <AppCard
@@ -169,10 +199,14 @@ const onSubmit = async (validation) => {
               />
             </VCol>
             <VCol cols="12" md="6">
-              <AppTextField v-model="form.title_en" label="Title English" placeholder="Present Simple" :rules="[requiredValidator]" />
+              <AppTextField
+                v-model="form.title_en"
+                label="Title English"
+                :rules="[requiredValidator]"
+              />
             </VCol>
             <VCol cols="12" md="6">
-              <AppTextField v-model="form.title_km" label="Title Khmer" placeholder="បច្ចុប្បន្នកាលសាមញ្ញ" />
+              <AppTextField v-model="form.title_km" label="Title Khmer" />
             </VCol>
             <VCol cols="12">
               <AppTextarea
@@ -180,7 +214,9 @@ const onSubmit = async (validation) => {
                 label="Summary"
                 rows="2"
                 auto-grow
-                :placeholder="t('One or two sentences shown in the lesson list')"
+                :placeholder="
+                  t('One or two sentences shown in the lesson list')
+                "
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -188,12 +224,17 @@ const onSubmit = async (validation) => {
                 v-model="form.slug"
                 label="Slug"
                 placeholder="present-simple"
-                :hint="t('Web address name. Leave empty to make it from the title.')"
+                :hint="
+                  t('Web address name. Leave empty to make it from the title.')
+                "
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
-              <AudioField v-model="form.audio_url" label="Lesson audio (optional)" />
+              <AudioField
+                v-model="form.audio_url"
+                label="Lesson audio (optional)"
+              />
             </VCol>
 
             <!-- Lesson text -->
@@ -236,20 +277,32 @@ const onSubmit = async (validation) => {
             <AppLabel title="Grammar lesson guide" />
             <VCol cols="12">
               <VList density="compact" class="guide py-0">
-                <VListItem v-for="(section, index) in sections" :key="section.title" class="px-0">
+                <VListItem
+                  v-for="(section, index) in sections"
+                  :key="section.title"
+                  class="px-0"
+                >
                   <template #prepend>
                     <VIcon
                       v-if="section.done !== null"
-                      :icon="section.done ? 'tabler-circle-check-filled' : 'tabler-circle'"
+                      :icon="
+                        section.done
+                          ? 'tabler-circle-check-filled'
+                          : 'tabler-circle'
+                      "
                       :color="section.done ? 'success' : 'disabled'"
                       size="20"
                     />
                     <span v-else class="guide__number">{{ index + 1 }}</span>
                   </template>
-                  <VListItemTitle class="font-weight-medium">{{ t(section.title) }}</VListItemTitle>
+                  <VListItemTitle class="font-weight-medium">{{
+                    t(section.title)
+                  }}</VListItemTitle>
                   <VListItemSubtitle class="guide__hint">
                     {{ t(section.hint) }}
-                    <template v-if="section.where"> · {{ t(section.where) }}</template>
+                    <template v-if="section.where">
+                      · {{ t(section.where) }}</template
+                    >
                   </VListItemSubtitle>
                 </VListItem>
               </VList>

@@ -2111,5 +2111,9 @@
   "Check my answers": "Check my answers",
   "Start again": "Start again",
   "Your sentence": "Your sentence",
-  "Tap the words in the right order": "Tap the words in the right order"
+  "Tap the words in the right order": "Tap the words in the right order",
+  "New Quiz": "New Quiz",
+  "Every lesson already has a quiz.": "Every lesson already has a quiz.",
+  "Each lesson has one quiz. Only lessons without a quiz are shown.": "Each lesson has one quiz. Only lessons without a quiz are shown.",
+  "Create the lesson first, then add examples and a quiz.": "Create the lesson first, then add examples and a quiz."
 }
