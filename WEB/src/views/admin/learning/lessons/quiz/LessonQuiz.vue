@@ -117,17 +117,40 @@ const { mdAndUp } = useDisplay();
 const rootEl = ref(null);
 const tableBox = ref(null);
 const tableHeight = ref(null);
+// What the page shows under an element: the bottom padding/border of each
+// parent card, and anything placed below it (e.g. a footer).
+// (Not the page height — a page with a minimum height would keep the table small.)
+const spaceBelow = (el) => {
+  let sum = parseFloat(getComputedStyle(el).marginBottom) || 0;
+  for (
+    let node = el;
+    node.parentElement && node !== document.body;
+    node = node.parentElement
+  ) {
+    const bottom = node.getBoundingClientRect().bottom;
+    for (let sib = node.nextElementSibling; sib; sib = sib.nextElementSibling) {
+      const style = getComputedStyle(sib);
+      if (["fixed", "absolute"].includes(style.position)) continue;
+      const rect = sib.getBoundingClientRect();
+      if (rect.top < bottom - 1) continue; // beside it, not below
+      sum +=
+        rect.height +
+        (parseFloat(style.marginTop) || 0) +
+        (parseFloat(style.marginBottom) || 0);
+    }
+    const parent = getComputedStyle(node.parentElement);
+    sum +=
+      (parseFloat(parent.paddingBottom) || 0) +
+      (parseFloat(parent.borderBottomWidth) || 0);
+  }
+  return sum;
+};
+
 const fitToScreen = () => {
   const box = tableBox.value;
   if (!box || !box.offsetParent) return; // not on screen (closed tab)
-  const rect = box.getBoundingClientRect();
-  const top = rect.top + window.scrollY;
-  // Whatever the page still shows under the table (card padding, footer…)
-  const below = Math.max(
-    0,
-    document.documentElement.scrollHeight - (rect.bottom + window.scrollY),
-  );
-  tableHeight.value = `${Math.max(360, window.innerHeight - top - below)}px`;
+  const top = box.getBoundingClientRect().top + window.scrollY;
+  tableHeight.value = `${Math.max(360, window.innerHeight - top - spaceBelow(box))}px`;
 };
 
 // Re-measure when the page changes size (tab opens, settings grow, window resizes)
