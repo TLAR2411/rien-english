@@ -30,55 +30,27 @@ watch(() => props.lessonId, load, { immediate: true });
 </script>
 
 <template>
-  <!-- The lesson sits on a "page" on a grey canvas, so it reads as the student screen -->
+  <!-- The lesson sits on a grey canvas, so it reads as the student screen -->
   <div class="preview-page">
-    <p class="preview-page__note">
-      <VIcon icon="tabler-eye" size="16" />
-      {{ $t("Preview — this is what students see.") }}
-    </p>
+    <VProgressLinear
+      v-if="isLoading"
+      indeterminate
+      color="primary"
+      class="mb-4"
+    />
 
-    <VProgressLinear v-if="isLoading" indeterminate color="primary" class="mb-4" />
-
-    <div v-if="lesson" class="preview-page__sheet">
-      <LessonView :lesson="lesson">
-        <div v-if="lesson.quiz?.questions?.length" class="preview-page__quiz">
-          <QuizView :quiz="lesson.quiz" preview />
-        </div>
-      </LessonView>
-    </div>
+    <LessonView v-if="lesson" :lesson="lesson">
+      <QuizView v-if="lesson.quiz?.questions?.length" :quiz="lesson.quiz" preview />
+    </LessonView>
   </div>
 </template>
 
 <style scoped>
 .preview-page {
   margin: -0.5rem -0.25rem 0;
-  padding: clamp(0.75rem, 3vw, 2rem) clamp(0rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem);
+  padding: clamp(0.75rem, 3vw, 2rem) clamp(0rem, 3vw, 2rem)
+    clamp(1rem, 4vw, 3rem);
   border-radius: 12px;
   background: rgba(var(--v-theme-on-surface), 0.03);
-}
-
-.preview-page__note {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  margin: 0 0 1rem;
-  font-size: 0.8125rem;
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-}
-
-.preview-page__sheet {
-  max-width: 860px;
-  margin-inline: auto;
-  padding: clamp(1.25rem, 5vw, 3.5rem) clamp(1rem, 5vw, 3.5rem);
-  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  border-radius: 16px;
-  background: rgb(var(--v-theme-surface));
-}
-
-.preview-page__quiz {
-  margin-block-start: 3rem;
-  padding-block-start: 2.5rem;
-  border-block-start: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 </style>

@@ -2115,5 +2115,9 @@
   "New Quiz": "New Quiz",
   "Every lesson already has a quiz.": "Every lesson already has a quiz.",
   "Each lesson has one quiz. Only lessons without a quiz are shown.": "Each lesson has one quiz. Only lessons without a quiz are shown.",
-  "Create the lesson first, then add examples and a quiz.": "Create the lesson first, then add examples and a quiz."
+  "Create the lesson first, then add examples and a quiz.": "Create the lesson first, then add examples and a quiz.",
+  "In this lesson": "In this lesson",
+  "{count} min read": "{count} min",
+  "{count} examples": "{count} examples",
+  "{count} sections": "{count} sections"
 }

@@ -2129,5 +2129,9 @@
   "New Quiz": "តេស្តថ្មី",
   "Every lesson already has a quiz.": "មេរៀនទាំងអស់មានតេស្តរួចហើយ។",
   "Each lesson has one quiz. Only lessons without a quiz are shown.": "មេរៀននីមួយៗមានតេស្តមួយ។ បង្ហាញតែមេរៀនដែលមិនទាន់មានតេស្ត។",
-  "Create the lesson first, then add examples and a quiz.": "បង្កើតមេរៀនជាមុនសិន បន្ទាប់មកបន្ថែមឧទាហរណ៍ និងតេស្ត។"
+  "Create the lesson first, then add examples and a quiz.": "បង្កើតមេរៀនជាមុនសិន បន្ទាប់មកបន្ថែមឧទាហរណ៍ និងតេស្ត។",
+  "In this lesson": "ក្នុងមេរៀននេះ",
+  "{count} min read": "{count} នាទី",
+  "{count} examples": "{count} ឧទាហរណ៍",
+  "{count} sections": "{count} ផ្នែក"
 }
