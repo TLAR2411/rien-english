@@ -2200,5 +2200,7 @@
   "No lessons done yet. Read a lesson, then press “Mark as completed”.": "No lessons done yet. Read a lesson, then press “Mark as completed”.",
   "{count} lessons done": "{count} lessons done",
   "Done on {date}": "Done on {date}",
-  "No quiz score yet": "No quiz score yet"
+  "No quiz score yet": "No quiz score yet",
+  "Pick a lesson. Finished lessons have a ✓.": "Pick a lesson. Finished lessons have a ✓.",
+  "Read again": "Read again"
 }

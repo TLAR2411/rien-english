@@ -1,7 +1,7 @@
 <script setup>
 import DoneLessonRow from "@/components/learning/student/DoneLessonRow.vue";
 import { getMyLessons } from "@/services/site";
-import { lessonsRoute } from "@/utils/siteRoutes";
+import { studentLessonsRoute } from "@/utils/studentRoutes";
 
 /**
  * "My lessons": every lesson the student finished, grouped by course
@@ -47,7 +47,7 @@ const total = computed(() => courses.value.reduce((sum, group) => sum + group.le
       <VCardText class="text-center py-10">
         <VIcon icon="tabler-book" size="40" class="text-disabled mb-3" />
         <p class="text-body-1 mb-4">{{ $t("No lessons done yet. Read a lesson, then press “Mark as completed”.") }}</p>
-        <VBtn :to="lessonsRoute()">{{ $t("All lessons") }}</VBtn>
+        <VBtn :to="studentLessonsRoute()">{{ $t("All lessons") }}</VBtn>
       </VCardText>
     </VCard>
 

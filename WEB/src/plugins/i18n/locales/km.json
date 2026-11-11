@@ -2214,5 +2214,7 @@
   "No lessons done yet. Read a lesson, then press “Mark as completed”.": "មិនទាន់មានមេរៀនរៀនចប់នៅឡើយ។ សូមអានមេរៀន រួចចុច “សម្គាល់ថាបានបញ្ចប់”។",
   "{count} lessons done": "បានរៀនចប់ {count} មេរៀន",
   "Done on {date}": "រៀនចប់នៅ {date}",
-  "No quiz score yet": "មិនទាន់មានពិន្ទុតេស្ត"
+  "No quiz score yet": "មិនទាន់មានពិន្ទុតេស្ត",
+  "Pick a lesson. Finished lessons have a ✓.": "ជ្រើសរើសមេរៀន។ មេរៀនដែលរៀនចប់មានសញ្ញា ✓។",
+  "Read again": "អានម្តងទៀត"
 }

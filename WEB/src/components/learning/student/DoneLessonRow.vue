@@ -1,5 +1,5 @@
 <script setup>
-import { lessonRoute } from "@/utils/siteRoutes";
+import { studentLessonRoute } from "@/utils/studentRoutes";
 import { formatLearningDate } from "@/utils/learningDate";
 
 /** One finished lesson: ✓, title, date, best quiz score. `lesson` = API DoneLessonResource. */
@@ -14,7 +14,7 @@ const khmerTitle = computed(() => (locale.value === "km" ? props.lesson.title_km
 </script>
 
 <template>
-  <VListItem :to="lessonRoute(lesson.slug)" class="done-row">
+  <VListItem :to="studentLessonRoute(lesson.slug)" class="done-row">
     <template #prepend>
       <VIcon icon="tabler-circle-check-filled" color="success" size="24" class="me-3" />
     </template>

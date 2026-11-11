@@ -1,14 +1,13 @@
 <script setup>
-import { formatLearningDate } from "@/utils/learningDate";
 import LessonView from "@/components/learning/student/LessonView.vue";
-import { completeLesson, getSiteLesson } from "@/services/site";
-import { useAuthStore } from "@/stores/authStore";
+import { useLessonReader } from "@/composables/useLessonReader";
 import { lessonsRoute, quizRoute, signUpRoute } from "@/utils/siteRoutes";
 
 /**
  * Public lesson page (no login): the lesson text with a Khmer/English switch,
  * examples with sound, and "Take the quiz". The API never sends the quiz
  * questions here — the quiz needs login.
+ * (Students read lessons inside their system: pages/student/lessons/[slug].vue)
  */
 definePage({
   meta: {
@@ -19,47 +18,16 @@ definePage({
 });
 
 const route = useRoute();
-const auth = useAuthStore();
-const { locale, t } = useI18n({ useScope: "global" });
+const { t } = useI18n({ useScope: "global" });
 
-const lesson = ref(null);
-const notFound = ref(false);
-
-const load = async () => {
-  lesson.value = null;
-  notFound.value = false;
-  try {
-    lesson.value = await getSiteLesson(route.params.slug);
-    document.title = `${lesson.value.title_en} — Rien English`;
-  } catch {
-    notFound.value = true;
-  }
-};
-watch(() => route.params.slug, load, { immediate: true });
-
-// Explanation language: starts with the site language, the reader can switch
-const language = ref(locale.value === "km" ? "km" : "en");
-const hasKhmer = computed(() => Boolean(lesson.value?.content_km));
+const { lesson, notFound, language, hasKhmer, isLoggedIn, isStudent, isSaving, markCompleted, completedDate } =
+  useLessonReader(() => route.params.slug);
 
 // Take the quiz: a visitor signs up first, then comes back to this quiz
-const isLoggedIn = computed(() => auth.isAuthenticated && Boolean(auth.user));
 const quizLink = computed(() => {
   const quiz = quizRoute(lesson.value.slug);
   return isLoggedIn.value ? quiz : signUpRoute(quiz.path);
 });
-
-// Mark as completed: students only
-const isStudent = computed(() => isLoggedIn.value && auth.user?.default_part === "student");
-const isSaving = ref(false);
-const markCompleted = async () => {
-  isSaving.value = true;
-  try {
-    lesson.value.completed_at = (await completeLesson(lesson.value.id)).completed_at;
-  } finally {
-    isSaving.value = false;
-  }
-};
-const completedDate = computed(() => formatLearningDate(lesson.value?.completed_at, locale.value));
 </script>
 
 <template>

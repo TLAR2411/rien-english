@@ -3,7 +3,7 @@ import AppStatTile from "@/components/AppStatTile.vue";
 import DoneLessonRow from "@/components/learning/student/DoneLessonRow.vue";
 import { getStudentDashboard } from "@/services/site";
 import { useAuthStore } from "@/stores/authStore";
-import { lessonRoute, lessonsRoute } from "@/utils/siteRoutes";
+import { myLessonsRoute, studentLessonRoute, studentLessonsRoute } from "@/utils/studentRoutes";
 
 /** Student home page: what to learn next, numbers, recently finished lessons. */
 definePage({
@@ -61,7 +61,7 @@ const percentDone = computed(() =>
               <p v-if="locale === 'km' && next.title_km" class="text-body-1 mb-1">{{ next.title_km }}</p>
               <p v-if="next.summary" class="text-body-2 text-medium-emphasis mb-4">{{ next.summary }}</p>
               <div class="mt-auto">
-                <VBtn :to="lessonRoute(next.slug)" append-icon="tabler-arrow-right">{{ $t("Read lesson") }}</VBtn>
+                <VBtn :to="studentLessonRoute(next.slug)" append-icon="tabler-arrow-right">{{ $t("Read lesson") }}</VBtn>
               </div>
             </template>
 
@@ -69,7 +69,7 @@ const percentDone = computed(() =>
               <h2 class="text-h5 font-weight-bold mb-1">{{ $t("You finished every lesson.") }}</h2>
               <p class="text-body-2 text-medium-emphasis mb-4">{{ $t("New lessons come soon. You can read your lessons again.") }}</p>
               <div class="mt-auto">
-                <VBtn :to="lessonsRoute()" variant="tonal">{{ $t("All lessons") }}</VBtn>
+                <VBtn :to="studentLessonsRoute()" variant="tonal">{{ $t("All lessons") }}</VBtn>
               </div>
             </template>
           </VCardText>
@@ -108,7 +108,7 @@ const percentDone = computed(() =>
           <VCardItem>
             <VCardTitle>{{ $t("Recently finished") }}</VCardTitle>
             <template #append>
-              <VBtn v-if="recent.length" :to="{ name: 'student-my-lessons' }" variant="text" size="small">
+              <VBtn v-if="recent.length" :to="myLessonsRoute()" variant="text" size="small">
                 {{ $t("See all") }}
               </VBtn>
             </template>

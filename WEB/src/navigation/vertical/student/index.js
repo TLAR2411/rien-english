@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import { lessonsRoute } from "@/utils/siteRoutes";
+import { myLessonsRoute, studentDashboardRoute, studentLessonsRoute } from "@/utils/studentRoutes";
 
 /**
  * Student sidebar. Add an item here when its page is built
@@ -9,17 +9,17 @@ export const useStudentNavigation = () =>
   computed(() => [
     {
       title: "Dashboard",
-      to: { name: "student-dashboard" },
+      to: studentDashboardRoute(),
       icon: { icon: "tabler-layout-dashboard" },
     },
     {
       title: "My lessons",
-      to: { name: "student-my-lessons" },
+      to: myLessonsRoute(),
       icon: { icon: "tabler-circle-check" },
     },
     {
       title: "All lessons",
-      to: lessonsRoute(),
+      to: studentLessonsRoute(),
       icon: { icon: "tabler-books" },
     },
   ]);
