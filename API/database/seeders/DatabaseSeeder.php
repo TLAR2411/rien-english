@@ -5,13 +5,11 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Database\Seeders\Address\AddressSeeder;
 use Database\Seeders\Auth\OAtuhSeeder;
-use Database\Seeders\Auth\PositionSeeder;
 use Database\Seeders\Auth\RoleSeeder;
 use Database\Seeders\Auth\SettingSeeder;
 use Database\Seeders\Auth\UserSeeder;
 use Database\Seeders\Core\BranchSeeder;
 use Database\Seeders\Core\CompanySeeder;
-use Database\Seeders\Core\DepartmentSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -30,8 +28,6 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
 
             AddressSeeder::class,
-            DepartmentSeeder::class,
-            PositionSeeder::class,
             UserSeeder::class,
         ]);
     }

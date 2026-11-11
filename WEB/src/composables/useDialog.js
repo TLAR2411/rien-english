@@ -24,7 +24,7 @@ export function useDialog() {
             heading: items.heading ?? null,
             // Optional big value under the message, e.g. the amount being saved
             highlight: items.highlight ?? null,
-            // Small caption above that value, e.g. "Loan Amount"
+            // Small caption above that value, e.g. "Total"
             highlightLabel: items.highlightLabel ?? null,
             // Optional "from → to" block:
             // { from: { label, code, name }, to: { label, code, name }, amount }

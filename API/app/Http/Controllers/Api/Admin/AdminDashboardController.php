@@ -23,11 +23,11 @@ class AdminDashboardController extends Controller
             $branchId = $this->getBranch();
 
             // All users of the selected branch except the system admin (id 1)
-            $users = fn() => User::query()
+            $users = fn () => User::query()
                 ->whereBranch($branchId)
                 ->where('users.id', '!=', 1);
 
-            $active = fn() => $users()->where('users.is_active', true);
+            $active = fn () => $users()->where('users.is_active', true);
 
             $summary = [
                 'total_users' => $users()->count(),
@@ -53,19 +53,6 @@ class AdminDashboardController extends Controller
                     DB::raw('COUNT(*) as total'),
                 ]);
 
-            $byPosition = $active()
-                ->join('positions as p', 'users.position_id', 'p.id')
-                ->groupBy('p.id', 'p.name_kh', 'p.name_en', 'p.abbr', 'p.level')
-                ->orderByDesc('p.level')
-                ->get([
-                    'p.id',
-                    'p.name_kh',
-                    'p.name_en',
-                    'p.abbr',
-                    'p.level',
-                    DB::raw('COUNT(*) as total'),
-                ]);
-
             $byRole = $active()
                 ->join('roles as r', 'users.role_id', 'r.id')
                 ->groupBy('r.id', 'r.display_name', 'r.abbr')
@@ -83,23 +70,20 @@ class AdminDashboardController extends Controller
                 'users.name_en',
                 'users.image_path',
                 'users.last_login',
-                'p.name_kh as position_name_kh',
-                'p.name_en as position_name_en',
                 'b.abbr as branch_abbr',
             ];
 
-            $withPositionBranch = fn($q) => $q
-                ->leftJoin('positions as p', 'users.position_id', 'p.id')
+            $withBranch = fn ($q) => $q
                 ->leftJoin('branches as b', 'users.branch_id', 'b.id');
 
-            $recentLogins = $withPositionBranch($active())
+            $recentLogins = $withBranch($active())
                 ->whereNotNull('users.last_login')
                 ->orderByDesc('users.last_login')
                 ->limit(5)
                 ->get($userColumns);
 
             // Active accounts nobody is using: never logged in, or idle 30+ days
-            $idleUsers = $withPositionBranch($active())
+            $idleUsers = $withBranch($active())
                 ->where(function ($q) use ($now) {
                     $q->whereNull('users.last_login')
                         ->orWhere('users.last_login', '<', $now->copy()->subDays(30));
@@ -126,7 +110,6 @@ class AdminDashboardController extends Controller
                 'data' => [
                     'summary' => $summary,
                     'by_branch' => $byBranch,
-                    'by_position' => $byPosition,
                     'by_role' => $byRole,
                     'recent_logins' => $recentLogins,
                     'idle_users' => $idleUsers,
@@ -136,7 +119,7 @@ class AdminDashboardController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

@@ -153,15 +153,6 @@ const byBranch = computed(() =>
   })),
 );
 
-const byPosition = computed(() =>
-  (data.value.by_position ?? []).map((p) => ({
-    key: p.id,
-    label: pick(p.name_kh, p.name_en),
-    sub: p.abbr,
-    value: Number(p.total),
-  })),
-);
-
 const byRole = computed(() =>
   (data.value.by_role ?? []).map((r) => ({
     key: r.id,
@@ -177,9 +168,7 @@ const person = (u, trailing, trailingColor) => ({
   name: u.name_kh,
   image: u.image_path,
   title: `${u.name_kh} (${u.name_en ?? ""})`,
-  subtitle: [pick(u.position_name_kh, u.position_name_en), u.branch_abbr]
-    .filter(Boolean)
-    .join(" · "),
+  subtitle: u.branch_abbr ?? "",
   trailing,
   trailingColor,
 });
@@ -240,7 +229,7 @@ const recentActivity = computed(() =>
 
     <!-- Where the staff are -->
     <VRow class="match-height">
-      <VCol v-if="byBranch.length > 1" cols="12" md="6" lg="4">
+      <VCol v-if="byBranch.length > 1" cols="12" md="6">
         <AdminBarList
           title="Users by Branch"
           icon="tabler-building"
@@ -248,15 +237,7 @@ const recentActivity = computed(() =>
           :loading="isLoading"
         />
       </VCol>
-      <VCol cols="12" md="6" :lg="byBranch.length > 1 ? 4 : 6">
-        <AdminBarList
-          title="Users by Position"
-          icon="tabler-briefcase-2"
-          :items="byPosition"
-          :loading="isLoading"
-        />
-      </VCol>
-      <VCol cols="12" md="6" :lg="byBranch.length > 1 ? 4 : 6">
+      <VCol cols="12" :md="byBranch.length > 1 ? 6 : 12">
         <AdminBarList
           title="Users by Role"
           icon="tabler-shield-lock"

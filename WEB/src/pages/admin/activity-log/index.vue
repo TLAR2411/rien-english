@@ -69,10 +69,6 @@ const events = [
 
 const subjectTypes = [
   { title: "User", value: "User" },
-  { title: "Loan", value: "Loan" },
-  { title: "Receive", value: "Receive" },
-  { title: "Journal", value: "Journal" },
-  { title: "CloseEntry", value: "CloseEntry" },
 ];
 
 const headers = [

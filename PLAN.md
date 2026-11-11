@@ -39,7 +39,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 
 | Phase | Name | Tasks | Done |
 |---|---|---|---|
-| 0 | Setup, check & clean existing project | T01–T03 | 1/3 |
+| 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
 | 1 | Roles & admin area | T04–T06 | 0/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 0/4 |
 | 3 | Admin: manage content | T11–T17 | 0/7 |
@@ -50,13 +50,13 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T03 (T01 waiting for owner OK)
+**Current task:** T04
 
 ---
 
 ## Phase 0 — Setup & check existing project
 
-- [ ] **T01 — Inspect the existing project**
+- [x] **T01 — Inspect the existing project**
   - Read `composer.json`, `package.json`, `routes/`, `resources/js/`, `app/Models/User.php`, `database/migrations/`.
   - Report: Laravel version, Vue version, Inertia or separate SPA + Sanctum, how login works, CSS framework, test setup.
   - Write the findings into the **Project Notes** section at the bottom of this file.
@@ -68,7 +68,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - Make sure `.env` is in `.gitignore`.
   - ✅ Done when: on the new branch, working tree clean.
 
-- [ ] **T03 — Clean up unused parts & check packages**
+- [x] **T03 — Clean up unused parts & check packages**
   - Owner decided (2026-11-11) to remove:
     - **Loan leftovers** — loan words in `en.json`/`km.json`, loan row actions, loan columns/filters, "Loan System Role" on positions, loan comments.
     - **"Devfin" name** — page title, API welcome message, "Powered by Devfin.", PWA short name → use the app name from `.env`.
@@ -391,8 +391,8 @@ _(Filled in by Claude Code in T01 — 2026-11-11)_
 - Login accepts **username or email**. Errors use `abort(500, '<Khmer message>')`.
 - Every login sends a **Telegram alert** (if `default_login_alert_telegram` + `telegram_bot_token` settings are set).
 - All API routes are under `/api/web`; feature routes are in `routes/modules/*.route.php` and use `auth:api` + `branch.access` + `permission:<name>` middleware.
-- **Roles & permissions = Laratrust** (`santigarcor/laratrust`), not spatie. Existing roles: `developer`, `system-administrator`, `human-resource-manager`, `staff`. Users also have `is_super` (all permissions).
-- **`users` table** needs: `name_kh`, `username` (unique), `password`, `branch_id`, `role_id` (all required); `email` is unique but nullable. `default_part` enum = `hr`, `admin`.
+- **Roles & permissions = Laratrust** (`santigarcor/laratrust`), not spatie. Roles after T03: `developer`, `system-administrator`, `staff`. Users also have `is_super` (all permissions).
+- **`users` table** needs: `name_kh`, `username` (unique), `password`, `branch_id`, `role_id` (all required); `email` is unique but nullable. `default_part` enum = `admin` (T03 removed `hr`; no `position_id`, `under_user_id`, `employee_id` any more).
 - Admin user `admin` is seeded; password from `ADMIN_PASSWORD` in `.env`.
 - **No sign-up and no forgot-password** exist yet.
 - Other packages: activity log, Excel, image (Intervention/Spatie), Reverb, Telegram SDK, log viewer.
@@ -401,9 +401,10 @@ _(Filled in by Claude Code in T01 — 2026-11-11)_
 - **Vue 3.5**, Vite 5, **Vuetify 3.8** (Vuexy-style admin template). **No Tailwind.**
 - Already installed: **pinia, vue-i18n (with `en.json` + `km.json`), TipTap, chart.js + vue-chartjs**, ApexCharts, PWA plugin.
 - Khmer font **Kantumruy** is already set up in `src/assets/styles/styles.scss`.
-- File-based routing (`src/pages/`). "System parts" (`admin`, `hr`) are set in `src/composables/useSystemParts.js` + `src/navigation/vertical/`.
+- File-based routing (`src/pages/`). "System parts" (only `admin` after T03) are set in `src/composables/useSystemParts.js` + `src/navigation/vertical/`.
 - Router guard (`src/router/guards.js`) already supports **`meta.public`** pages. Today `/` redirects to login or the user's dashboard.
-- Page title fallback is "Devfin."; primary color `#1976D2` in `WEB/.env`.
+- Page title fallback = `VITE_APP_TITLE` ("Devfin" removed in T03); primary color `#1976D2` in `WEB/.env`.
+- One branch is seeded; the navbar branch picker hides itself when there is only one branch.
 
 **Tests**
 - PHPUnit 11, MySQL test DB `learning_english_test`. 34 tests pass (security/permission tests). `npm run build` passes. Pint is installed.
@@ -421,3 +422,5 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — PLAN — owner decision: lessons are public (no login), quizzes need sign-up (name + email + password), Google sign-in later. Added T18 public landing, T21 sign-up, T22 forgot password, T23 student layout, T37 Google sign-in; renumbered tasks to T01–T46; paid courses moved to Phase 9 — tests: n/a (plan only)
 - 2026-11-11 — PLAN — owner decision: T03 changed from "install packages" (already installed, see Project Notes) to "clean up unused parts" (loan leftovers, Devfin name, HR, company structure pages, user access requests). Do git (T02) first so deleted files can be restored — tests: n/a (plan only)
 - 2026-11-11 — T02 — git init, first commit pushed to GitHub `main`, branch `feature/learning-platform`; removed real secrets from `API/.env.example` + `WEB/.env.example` (repo is public); fixed `laradumps.yaml` ignore — tests: pass
+- 2026-11-11 — T01 — inspected API/WEB, filled Project Notes (owner confirmed by moving on) — tests: pass
+- 2026-11-11 — T03 — removed HR part, departments, positions, team leader/diagram/transfer, user access requests, HR manager role, loan leftovers (40→15 row buttons, 216 unused loan translations), "Devfin" name; navbar branch picker hidden with one branch — tests: pass (28), migrate:fresh --seed on test DB: pass, build: pass

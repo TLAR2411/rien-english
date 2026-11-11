@@ -29,7 +29,6 @@ use Laravel\Passport\RefreshTokenRepository;
 
 class AuthController extends Controller
 {
-
     private $telegramService;
 
     public function __construct(TelegramService $telegramService)
@@ -76,20 +75,20 @@ class AuthController extends Controller
             $user = User::query()
                 ->whereUsername($request->username)
                 ->orWhere('email', $request->username)
-                ->with(['branch', 'position'])
+                ->with('branch')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 LoginHistory::recordFailed($request->username, $request, 'user_not_found');
                 abort(500, 'ពុំមានគណនីក្នុងប្រព័ន្ធ!');
-            } else if (!Hash::check($request->password, $user->password)) {
+            } elseif (! Hash::check($request->password, $user->password)) {
                 LoginHistory::record($user, $request, successful: false, reason: 'wrong_password');
                 abort(500, 'អ្នកបានបញ្ចូលលេខសម្ងាត់ខុស!');
-            } else if ($user->is_active == false) {
+            } elseif ($user->is_active == false) {
                 LoginHistory::record($user, $request, successful: false, reason: 'account_disabled');
-                abort(5, "គណនីរបស់អ្នកត្រូវបានបិទ!");
+                abort(5, 'គណនីរបស់អ្នកត្រូវបានបិទ!');
             }
-            $defaultBranch = "*";
+            $defaultBranch = '*';
 
             if ($user->manage_branch == 1) {
                 $defaultBranch = $user->branch_id;
@@ -97,18 +96,18 @@ class AuthController extends Controller
                 $defaultBranch = $user->branch_id;
             }
 
-            $client = new Client();
+            $client = new Client;
 
             $response = $client->request(
                 'POST',
-                config('services.passport.oauth_url') . '/oauth/token',
+                config('services.passport.oauth_url').'/oauth/token',
                 [
                     'form_params' => [
-                        'grant_type' => "password",
+                        'grant_type' => 'password',
                         'client_id' => $request->header('X-CLIENT-ID') ?? '',
                         'client_secret' => config('services.passport.client_secret'),
                         'username' => $user->email,
-                        'password' => $request->password
+                        'password' => $request->password,
                     ],
                 ]
             );
@@ -126,36 +125,33 @@ class AuthController extends Controller
 
             $history = LoginHistory::record($user, $request, successful: true);
 
-            $loc = new Agent();
+            $loc = new Agent;
             $loc->setUserAgent($request->userAgent());
 
             $lat = $request->input('latitude');
             $lng = $request->input('longitude');
 
+            $b = fn ($value) => '<b>'.htmlspecialchars((string) ($value ?? '-'), ENT_NOQUOTES, 'UTF-8').'</b>';
 
-            $b = fn($value) => '<b>' . htmlspecialchars((string)($value ?? '-'), ENT_NOQUOTES, 'UTF-8') . '</b>';
-
-            $codeMsg = "🔐 ចូលប្រើប្រាស់ប្រព័ន្ធ [" . $b($companyName) . "]";
+            $codeMsg = '🔐 ចូលប្រើប្រាស់ប្រព័ន្ធ ['.$b($companyName).']';
             $codeMsg .= "\n";
             $codeMsg .= "\n---ព័ត៌មានអ្នកប្រើប្រាស់---";
             $codeMsg .= "\n";
-            $codeMsg .= "\nឈ្មោះ " . $b($user->name_kh);
-            $codeMsg .= "\nលេខសំគាល់ " . $b($user->code);
-            $codeMsg .= "\nតួនាទី " . $b($user->position->name_kh . " (" . $user->position->abbr . ")");
-            $codeMsg .= "\nសាខា " . $b($user->branch->name_kh);
+            $codeMsg .= "\nឈ្មោះ ".$b($user->name_kh);
+            $codeMsg .= "\nលេខសំគាល់ ".$b($user->code);
+            $codeMsg .= "\nសាខា ".$b($user->branch->name_kh);
             $codeMsg .= "\n";
             $codeMsg .= "\n---ព័ត៌មានឧបករណ៍---";
             $codeMsg .= "\n";
-            $codeMsg .= "\n📱 ឧបករណ៍: " . $b(ucfirst($history->device_type) . " / " . $history->platform);
-            $codeMsg .= "\n🌐 កម្មវិធីរុករក: " . $b($history->browser);
-            $codeMsg .= "\n📍 ទីតាំង: " . $b(($history->city ?? '-') . ", " . ($history->country ?? '-'));
-            $codeMsg .= "\n🔢 IP: " . $b($history->ip_address);
+            $codeMsg .= "\n📱 ឧបករណ៍: ".$b(ucfirst($history->device_type).' / '.$history->platform);
+            $codeMsg .= "\n🌐 កម្មវិធីរុករក: ".$b($history->browser);
+            $codeMsg .= "\n📍 ទីតាំង: ".$b(($history->city ?? '-').', '.($history->country ?? '-'));
+            $codeMsg .= "\n🔢 IP: ".$b($history->ip_address);
             if ($lat && $lng) {
                 $mapLink = "https://www.google.com/maps/search/?api=1&query={$lat},{$lng}";
-                $codeMsg .= "\n🔢 Google Map: " . '<a href="' . htmlspecialchars($mapLink, ENT_QUOTES, 'UTF-8') . '">' . $b('មើលទីតាំង') . '</a>';
+                $codeMsg .= "\n🔢 Google Map: ".'<a href="'.htmlspecialchars($mapLink, ENT_QUOTES, 'UTF-8').'">'.$b('មើលទីតាំង').'</a>';
             }
-            $codeMsg .= "\n🕐 ពេលវេលា: " . $b(Carbon::parse($history->logged_in_at)->format('d-m-Y H:i:s'));
-
+            $codeMsg .= "\n🕐 ពេលវេលា: ".$b(Carbon::parse($history->logged_in_at)->format('d-m-Y H:i:s'));
 
             if ($history->is_new_device) {
                 $codeMsg .= "\n⚠️ ចូលប្រើពីឧបករណ៍ថ្មី!"; // login from a new device
@@ -166,23 +162,24 @@ class AuthController extends Controller
                     $this->telegramService->sendMessage($codeMsg, [$groupId], $botToken, 'HTML');
                 }
             } catch (\Throwable $e) {
-                Log::warning('Login Telegram alert failed: ' . $e->getMessage());
+                Log::warning('Login Telegram alert failed: '.$e->getMessage());
             }
 
             $response = json_decode($response->getBody());
             $date = Carbon::now()->addSeconds($response->expires_in);
+
             return response()->json([
                 'status' => true,
                 'is_login' => true,
                 'data' => [
                     'access_token' => [
                         'value' => $response->access_token,
-                        'expiry' => $date->valueOf()
+                        'expiry' => $date->valueOf(),
                     ],
                     'refresh_token' => $this->refreshTokenPayload($response->refresh_token),
                     'default_part' => $user->default_part,
-                    'default_branch' => $defaultBranch
-                ]
+                    'default_branch' => $defaultBranch,
+                ],
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -192,22 +189,21 @@ class AuthController extends Controller
         }
     }
 
-
     public function refresh(RefreshTokenRequest $request)
     {
         try {
-            $client = new Client();
+            $client = new Client;
 
             $response = $client->request(
                 'POST',
-                config('services.passport.oauth_url') . '/oauth/token',
+                config('services.passport.oauth_url').'/oauth/token',
                 [
                     'form_params' => [
                         'grant_type' => 'refresh_token',
                         'client_id' => $request->header('X-CLIENT-ID') ?? '',
                         'client_secret' => config('services.passport.client_secret'),
                         'refresh_token' => $request->refreshToken,
-                        'scope' => ""
+                        'scope' => '',
                     ],
                 ]
             );
@@ -227,7 +223,7 @@ class AuthController extends Controller
             ]);
         } catch (\Throwable $th) {
             // Expired / revoked refresh token: 401 so the app logs the user out
-            Log::info('Token refresh failed: ' . $th->getMessage());
+            Log::info('Token refresh failed: '.$th->getMessage());
 
             return response()->json([
                 'status' => false,
@@ -241,7 +237,7 @@ class AuthController extends Controller
      */
     private function refreshTokenPayload(?string $refreshToken): ?array
     {
-        if (!$refreshToken) {
+        if (! $refreshToken) {
             return null;
         }
 
@@ -265,10 +261,10 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'User logout.'
+                'message' => 'User logout.',
             ]);
         } catch (\Exception $e) {
-            Log::error('Logout failed: ' . $e->getMessage());
+            Log::error('Logout failed: '.$e->getMessage());
 
             return response()->json([
                 'status' => false,
@@ -287,27 +283,23 @@ class AuthController extends Controller
             $encrypter = new Encrypter($key, config('app.cipher'));
 
             $authUser = $request->user();
-            if (!$authUser) {
+            if (! $authUser) {
                 return response()->json(['status' => 401, 'message' => 'Unauthenticated'], 401);
             }
             $user = User::query()
                 ->with([
-                    'mainUser.position',
-                    'subUsers.position',
+                    'mainUser.role',
                     'subUsers.role',
-                    'siblings.position',
                     'siblings.role',
-                    'underUser',
                     'branch',
                     'role',
-                    'position',
-                    'village.commune.district.province'
+                    'village.commune.district.province',
                 ])
                 ->findOrFail(Auth::id());
 
             $user->last_login = Carbon::now();
             $user->saveQuietly();
-            
+
             $branches = $this->branchesFor($user);        // ← uses the same helper now
             $permissions = $this->permissionsFor($user->id); // ← pass id
             $company = Company::find(app(BranchContext::class)->companyId($user), ['name_kh']);
@@ -337,10 +329,10 @@ class AuthController extends Controller
             $caller = $request->user();
             $target = User::where('is_active', true)->find($request->user_id);
 
-            if (!$target || !$this->isLinkedAccount($caller, $target)) {
+            if (! $target || ! $this->isLinkedAccount($caller, $target)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'User not found or access denied.'
+                    'message' => 'User not found or access denied.',
                 ], 403);
             }
 
@@ -356,12 +348,12 @@ class AuthController extends Controller
                     'refresh_token' => null,
                     'default_part' => $target->default_part,
                     'branch_id' => $target->branch_id,
-                ]
+                ],
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

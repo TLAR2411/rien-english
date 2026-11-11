@@ -2,7 +2,6 @@
 // used after login / switching user, and when the app is opened at "/"
 // (e.g. the installed PWA, whose start_url is "/").
 const HOME_BY_PART = {
-  hr: "/hr",
   admin: "/admin",
 };
 

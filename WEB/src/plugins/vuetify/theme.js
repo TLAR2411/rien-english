@@ -15,7 +15,7 @@ export const themes = {
       'on-secondary': '#ffffff',
       'secondary-darken-1': '#475569',
 
-      // Status colors critical for loans (Approvals, Pending, Overdue)
+      // Status colors (approved / pending / overdue)
       'success': '#10B981', // Clean green for "Paid" or "Approved"
       'on-success': '#ffffff',
       'success-darken-1': '#059669',

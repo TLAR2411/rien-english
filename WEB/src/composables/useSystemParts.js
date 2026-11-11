@@ -1,7 +1,6 @@
 import { computed, unref } from "vue";
 import { usePartStore } from "@/stores/partStore";
 import DefaultNavItems from "@/navigation/vertical/index";
-import { useHrNavigation } from "@/navigation/vertical/hr";
 import { useAdminNavigation } from "@/navigation/vertical/admin";
 
 // The normalized `system_part` value for each part — what
@@ -10,7 +9,6 @@ import { useAdminNavigation } from "@/navigation/vertical/admin";
 // files that need to branch on the active system part (e.g. choosing a
 // sidebar nav list) don't hardcode these strings themselves.
 export const SYSTEM_PART = {
-  HR: "hr",
   ADMIN: "admin",
 };
 
@@ -39,15 +37,6 @@ export const SYSTEM_PART = {
 // scope would run before app.use(pinia) does (see useSystemPartNavItems(),
 // which calls each one lazily instead).
 const SYSTEM_PARTS = [
-  {
-    title: "HR System",
-    icon: "tabler-users-group",
-    part: "hr",
-    matchValue: SYSTEM_PART.HR,
-    permission: "hr-allow-part",
-    profileRouteName: "hr-user-profile-tab",
-    navItems: useHrNavigation,
-  },
   {
     title: "Admin System",
     icon: "tabler-shield-cog",
@@ -87,7 +76,7 @@ export const SYSTEM_PART_SEGMENT_MAP = Object.fromEntries(
 );
 
 // Where the profile icon (UserFullProfile.vue) sends each system part.
-// Keyed by SYSTEM_PART so it can't drift the way the old `systemPart == "hr"`
+// Keyed by SYSTEM_PART so it can't drift the way an old hard-coded part name
 // check did when the router guard normalized to a different string.
 export const PROFILE_ROUTE_BY_PART = Object.fromEntries(
   ALL_PARTS.filter((item) => item.profileRouteName).map((item) => [

@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -37,16 +38,6 @@ return new class extends Migration {
             $table->boolean('is_active')->default(true);
             $table->boolean('is_super')->default(false);
 
-            $table->unsignedMediumInteger('under_user_id')->nullable();
-            $table->foreign('under_user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
-            $table->index('under_user_id');
-
-            $table->unsignedMediumInteger('employee_id')->nullable();
-
             $table->rememberToken();
 
             $table->unsignedTinyInteger('role_id');
@@ -56,14 +47,6 @@ return new class extends Migration {
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             $table->index('role_id');
-
-            $table->unsignedSmallInteger('position_id')->nullable();
-            $table->foreign('position_id')
-                ->references('id')
-                ->on('positions')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
-            $table->index('position_id');
 
             $table->enum('gender', ['male', 'female'])->default('male')->nullable();
             $table->date('dob')->nullable();
@@ -75,7 +58,7 @@ return new class extends Migration {
             $table->date('join_date')->nullable();
             $table->integer('village_code')->nullable();
 
-            $table->enum('default_part', ['hr', 'admin'])->default('admin');
+            $table->enum('default_part', ['admin'])->default('admin');
             $table->string('image_path')->nullable();
             $table->boolean('is_reset_password')->default(false);
 

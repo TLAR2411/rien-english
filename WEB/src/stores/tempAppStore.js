@@ -10,7 +10,7 @@ import { useSettingStore } from "@/stores/settingStore";
  *   url        the "...-all" endpoint that returns the list
  *   resources  API paths whose save / delete makes the list stale: after a
  *              successful POST / PUT / PATCH / DELETE to one of them (e.g.
- *              "positions", "positions/12") the list is dropped and
+ *              "roles", "roles/12") the list is dropped and
  *              the next request fetches it again (api.js calls invalidateUrl)
  *   perBranch  the endpoint answers for the selected branch, so a copy is
  *              kept per branch instead of one shared copy
@@ -20,8 +20,6 @@ import { useSettingStore } from "@/stores/settingStore";
  */
 export const CACHED_LISTS = {
   // admin
-  positions: { url: "positions-all", resources: ["positions"] },
-  departments: { url: "departments-all", resources: ["departments"] },
   roles: { url: "roles-all", resources: ["roles"] },
   branches: { url: "branches-all", resources: ["branches"] },
   permissions: { url: "permissions-all", resources: ["permissions"] },

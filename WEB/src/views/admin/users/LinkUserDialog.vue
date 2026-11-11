@@ -12,7 +12,6 @@ import CustomCheckboxes from "@/@core/components/app-form-elements/CustomCheckbo
 import {
   getBranches,
   getPermissions,
-  getPositions,
   getRoles,
 } from "@/services/dataService";
 import AppAutocomplete from "@/@core/components/app-form-elements/AppAutocomplete.vue";
@@ -40,7 +39,6 @@ const { showDialog } = useDialog();
 const isLoading = ref(false);
 const userInfo = ref({});
 const roles = ref([]);
-const positions = ref([]);
 
 const manageBranch = [
   { name: "មួយសាខា", value: 1 },
@@ -94,14 +92,12 @@ onMounted(async () => {
   await initData();
   isLoading.value = false;
 
-  const [dataRoles, dataPositions, dataBranches] = await Promise.all([
+  const [dataRoles, dataBranches] = await Promise.all([
     getRoles(),
-    getPositions(),
     getBranches(),
   ]);
 
   roles.value = dataRoles;
-  positions.value = dataPositions;
   branches.value = dataBranches;
 });
 
@@ -162,19 +158,10 @@ const onCloseDialog = () => {
           item-value="id"
         />
       </VCol>
-      <VCol cols="12" sm="6" class="pt-0">
-        <AppAutocomplete
-          label="Position"
-          v-model="formData.position_id"
-          :items="positions"
-          item-title="name_kh"
-          item-value="id"
-        />
-      </VCol>
 
       <VCol cols="12" sm="6" class="pt-0">
         <AppAutocomplete
-          label="Role"
+          label="Branch"
           v-model="formData.branch_id"
           :items="branches"
           item-title="name_kh"

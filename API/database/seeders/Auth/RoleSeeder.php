@@ -17,22 +17,17 @@ class RoleSeeder extends Seeder
             [
                 'name' => 'developer',
                 'display_name' => 'Developer',
-                'abbr' => 'DEV'
+                'abbr' => 'DEV',
             ],
             [
                 'name' => 'system-administrator',
                 'display_name' => 'System Administrator',
-                'abbr' => 'SYS'
-            ],
-            [
-                'name' => 'human-resource-manager',
-                'display_name' => 'ប្រធាននាយកដ្ឋានធនធានមនុស្ស',
-                'abbr' => 'HHR'
+                'abbr' => 'SYS',
             ],
             [
                 'name' => 'staff',
                 'display_name' => 'បុគ្គលិក',
-                'abbr' => 'STF'
+                'abbr' => 'STF',
             ],
         ];
 

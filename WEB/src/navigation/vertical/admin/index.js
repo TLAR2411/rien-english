@@ -17,18 +17,6 @@ export const useAdminNavigation = () => {
             permission: "view-users"
         },
         {
-            title: "User Requests",
-            to: { name: "admin-user-requests" },
-            icon: { icon: "tabler-user-plus" },
-            permission: "add-users"
-        },
-        {
-            title: "Team Structure",
-            to: { name: "admin-under-user-diagram" },
-            icon: { icon: 'tabler-sitemap' },
-            permission: "view-users"
-        },
-        {
             title: "Activity Log",
             to: { name: "admin-activity-log" },
             icon: { icon: "tabler-history" },
@@ -49,14 +37,6 @@ export const useAdminNavigation = () => {
                     icon: { icon: "tabler-user-shield" },
                     permission: "view-roles",
                 },
-                {
-                    title: "Positions",
-                    to: {
-                        name: "admin-positions",
-                    },
-                    icon: { icon: "tabler-id-badge-2" },
-                    permission: "view-positions",
-                },
             ],
         },
         {
@@ -72,14 +52,6 @@ export const useAdminNavigation = () => {
                     },
                     icon: { icon: "tabler-building" },
                     permission: "view-branches",
-                },
-                {
-                    title: "Departments",
-                    to: {
-                        name: "admin-departments",
-                    },
-                    icon: { icon: "tabler-hierarchy-3" },
-                    permission: "view-departments",
                 },
                 {
                     title: "Settings",

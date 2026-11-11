@@ -79,11 +79,11 @@ const changeBranch = (id) => {
 </script>
 
 <template>
-  <!-- Up to 230px wide; shrinks on phones so the navbar icons always fit -->
-  <div class="navbar-branches">
+  <!-- Up to 230px wide; shrinks on phones so the navbar icons always fit.
+       Hidden with one branch: there is nothing to choose. -->
+  <div v-if="branches.length > 1" class="navbar-branches">
     <AppAutocomplete
       class="branch-autocomplete"
-      :class="{ 'single-branch': branches.length === 1 }"
       v-model="filter.branch_id"
       :items="showBranches"
       :item-title="
@@ -92,8 +92,6 @@ const changeBranch = (id) => {
           (item.abbr ? `  (${item.abbr})` : '')
       "
       item-value="id"
-      :readonly="branches.length > 1 ? false : true"
-      :disabled="branches.length === 1 ? true : false"
       @update:model-value="(value) => changeBranch(value)"
       autocomplete="off"
     />
@@ -108,12 +106,5 @@ const changeBranch = (id) => {
 
 .branch-autocomplete {
   width: 100%;
-}
-
-.branch-autocomplete.single-branch :deep(.v-field.v-field--disabled) {
-  background-color: transparent !important;
-  color: inherit !important;
-  opacity: 1 !important;
-  cursor: default !important;
 }
 </style>

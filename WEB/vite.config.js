@@ -33,10 +33,6 @@ export default defineConfig(mode => {
             .toLowerCase()
         },
 
-        // beforeWriteFiles: root => {
-        //   root.insert('/loans/index.vue', '/src/pages/loans/index.vue')
-        //   root.insert('test.vue', '/src/pages/test.vue')
-        // },
       }),
       vue({
         template: {
@@ -56,7 +52,7 @@ export default defineConfig(mode => {
         selfDestroying: true,
         manifest: {
           name: env.VITE_APP_TITLE_NAME || 'Learning English',
-          short_name: env.VITE_APP_SHORT_NAME || 'Devfin',
+          short_name: env.VITE_APP_SHORT_NAME || 'Learning English',
           description: env.VITE_APP_TITLE_NAME || 'Learning English',
           start_url: '/',                  // important for scope
           scope: '/',                      // make SW control whole app

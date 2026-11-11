@@ -11,8 +11,8 @@ use Intervention\Image\Laravel\Facades\Image;
 
 abstract class Controller
 {
-
     public $startDate;
+
     public $endDate;
 
     public function getUser()
@@ -35,7 +35,7 @@ abstract class Controller
     {
         $branchId = $this->getBranch();
 
-        if (!is_numeric($branchId)) {
+        if (! is_numeric($branchId)) {
             throw ValidationException::withMessages(['branch' => 'Please choose a branch first.']);
         }
 
@@ -55,19 +55,11 @@ abstract class Controller
 
     public function getAge($date)
     {
-        if (!$date) return 0;
+        if (! $date) {
+            return 0;
+        }
 
         return Carbon::parse($date)->age;
-    }
-
-    public function roleCO()
-    {
-        return Auth::user()?->position?->is_member ?? false;
-    }
-
-    public function roleCCO()
-    {
-        return Auth::user()?->position?->is_leader ?? false;
     }
 
     public function storeImage(string $inputImage, string $imagePage, string $disk = 'public'): string
@@ -80,12 +72,12 @@ abstract class Controller
         $sizeCap = 8 * 1024 * 1024; // 8MB base64 payload cap (optional)
 
         // ---- decode & validate base64 ----
-        if (!preg_match('/^data:image\/(\w+);base64,/', $inputImage, $type)) {
+        if (! preg_match('/^data:image\/(\w+);base64,/', $inputImage, $type)) {
             abort(500, 'Invalid Base64 image format');
         }
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $ext = strtolower($type[1]);
-        if (!in_array($ext, $allowed, true)) {
+        if (! in_array($ext, $allowed, true)) {
             abort(500, 'Unsupported image type');
         }
 
@@ -117,14 +109,16 @@ abstract class Controller
 
         // ---- encode to webp & store ----
         $now = Carbon::now();
-        $filename = $now->year . '/' . $now->month . '/' . $now->day . '/' . Str::uuid() . '.webp';
-        $storagePath = 'images/' . $imagePage . '/' . $filename;
+        $filename = $now->year.'/'.$now->month.'/'.$now->day.'/'.Str::uuid().'.webp';
+        $storagePath = 'images/'.$imagePage.'/'.$filename;
 
         $webp = $img->toWebp($quality);
-        Storage::disk($disk)->put($storagePath, (string)$webp);
+        Storage::disk($disk)->put($storagePath, (string) $webp);
 
         // optional: free memory
-        if (method_exists($img, 'destroy')) $img->destroy();
+        if (method_exists($img, 'destroy')) {
+            $img->destroy();
+        }
         unset($binary, $webp);
 
         return $storagePath; // relative path on the disk

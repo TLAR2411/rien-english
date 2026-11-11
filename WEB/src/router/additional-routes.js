@@ -10,11 +10,7 @@ const defaultDashboard = () => {
 
   const userPath = auth()?.user?.default_part
 
-  if (userPath == 'hr') {
-    return hasPermission('hr-allow-part')
-      ? { name: 'hr-dashboards' }
-      : { name: 'not-authorized' }
-  } else if (userPath == 'admin') {
+  if (userPath == 'admin') {
     return hasPermission('admin-allow-part')
       ? { name: 'admin-dashboards' }
       : { name: 'not-authorized' }
@@ -40,17 +36,6 @@ export const redirects = [
 
       return hasPermission('admin-allow-part')
         ? { name: 'admin-dashboards' }
-        : { name: 'not-authorized' }
-    },
-  },
-  {
-    path: '/hr',
-    name: 'hr',
-    redirect: () => {
-      if (!isLoggedIn()) return { name: 'login' }
-
-      return hasPermission('hr-allow-part')
-        ? { name: 'hr-dashboards' }
         : { name: 'not-authorized' }
     },
   },

@@ -21,9 +21,6 @@ import hasPermission from "@/utils/hasPermission";
  */
 export const ROW_ACTIONS = [
     { key: "approve", title: "Approve", icon: "tabler-check", color: "success", condition: true },
-    { key: "activityCreate", title: "Activity Create", icon: "tabler-pencil-plus", color: "success" },
-    { key: "activityHistory", title: "Activity History", icon: "tabler-history", color: "primary" },
-    { key: "clientLoanHistory", title: "Client Loan History", icon: "tabler-history", color: "primary" },
     {
         key: "default", title: "Default", icon: "tabler-circuit-capacitor", color: "secondary",
         checkDefault: true, firstColor: "success", secondColor: "secondary",
@@ -38,63 +35,9 @@ export const ROW_ACTIONS = [
     { key: "linkUser", title: "Link User", icon: "tabler-link", color: "success" },
     { key: "password", title: "Password", icon: "tabler-key", color: "secondary" },
     { key: "username", title: "Username", icon: "tabler-user", color: "success" },
-    { key: "receive", title: "Receive", icon: "tabler-cash-banknote", color: "success", condition: true },
-    { key: "salary", title: "Edit Salary", icon: "tabler-cash-edit", color: "primary" },
-    // promotion / demotion / transfer / salary adjustment
-    { key: "jobChange", title: "Promotion / Demotion", icon: "tabler-arrows-up-down", color: "primary" },
-    { key: "terminate", title: "Terminate", icon: "tabler-file-x", color: "error" },
-    {
-        key: "receiveLastSchedule", title: "Receive Last Schedule", icon: "tabler-cash-banknote",
-        color: "success", condition: true,
-        checkStatus: true, checkIcon: true, checkTitle: true, checkDisable: true,
-        firstColor: "success", secondColor: "secondary",
-        firstTitle: "Receive Last Schedule", secondTitle: "Has Receive",
-        firstIcon: "tabler-cash-banknote", secondIcon: "tabler-file-check",
-    },
-    {
-        key: "backDailyCash", title: "Back Daily Cash", icon: "tabler-arrow-back", color: "secondary",
-        condition: true, confirm: "ask", confirmMessage: "Back to daily cash?",
-    },
-    { key: "repay", title: "Repay", icon: "tabler-cash-banknote", color: "success", condition: true },
     { key: "view", title: "View", icon: "tabler-eye", color: "success" },
-    { key: "payoffRequest", title: "Payoff Request", icon: "tabler-ballpen", color: "warning" },
     { key: "copy", title: "Copy", icon: "tabler-copy", color: "warning" },
-    // rental stays
-    { key: "moveIn", title: "Move In", icon: "tabler-login-2", color: "primary", condition: true },
-    { key: "moveOut", title: "Move Out", icon: "tabler-logout", color: "primary", condition: true },
-    { key: "changeDates", title: "Change Dates", icon: "tabler-calendar-event", color: "secondary", condition: true },
-    { key: "cancelStay", title: "Cancel Stay", icon: "tabler-calendar-off", color: "error", condition: true },
-    { key: "reminderLetter", title: "Reminder Letter", icon: "tabler-bell-ringing", color: "secondary" },
-    { key: "requestPawnLetter", title: "Request Pawn Letter", icon: "tabler-news", color: "secondary" },
-    { key: "recovery", title: "Recovery", icon: "tabler-restore", color: "success" },
     { key: "detail", title: "Detail", icon: "tabler-file-description", color: "success" },
-    { key: "schedule", title: "Schedule", icon: "tabler-calendar-event", color: "warning", condition: true },
-    {
-        key: "scheduleForClient", title: "Schedule For Client", icon: "tabler-calendar-event",
-        color: "warning", condition: true,
-    },
-    {
-        key: "clientHistory", title: "Client History", icon: "tabler-user-search", color: "success",
-        // TODO: typo carried over from the old file, so this permission is
-        // never checked. Delete this line to use canClientHistory.
-        permissionFrom: "canClientistory",
-    },
-    {
-        key: "blackList", title: "Black List", icon: "tabler-cancel", color: "error",
-        confirm: "ask", confirmMessage: "Do you want to make this client to black list?",
-        permissionProps: ["canCheckBlackList", "canUncheckBlackList"],
-        checkBlackList: true, checkBleckListPermission: true, checkIcon: true,
-        firstColor: "error", secondColor: "secondary",
-        firstIcon: "tabler-address-book-off", secondIcon: "tabler-address-book",
-    },
-    {
-        key: "receiveHistory", title: "Receive History", icon: "tabler-history", color: "success",
-        // TODO: canLoan is not a prop, so this permission is never checked.
-        // Delete this line to use canReceiveHistory.
-        permissionFrom: "canLoan",
-    },
-    { key: "penalty", title: "Penalty", icon: "tabler-coin", color: "warning" },
-    { key: "restructure", title: "Restructure", icon: "tabler-calendar-event", color: "warning" },
     { key: "permission", title: "Permission", icon: "tabler-shield", color: "warning" },
     { key: "edit", title: "Edit", icon: "tabler-pencil", color: "warning", condition: true },
     {
@@ -206,37 +149,19 @@ export function useRowActions(emit, props, { t, showDialog, debounce, DEBOUNCE_D
 // Per-row display helpers (unchanged)
 
 export const getButtonColor = (button, item) => {
-    if (button.checkBlackList) return item.is_black_list ? button.firstColor : button.secondColor;
-    if (button.checkActive)
-        return item.is_active || item.last_schedule?.status ? button.firstColor : button.secondColor;
-    if (button.checkStatus)
-        return item.last_schedule?.status ? button.firstColor : button.secondColor;
+    if (button.checkActive) return item.is_active ? button.firstColor : button.secondColor;
     if (button.checkDefault) return item.default ? button.firstColor : button.secondColor;
     return button.color;
 };
 
 export const getButtonTitle = (button, item) => {
-    if (button.checkTitle)
-        return item.is_active || item.last_schedule?.status ? button.firstTitle : button.secondTitle;
+    if (button.checkTitle) return item.is_active ? button.firstTitle : button.secondTitle;
     return button.title;
 };
 
-export const getButtonDisable = (button, item) => {
-    if (button.checkDisable) return !item.last_schedule?.status;
-    return false;
-};
-
 export const getButtonIcon = (button, item) => {
-    if (button.checkBlackList) return item.is_black_list ? button.firstIcon : button.secondIcon;
-    if (button.checkIcon)
-        return item.is_active || item.last_schedule?.status ? button.firstIcon : button.secondIcon;
+    if (button.checkIcon) return item.is_active ? button.firstIcon : button.secondIcon;
     return button.icon;
 };
 
-export const checkPermission = (button, item) => {
-    if (button.checkBleckListPermission)
-        return item.is_black_list
-            ? hasPermission(button.permission[1])
-            : hasPermission(button.permission[0]);
-    return hasPermission(button.permission);
-};
+export const checkPermission = (button) => hasPermission(button.permission);

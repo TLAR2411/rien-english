@@ -13,13 +13,15 @@ export const setupGuards = (router) => {
     const auth = useAuthStore()
     const part = usePartStore()
 
-    // 1. Determine the module (Admin, HR, etc.)
+    // 1. Determine the module (Admin, ...)
     const firstSegment = to.path.split("/")[1] || 'admin';
     part.setSystemPart(SYSTEM_PART_SEGMENT_MAP[firstSegment] || 'admin');
 
     // the page's own title, translated; pages without one show the brand
     // name as is (it is a name, not a translation key)
-    document.title = to?.meta?.title ? t(to.meta.title) : "Devfin.";
+    document.title = to?.meta?.title
+      ? t(to.meta.title)
+      : import.meta.env.VITE_APP_TITLE || "Learning English";
 
     // 2. Get the token - use a fresh check
     let accessToken = getAccessToken();

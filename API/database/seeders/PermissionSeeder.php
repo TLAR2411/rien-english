@@ -22,7 +22,7 @@ class PermissionSeeder extends Seeder
     private function insert($group, $attribute = null, $isAttribute = true)
     {
         // If $attribute is not null, merge it with the default $this->attribute
-        if (!is_null($attribute)) {
+        if (! is_null($attribute)) {
             $attribute = array_unique(array_merge(($isAttribute == true ? $this->attributes : []), $attribute));
         } else {
             $attribute = ($isAttribute == true ? $this->attributes : []);
@@ -31,10 +31,10 @@ class PermissionSeeder extends Seeder
         foreach ($attribute as $item) {
             // firstOrCreate so the seeder can be re-run without duplicates
             Permission::firstOrCreate(
-                ['name' => $item . '-' . $group],
+                ['name' => $item.'-'.$group],
                 [
                     'group' => $group,
-                    'display_name' => $item
+                    'display_name' => $item,
                 ]
             );
         }
@@ -44,7 +44,6 @@ class PermissionSeeder extends Seeder
     {
         // One permission per system part (see WEB/src/composables/useSystemParts.js)
         $this->insert('allow-part', [
-            'hr',
             'admin',
         ], false);
 
@@ -54,22 +53,15 @@ class PermissionSeeder extends Seeder
             'change-password',
             'change-permission',
         ]);
-        $this->insert('employees', [
-            'transfer',
-            'change-active',
-        ]);
 
         $this->insert('activity-log');
 
-        $this->insert('positions');
         $this->insert('roles');
         $this->insert('permissions');
         $this->insert('villages');
         $this->insert('communes');
         $this->insert('districts');
         $this->insert('provinces');
-
-        $this->insert('departments');
 
         // Admin General Settings page (company info, default passwords, Telegram)
         $this->insert('settings', ['view', 'edit'], false);

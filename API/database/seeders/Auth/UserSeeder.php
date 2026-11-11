@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\Auth;
 
-use App\Models\Auth\Position;
 use App\Models\Auth\Role;
 use App\Models\Auth\UserBranch;
 use App\Models\User;
@@ -17,7 +16,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $password = env('ADMIN_PASSWORD') ?: Str::password(16);
-        if (!env('ADMIN_PASSWORD')) {
+        if (! env('ADMIN_PASSWORD')) {
             $this->command?->warn("Generated admin password (shown once): {$password}");
         }
 
@@ -32,7 +31,6 @@ class UserSeeder extends Seeder
             'is_super' => true,
             'manage_branch' => 3,
             'role_id' => 1,
-            'position_id' => Position::where('abbr', 'CIO')->first()->id,
             'join_date' => now(),
             'default_part' => 'admin',
         ]);
