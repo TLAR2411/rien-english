@@ -1,8 +1,8 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { useDisplay } from "vuetify";
 import { api } from "@/utils/api";
 import { useCrud } from "@/composables/useCrud";
+import { useFitTable } from "@/composables/useFitTable";
 import hasPermission from "@/utils/hasPermission";
 import {
   QUESTION_TYPES,
@@ -111,60 +111,8 @@ const answerSummary = (question) => {
     : correct[0];
 };
 
-// Big screens: tabs and settings stay still, only the questions table scrolls.
-// The table fills the screen from where it starts down to the bottom.
-const { mdAndUp } = useDisplay();
-const rootEl = ref(null);
-const tableBox = ref(null);
-const tableHeight = ref(null);
-// What the page shows under an element: the bottom padding/border of each
-// parent card, and anything placed below it (e.g. a footer).
-// (Not the page height — a page with a minimum height would keep the table small.)
-const spaceBelow = (el) => {
-  let sum = parseFloat(getComputedStyle(el).marginBottom) || 0;
-  for (
-    let node = el;
-    node.parentElement && node !== document.body;
-    node = node.parentElement
-  ) {
-    const bottom = node.getBoundingClientRect().bottom;
-    for (let sib = node.nextElementSibling; sib; sib = sib.nextElementSibling) {
-      const style = getComputedStyle(sib);
-      if (["fixed", "absolute"].includes(style.position)) continue;
-      const rect = sib.getBoundingClientRect();
-      if (rect.top < bottom - 1) continue; // beside it, not below
-      sum +=
-        rect.height +
-        (parseFloat(style.marginTop) || 0) +
-        (parseFloat(style.marginBottom) || 0);
-    }
-    const parent = getComputedStyle(node.parentElement);
-    sum +=
-      (parseFloat(parent.paddingBottom) || 0) +
-      (parseFloat(parent.borderBottomWidth) || 0);
-  }
-  return sum;
-};
-
-const fitToScreen = () => {
-  const box = tableBox.value;
-  if (!box || !box.offsetParent) return; // not on screen (closed tab)
-  const top = box.getBoundingClientRect().top + window.scrollY;
-  tableHeight.value = `${Math.max(360, window.innerHeight - top - spaceBelow(box))}px`;
-};
-
-// Re-measure when the page changes size (tab opens, settings grow, window resizes)
-let observer = null;
-onMounted(() => {
-  observer = new ResizeObserver(() => fitToScreen());
-  if (rootEl.value) observer.observe(rootEl.value);
-  window.addEventListener("resize", fitToScreen);
-});
-watch(quiz, () => nextTick(fitToScreen));
-onBeforeUnmount(() => {
-  observer?.disconnect();
-  window.removeEventListener("resize", fitToScreen);
-});
+// Big screens: tabs and settings stay still, only the questions table scrolls
+const { box: tableBox, isFit, height: tableHeight } = useFitTable();
 
 const countHint = computed(() =>
   t("{count} of {min}–{max} recommended", {
@@ -175,7 +123,7 @@ const countHint = computed(() =>
 </script>
 
 <template>
-  <div ref="rootEl" class="d-flex flex-column">
+  <div class="d-flex flex-column">
     <!-- Settings -->
     <AppCard
       :title="quiz ? 'Quiz settings' : 'This lesson has no quiz yet'"
@@ -235,8 +183,8 @@ const countHint = computed(() =>
 
       <div
         ref="tableBox"
-        :class="{ 'quiz-questions--fit': mdAndUp }"
-        :style="{ height: mdAndUp ? tableHeight : null }"
+        :class="{ 'fit-table': isFit }"
+        :style="{ height: isFit ? tableHeight : null }"
       >
         <AppCardTable
           ref="tableRef"
@@ -248,8 +196,8 @@ const countHint = computed(() =>
           :api-url="`admin/quizzes/${quiz.id}/questions`"
           :headers="headers"
           :limit="50"
-          :is-full-height="mdAndUp"
-          :is-full-height-tab="mdAndUp"
+          :is-full-height="isFit"
+          :is-full-height-tab="isFit"
           save-header-name="header-quiz-questions"
           enable-mobile-card
           :create-dialog="canEdit"
@@ -296,21 +244,3 @@ const countHint = computed(() =>
     </template>
   </div>
 </template>
-
-<style scoped>
-/* Fill the measured box; the table rows scroll inside, the column titles stay on top */
-.quiz-questions--fit :deep(.list-tab-height) {
-  height: 100%;
-}
-.quiz-questions--fit :deep(.v-table) {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-.quiz-questions--fit :deep(.v-table__wrapper) {
-  flex: 1 1 0;
-  height: auto !important;
-  min-height: 0;
-  overscroll-behavior: contain;
-}
-</style>

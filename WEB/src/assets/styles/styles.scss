@@ -348,3 +348,23 @@ body,
     }
   }
 }
+// AppCardTable inside a box sized by useFitTable(): fill the box, the rows
+// scroll inside and the column titles stay on top
+.fit-table {
+  .list-tab-height {
+    height: 100%;
+  }
+
+  .v-table {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
+  .v-table__wrapper {
+    flex: 1 1 0;
+    height: auto !important;
+    min-block-size: 0;
+    overscroll-behavior: contain;
+  }
+}
