@@ -1,0 +1,350 @@
+/* ============================================================
+   1. GLOBAL FONT STACK & ROOT
+   Latin first so English text and ASCII digits come from Inter.
+   No height: 100% — it squeezes tab panels and clips content.
+   ============================================================ */
+:root {
+  --app-fs-10: clamp(9px, 2.5vw, 10px);
+  --app-fs-11: clamp(10px, 2.8vw, 11px);
+  --app-fs-12: clamp(11px, 3vw, 12px);
+  --app-fs-13: clamp(12px, 3.3vw, 13px);
+  --app-fs-14: clamp(12.5px, 3.5vw, 14px);
+  --app-fs-15: clamp(13.5px, 3.8vw, 15px);
+  --app-fs-16: clamp(14px, 4vw, 16px);
+  --app-fs-17: clamp(15px, 4.3vw, 17px);
+  --app-fs-18: clamp(16px, 4.5vw, 18px);
+  --app-fs-19: clamp(17px, 4.8vw, 19px);
+  --app-fs-20: clamp(17.5px, 5vw, 20px);
+  --app-fs-21: clamp(18.5px, 5.3vw, 21px);
+  --app-fs-22: clamp(19.5px, 5.5vw, 22px);
+  --app-fs-23: clamp(20px, 5.8vw, 23px);
+  --app-fs-24: clamp(21px, 6vw, 24px);
+}
+
+html {
+  /* Scales between 14px on small phones up to 16px on larger screens */
+  font-size: clamp(13.5px, 3.8vw, 16px);
+  margin: 0;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100dvh;
+  font-family: "inter", "kantumruy", sans-serif;
+}
+
+html,
+body,
+.v-application,
+.v-overlay-container,
+.v-overlay__content,
+.v-list,
+.v-field,
+.v-label,
+input,
+textarea,
+select,
+button {
+  font-family: "inter", "kantumruy", sans-serif;
+}
+
+/* Vuetify typography classes set their own font-family with !important,
+   which drops Kantumruy for Khmer text — put our stack back. */
+[class*="text-h"],
+[class*="text-body-"],
+[class*="text-subtitle-"],
+.text-caption,
+.text-overline,
+.text-button {
+  font-family: "inter", "kantumruy", sans-serif !important;
+}
+
+/* Tap highlight is safe globally. touch-callout is NOT — it kills
+   long-press copy, so scope it to controls only. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.v-btn,
+.v-tab,
+.v-list-item,
+img {
+  -webkit-touch-callout: none;
+}
+
+/* ============================================================
+   2. VUETIFY & TABLE FIXES
+   ============================================================ */
+.v-data-table,
+.v-table,
+table {
+  color: rgba(var(--v-theme-on-surface), 0.87);
+}
+
+// .v-table__wrapper {
+//   overscroll-behavior: contain;
+// }
+
+.v-table th .v-data-table-header__content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.v-data-table__thead,
+.v-table thead {
+  font-family: "inter", "kantumruy", sans-serif;
+  font-weight: 600;
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+}
+
+/* Khmer sits taller than Latin — coeng subscripts and diacritics
+   need vertical room or they clip in dense rows.
+   Note: no `height: auto !important` here. That override is what
+   breaks Vuetify's row sizing. */
+.v-table .v-table__wrapper table td,
+.v-table .v-table__wrapper table th,
+.v-data-table .v-data-table__td,
+.v-data-table .v-data-table__th {
+  line-height: 1.6;
+  vertical-align: middle;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Keep numeric columns on one line and vertically aligned */
+.no-wrap-num,
+.number-col,
+td.text-end,
+th.text-end {
+  white-space: nowrap;
+  word-break: keep-all;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vuetify keeps a closed tooltip's role="tooltip" wrapper in the DOM
+   with its text hidden, so screen readers see an unnamed tooltip.
+   Hide the wrapper while closed; the content opts back in so the
+   fade-out transition still plays (v-show hides it afterwards). */
+.v-overlay.v-tooltip:not(.v-overlay--active) {
+  visibility: hidden;
+
+  > .v-overlay__content {
+    visibility: visible;
+  }
+}
+
+/* ============================================================
+   3. LAYOUT & UTILITIES
+   ============================================================ */
+.layout-navbar,
+.layout-page-content {
+  padding: 0 12px !important;
+}
+
+body
+  .layout-wrapper.layout-nav-type-vertical.layout-navbar-sticky
+  .layout-navbar {
+  inset-block-start: 0.5rem !important;
+}
+
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+}
+
+.font-size-0-5 {
+  font-size: 0.5rem !important;
+}
+.font-size-0-75 {
+  font-size: 0.75rem !important;
+}
+.font-size-1 {
+  font-size: 1rem !important;
+}
+.font-size-2 {
+  font-size: 2rem !important;
+}
+.font-size-3 {
+  font-size: 3rem !important;
+}
+.font-size-4 {
+  font-size: 4rem !important;
+}
+
+/* ============================================================
+   4. SCROLLBAR STYLING
+   Scoped to real scroll containers. Never target `div` broadly —
+   that promotes every element to its own iOS compositing layer
+   and causes offset / blank-region rendering bugs.
+   ============================================================ */
+html,
+body,
+.v-table__wrapper,
+.v-list,
+.v-navigation-drawer__content,
+.v-overlay__content,
+.v-card-text,
+.chat-log-container,
+.mobile-card-container,
+.dialog-content,
+#app-card-print-area,
+.layout-vertical-nav .nav-items,
+[class*="scrollable"] {
+  // 10px gutter, but the thumb is drawn as a 6px pill floating in the
+  // middle (transparent border + padding-box clip). On hover the border
+  // shrinks so the pill grows to 8px — easier to grab, still slim at rest.
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    min-width: 32px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background-clip: padding-box;
+    background-color: rgba(var(--v-theme-on-surface), 0.14);
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--v-theme-on-surface), 0.22);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    border-width: 1px;
+    background-color: rgba(var(--v-theme-on-surface), 0.32);
+  }
+
+  // &::-webkit-scrollbar-thumb:active {
+  //   border-width: 1px;
+  //   background-color: rgba(var(--v-theme-primary), 0.7);
+  // }
+
+  // Arrow buttons — rounded chevrons (Chrome/Edge/Safari only; Firefox has
+  // no API for them). Images can't read theme vars, so colours are fixed:
+  // #94a3b8 at rest, #475569 on hover.
+  &::-webkit-scrollbar-button:single-button {
+    display: block;
+    border-radius: 4px;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 8px 8px;
+  }
+
+  &::-webkit-scrollbar-button:single-button:vertical {
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-button:single-button:horizontal {
+    width: 14px;
+  }
+
+  &::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 5.5L4 3l2.5 2.5' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 2.5L4 5l2.5-2.5' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 1.5L3 4l2.5 2.5' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:horizontal:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 1.5L5 4 2.5 6.5' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 5.5L4 3l2.5 2.5' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 2.5L4 5l2.5-2.5' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 1.5L3 4l2.5 2.5' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 1.5L5 4 2.5 6.5' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  &::-webkit-scrollbar-button:single-button:hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.06);
+  }
+
+  &::-webkit-scrollbar-button:single-button:active {
+    background-color: rgba(var(--v-theme-on-surface), 0.12);
+  }
+
+  // Firefox only. In Chrome 121+ `scrollbar-color` disables every
+  // ::-webkit-scrollbar rule, and because it is INHERITED, setting it on
+  // `html` turns every scroll area in the app back into a thick native bar.
+
+  @supports (-moz-appearance: none) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--v-theme-on-surface), 0.12) transparent;
+  }
+}
+
+/* ============================================================
+   5. Chill Chill Chill
+   ============================================================ */
+
+// Sub-menu items that have their own icon: show it at a readable size.
+// The template shrinks nested icons to 0.75rem, which only suits the default
+// circle bullet, so items without an icon keep that small circle.
+.layout-vertical-nav .nav-group .nav-link .nav-item-icon:not(.tabler-circle) {
+  font-size: 1.125rem;
+  margin-inline: 0.125rem 0.625rem;
+}
+
+// Sidebar section titles: bold theme colour, then a thin line to the row's
+// right edge. The line is on .title-text, so the collapsed sidebar (which
+// shows a placeholder icon instead) has no line.
+.layout-nav-type-vertical .layout-vertical-nav .nav-section-title {
+  block-size: 1.5rem;
+  color: rgb(var(--v-theme-primary));
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.5rem;
+  margin-block-end: 0.125rem;
+  text-transform: none;
+
+  &:not(:first-child) {
+    margin-block-start: 0.25rem;
+  }
+
+  .title-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &::after {
+      flex: 1 1 auto;
+      background: rgba(var(--v-border-color), var(--v-border-opacity));
+      block-size: 1px;
+      content: "";
+    }
+  }
+}

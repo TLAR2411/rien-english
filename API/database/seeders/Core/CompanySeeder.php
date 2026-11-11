@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Seeders\Core;
+
+use App\Models\Core\Company;
+use Illuminate\Database\Seeder;
+
+class CompanySeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        Company::create([
+            'name_kh' => 'ក្រុមហ៊ុនរបស់ខ្ញុំ',
+            'name_en' => 'My Company',
+        ]);
+    }
+}

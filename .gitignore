@@ -1,0 +1,8 @@
+.DS_Store
+.rnd
+.idea/
+.vscode/
+*.log
+
+# Never commit real env files (each app also ignores them)
+.env

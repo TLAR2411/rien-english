@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="km" translate="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Browser Tab Title & Description -->
+    <title>%VITE_APP_TITLE% | Learning English</title>
+    <meta
+      name="description"
+      content="Authorized access only. %VITE_APP_TITLE% Learning English Portal."
+    />
+
+    <!-- Block Google & Search Bots from Indexing Private Financial System -->
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="googlebot" content="noindex, nofollow" />
+
+    <!-- Favicon & Mobile App Icon -->
+    <link rel="icon" href="/logo/%VITE_BASE_COMPANY%/favicon.ico" />
+    <link rel="apple-touch-icon" href="/logo/%VITE_BASE_COMPANY%/logo-192.webp" />
+
+    <!-- Clean Preview for Telegram / Messenger Link Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="%VITE_APP_TITLE% — Learning English" />
+    <meta
+      property="og:description"
+      content="Sign in to manage rooms, tenants, invoices, and payments."
+    />
+    <meta property="og:image" content="/logo/%VITE_BASE_COMPANY%/logo-192.webp" />
+
+    <!-- Fonts -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/src/assets/fonts/woff2/inter-regular.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/src/assets/fonts/woff2/kantumruy-pro.woff2"
+      crossorigin
+    />
+
+    <!-- Preload Logo for faster LCP -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/logo/%VITE_BASE_COMPANY%/logo-192.webp"
+      fetchpriority="high"
+    />
+
+    <style>
+      body {
+        margin: 0;
+      }
+
+      html {
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+
+      #loading-bg {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--initial-loader-bg, #fff);
+        block-size: 100%;
+        gap: 1rem 0;
+        inline-size: 100%;
+      }
+
+      .loading {
+        position: relative;
+        box-sizing: border-box;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        block-size: 55px;
+        inline-size: 55px;
+      }
+
+      .loading .effect-1,
+      .loading .effect-2,
+      .loading .effect-3 {
+        position: absolute;
+        box-sizing: border-box;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        block-size: 100%;
+        border-inline-start: 3px solid var(--initial-loader-color, #eee);
+        inline-size: 100%;
+      }
+
+      .loading .effect-1 {
+        animation: rotate 1s ease infinite;
+      }
+
+      .loading .effect-2 {
+        animation: rotate-opacity 1s ease infinite 0.1s;
+      }
+
+      .loading .effect-3 {
+        animation: rotate-opacity 1s ease infinite 0.2s;
+      }
+
+      .loading .effects {
+        transition: all 0.3s ease;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(1turn);
+        }
+      }
+
+      @keyframes rotate-opacity {
+        0% {
+          opacity: 0.1;
+          transform: rotate(0deg);
+        }
+
+        100% {
+          opacity: 1;
+          transform: rotate(1turn);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="loading-bg">
+        <div class="loading-logo">
+          <img
+            class="justify-center align-center"
+            src="/logo/%VITE_BASE_COMPANY%/logo-192.webp"
+            alt="%VITE_APP_TITLE% Logo"
+            width="80"
+            height="80"
+            fetchpriority="high"
+            decoding="sync"
+          />
+        </div>
+        <div class="loading">
+          <div class="effect-1 effects"></div>
+          <div class="effect-2 effects"></div>
+          <div class="effect-3 effects"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Run theme styling before script bundles load to prevent style recalculation delays
+      const loaderColor =
+        localStorage.getItem("vuexy-initial-loader-bg") || "#FFFFFF";
+      const primaryColor =
+        localStorage.getItem("vuexy-initial-loader-color") ||
+        "%VITE_PRIMARY_COLOR%";
+
+      if (loaderColor) {
+        document.documentElement.style.setProperty(
+          "--initial-loader-bg",
+          loaderColor,
+        );
+      }
+      if (primaryColor) {
+        document.documentElement.style.setProperty(
+          "--initial-loader-color",
+          primaryColor,
+        );
+      }
+    </script>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

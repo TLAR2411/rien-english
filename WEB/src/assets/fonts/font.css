@@ -1,0 +1,170 @@
+/* ============================================================
+   1. @FONT-FACE DEFINITIONS (Corrected Weights & Rendering)
+   ============================================================ */
+
+/* --- Kantumruy Pro --- */
+@font-face {
+  font-family: "kantumruy";
+  src:
+    url("./woff2/kantumruy-pro.woff2") format("woff2"),
+    url("./ttf/kantumruy-pro.ttf") format("truetype");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kantumruy";
+  src:
+    url("./woff2/kantumruy-pro-medium.woff2") format("woff2"),
+    url("./ttf/kantumruy-pro-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kantumruy";
+  src:
+    url("./woff2/kantumruy-pro-bold.woff2") format("woff2"),
+    url("./ttf/kantumruy-pro-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Suwannaphum --- */
+@font-face {
+  font-family: "suwannaphum";
+  src:
+    url("./woff2/suwannaphum.woff2") format("woff2"),
+    url("./ttf/suwannaphum.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "suwannaphum";
+  src:
+    url("./woff2/suwannaphum-bold.woff2") format("woff2"),
+    url("./ttf/suwannaphum-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Noto Sans Khmer --- */
+@font-face {
+  font-family: "notosans";
+  src:
+    url("./woff2/notosans.woff2") format("woff2"),
+    url("./ttf/notosans.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "notosans";
+  src:
+    url("./woff2/notosans-bold.woff2") format("woff2"),
+    url("./ttf/notosans-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Single Weight Fonts --- */
+@font-face {
+  font-family: "battambang";
+  src:
+    url("./woff2/battambang.woff2") format("woff2"),
+    url("./ttf/battambang.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "battambang";
+  src:
+    url("./woff2/battambang-bold.woff2") format("woff2"),
+    url("./ttf/battambang-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "tacteing";
+  src:
+    url("./woff2/tacteing.woff2") format("woff2"),
+    url("./ttf/tacteing.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "moul";
+  src:
+    url("./woff2/moul-light.woff2") format("woff2"),
+    url("./ttf/moul-light.ttf") format("truetype");
+  font-display: swap;
+}
+/* --- Inter --- */
+@font-face {
+  font-family: "inter";
+  src:
+    url("./woff2/inter-regular.woff2") format("woff2"),
+    url("./ttf/inter-regular.ttf") format("truetype");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 90%;
+}
+
+@font-face {
+  font-family: "inter";
+  src:
+    url("./woff2/inter-medium.woff2") format("woff2"),
+    url("./ttf/inter-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 90%;
+}
+
+@font-face {
+  font-family: "inter";
+  src:
+    url("./woff2/inter-bold.woff2") format("woff2"),
+    url("./ttf/inter-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 90%;
+}
+
+@font-face {
+  font-family: "inter-bold";
+  src:
+    url("./woff2/inter-bold.woff2") format("woff2"),
+    url("./ttf/inter-bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 90%;
+}
+
+/* Utility Helper Classes */
+.battambang {
+  font-family: "battambang", sans-serif !important;
+}
+.suwannaphum {
+  font-family: "suwannaphum", sans-serif !important;
+}
+.kantumruy {
+  font-family: "kantumruy", sans-serif !important;
+}
+.moul {
+  font-family: "moul", sans-serif !important;
+}
