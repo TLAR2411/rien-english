@@ -348,7 +348,7 @@ body,
     }
   }
 }
-// AppCardTable inside a box sized by useFitTable(): fill the box, the rows
+// AppCardTable inside a box sized by useFitToScreen(): fill the box, the rows
 // scroll inside and the column titles stay on top
 .fit-table {
   .list-tab-height {
@@ -365,6 +365,30 @@ body,
     flex: 1 1 0;
     height: auto !important;
     min-block-size: 0;
+    overscroll-behavior: contain;
+  }
+}
+
+// AppCard inside a box sized by useFitToScreen(): fill the box, the card body
+// scrolls between the still title and the still Save bar
+.fit-card {
+  > .data-tab-list-height {
+    height: 100%;
+    max-height: none;
+  }
+
+  .chat-content-container > .d-flex > .v-card {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
+  #app-card-print-area {
+    flex: 1 1 0;
+    max-height: none !important;
+    min-block-size: 0;
+    overflow-y: auto;
     overscroll-behavior: contain;
   }
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import { useCrud } from "@/composables/useCrud";
-import { useFitTable } from "@/composables/useFitTable";
+import { useFitToScreen } from "@/composables/useFitToScreen";
 import { RECOMMENDED_EXAMPLES } from "@/constants/learning";
 import ExampleDialog from "@/views/admin/learning/lessons/examples/ExampleDialog.vue";
 
@@ -44,7 +44,7 @@ const onSave = async (form) => {
 };
 
 // Big screens: the tabs stay still, only the examples table scrolls
-const { box: tableBox, isFit, height: tableHeight } = useFitTable();
+const { box: tableBox, isFit, height: tableHeight } = useFitToScreen();
 
 const countHint = computed(() =>
   t("{count} of {min}–{max} recommended", {

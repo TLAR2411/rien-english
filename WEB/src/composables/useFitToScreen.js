@@ -1,16 +1,16 @@
 import { useDisplay } from "vuetify";
 
-// Big screens: an AppCardTable fills the screen from where it starts down to
-// the bottom, so the page stays still and only the table rows scroll.
+// Big screens: a table or card fills the screen from where it starts down to
+// the bottom, so the page stays still and only its inside scrolls.
 // Phones keep the normal page scroll.
 //
-// Use:
-//   const { box, isFit, height } = useFitTable();
+// Use (class `fit-table` for an AppCardTable, `fit-card` for an AppCard):
+//   const { box, isFit, height } = useFitToScreen();
 //   <div ref="box" :class="{ 'fit-table': isFit }" :style="{ height: isFit ? height : null }">
 //     <AppCardTable :is-full-height="isFit" :is-full-height-tab="isFit" … />
 //   </div>
 // Call `refit()` after something above the table changes size.
-export function useFitTable({ minHeight = 360 } = {}) {
+export function useFitToScreen({ minHeight = 360 } = {}) {
   const { mdAndUp: isFit } = useDisplay();
   const box = ref(null);
   const height = ref(null);

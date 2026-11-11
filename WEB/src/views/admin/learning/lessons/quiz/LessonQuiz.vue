@@ -2,7 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { api } from "@/utils/api";
 import { useCrud } from "@/composables/useCrud";
-import { useFitTable } from "@/composables/useFitTable";
+import { useFitToScreen } from "@/composables/useFitToScreen";
 import hasPermission from "@/utils/hasPermission";
 import {
   QUESTION_TYPES,
@@ -112,7 +112,7 @@ const answerSummary = (question) => {
 };
 
 // Big screens: tabs and settings stay still, only the questions table scrolls
-const { box: tableBox, isFit, height: tableHeight } = useFitTable();
+const { box: tableBox, isFit, height: tableHeight } = useFitToScreen();
 
 const countHint = computed(() =>
   t("{count} of {min}–{max} recommended", {
