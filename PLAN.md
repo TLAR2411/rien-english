@@ -40,7 +40,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | Phase | Name | Tasks | Done |
 |---|---|---|---|
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
-| 1 | Roles & admin area | T04–T06 | 1/3 |
+| 1 | Roles & admin area | T04–T06 | 2/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 0/4 |
 | 3 | Admin: manage content | T11–T17 | 0/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T05
+**Current task:** T06
 
 ---
 
@@ -89,7 +89,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - Seeder creates one admin account using values from `.env` (`ADMIN_EMAIL`, `ADMIN_PASSWORD`) — never hard-code passwords.
   - ✅ Done when: tests prove roles exist, a new student account = student, admin seeded.
 
-- [ ] **T05 — Admin middleware & routes group**
+- [x] **T05 — Admin middleware & routes group**
   - Route group `/admin` with `auth` + `role:admin|teacher`.
   - Some actions (manage users) are `admin` only.
   - ✅ Done when: tests — student gets 403 on `/admin`, admin gets 200.
@@ -425,3 +425,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T01 — inspected API/WEB, filled Project Notes (owner confirmed by moving on) — tests: pass
 - 2026-11-11 — T03 — removed HR part, departments, positions, team leader/diagram/transfer, user access requests, HR manager role, loan leftovers (40→15 row buttons, 216 unused loan translations), "Devfin" name; navbar branch picker hidden with one branch — tests: pass (28), migrate:fresh --seed on test DB: pass, build: pass
 - 2026-11-11 — T04 — Laratrust roles `admin`, `teacher`, `student` added (old roles kept); `CreateStudentAccount` action (student role, username from email, head branch, `default_part=student`); new migration adds `student` to `users.default_part`; admin email/password from `.env` (`ADMIN_EMAIL`, `ADMIN_PASSWORD`) via `config/app.php`; admin seeder no longer assumes ID 1 — tests: pass (32), migrate:fresh --seed on test DB: pass, build: pass
+- 2026-11-11 — T05 — new `config/roles.php` (role groups admin_area = admin|teacher, admin_only = admin; permissions per role) + `AccessGroup` helper; API routes split: admin area (learning `/api/web/admin/*`, address, export) and admin-only (users, roles, branches, settings, logs); RoleSeeder gives roles their permissions from config; `GET /api/web/admin/dashboard`; test users now get a real role — tests: pass (39)

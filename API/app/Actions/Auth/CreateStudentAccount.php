@@ -16,12 +16,10 @@ use Illuminate\Support\Str;
  */
 class CreateStudentAccount
 {
-    public const ROLE = 'student';
-
     public function handle(string $name, string $email, string $password): User
     {
         return DB::transaction(function () use ($name, $email, $password) {
-            $role = Role::where('name', self::ROLE)->firstOrFail();
+            $role = Role::where('name', config('roles.student'))->firstOrFail();
             $branch = Branch::where('is_head', true)->first() ?? Branch::firstOrFail();
 
             $user = User::forceCreate([
