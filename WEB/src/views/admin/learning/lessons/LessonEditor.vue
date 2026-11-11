@@ -60,6 +60,10 @@ const textTab = ref("en");
 const { isSaving, save } = useCrud("admin/lessons");
 
 const isEdit = computed(() => !!form.value.id);
+const allTabs = computed(() => [
+  { value: "lesson", title: "Lesson", icon: "tabler-notebook" },
+  ...props.tabs,
+]);
 const isGrammar = computed(() => form.value.skill === "grammar");
 
 const load = async () => {
@@ -117,28 +121,29 @@ const onSubmit = async (validation) => {
 </script>
 
 <template>
-  <div>
+  <!-- One frame: full-width tabs on top, the open tab below (inner cards have no border) -->
+  <VCard flat border class="lesson-tabs">
     <!-- Lesson · Examples · Quiz · Preview (the others open once the lesson is saved) -->
-    <div v-if="tabs.length" class="d-flex align-center flex-wrap gap-x-4 mb-4">
-      <VTabs v-model="tab">
-        <VTab value="lesson" prepend-icon="tabler-notebook">{{
-          t("Lesson")
-        }}</VTab>
-        <VTab
-          v-for="item in tabs"
-          :key="item.value"
-          :value="item.value"
-          :prepend-icon="item.icon"
-          :disabled="!isEdit"
-        >
-          {{ t(item.title) }}
-        </VTab>
-      </VTabs>
-      <span v-if="!isEdit" class="text-body-2 text-medium-emphasis">
-        <VIcon icon="tabler-info-circle" size="16" class="me-1" />
-        {{ t("Create the lesson first, then add examples and a quiz.") }}
-      </span>
-    </div>
+    <VTabs v-model="tab" grow stacked class="v-tabs--fixed">
+      <VTab
+        v-for="item in allTabs"
+        :key="item.value"
+        :value="item.value"
+        :disabled="item.value !== 'lesson' && !isEdit"
+      >
+        <VIcon :icon="item.icon" class="mb-2" />
+        <span>{{ t(item.title) }}</span>
+      </VTab>
+    </VTabs>
+    <VDivider />
+
+    <p
+      v-if="!isEdit"
+      class="d-flex align-center justify-center gap-1 text-body-2 text-medium-emphasis mt-4 mb-0 px-4"
+    >
+      <VIcon icon="tabler-info-circle" size="16" />
+      {{ t("Create the lesson first, then add examples and a quiz.") }}
+    </p>
 
     <template v-for="item in tabs" :key="item.value">
       <slot
@@ -150,6 +155,7 @@ const onSubmit = async (validation) => {
 
     <AppCard
       v-show="tab === 'lesson' || !isEdit"
+      border=""
       :title="isEdit ? 'Edit Lesson' : 'New Lesson'"
       title-icon="tabler-notebook"
       is-submit
@@ -311,7 +317,7 @@ const onSubmit = async (validation) => {
         </VCol>
       </VRow>
     </AppCard>
-  </div>
+  </VCard>
 </template>
 
 <style lang="scss" scoped>

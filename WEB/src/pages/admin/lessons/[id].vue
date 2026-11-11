@@ -27,7 +27,7 @@ const route = useRoute();
       <LessonQuiz :lesson="lesson" />
     </template>
     <template #tab-preview="{ lesson }">
-      <AppCard title="Preview" title-icon="tabler-eye" :is-back="false">
+      <AppCard title="Preview" title-icon="tabler-eye" border="" :is-back="false">
         <LessonPreview :lesson-id="lesson.id" />
       </AppCard>
     </template>

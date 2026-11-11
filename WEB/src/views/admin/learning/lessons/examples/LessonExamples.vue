@@ -60,6 +60,7 @@ const countHint = computed(() =>
     v-model:is-dialog-create-visible="isDialogVisible"
     v-model:loading="isLoading"
     title="Examples"
+    border=""
     title-icon="tabler-message-2"
     :api-url="`admin/lessons/${lessonId}/examples`"
     :headers="headers"

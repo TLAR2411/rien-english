@@ -105,10 +105,11 @@ const countHint = computed(() =>
 </script>
 
 <template>
-  <div class="d-flex flex-column gap-6">
+  <div class="d-flex flex-column">
     <!-- Settings -->
     <AppCard
       :title="quiz ? 'Quiz settings' : 'This lesson has no quiz yet'"
+      border=""
       title-icon="tabler-settings"
       :is-back="false"
       :is-submit="canEdit"
@@ -140,6 +141,7 @@ const countHint = computed(() =>
 
     <!-- Questions -->
     <template v-if="quiz">
+      <VDivider />
       <QuestionDialog
         v-model:is-dialog-visible="isDialogVisible"
         :question="editing"
@@ -152,6 +154,7 @@ const countHint = computed(() =>
         v-model:is-dialog-create-visible="isDialogVisible"
         v-model:loading="isTableLoading"
         title="Questions"
+        border=""
         title-icon="tabler-checklist"
         :api-url="`admin/quizzes/${quiz.id}/questions`"
         :headers="headers"
