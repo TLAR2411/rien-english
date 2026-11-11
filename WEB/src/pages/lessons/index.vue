@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import LessonCard from "@/components/site/LessonCard.vue";
 import { SKILLS } from "@/constants/learning";
 import { getSiteLessons, getSiteLevels } from "@/services/site";
-import { lessonsRoute } from "@/utils/siteRoutes";
+import { homeRoute, lessonsRoute } from "@/utils/siteRoutes";
 
 /**
  * Public lesson list (no login). The filters live in the address
@@ -89,15 +89,49 @@ const goToPage = (page) => {
 <template>
   <div class="site-section lessons-page">
     <div class="site-container">
+      <RouterLink :to="homeRoute()" class="site-link lessons-back">
+        <VIcon icon="tabler-arrow-left" size="18" />
+        {{ $t("Home") }}
+      </RouterLink>
+
       <header class="site-section__head">
         <h1 class="site-h2">{{ $t("Lessons") }}</h1>
         <p class="site-lead">{{ $t("Read any lesson for free. Sign up to take the quizzes.") }}</p>
       </header>
 
-      <!-- Filters -->
-      <div class="lessons-filters">
+      <!-- Skill: simple tabs with a blue line under the chosen one -->
+      <nav class="lessons-tabs" :aria-label="$t('Skill')">
+        <button
+          v-for="tab in [{ value: null, title: 'All skills' }, ...SKILLS]"
+          :key="tab.value ?? 'all'"
+          type="button"
+          class="lessons-tabs__tab"
+          :class="{ 'is-on': filters.skill === tab.value }"
+          :aria-pressed="filters.skill === tab.value"
+          @click="setFilters({ skill: tab.value })"
+        >
+          {{ $t(tab.title) }}
+        </button>
+      </nav>
+
+      <!-- Level switch + search on one row -->
+      <div class="lessons-tools">
+        <div v-if="levels.length" class="lessons-levels" role="group" :aria-label="$t('Level')">
+          <button
+            v-for="level in [{ id: 'all', code: null }, ...levels]"
+            :key="level.id"
+            type="button"
+            :class="{ 'is-on': filters.level === level.code }"
+            :aria-pressed="filters.level === level.code"
+            :title="level.code ? levelName(level) : $t('All levels')"
+            @click="setFilters({ level: level.code })"
+          >
+            {{ level.code ?? $t("All") }}
+          </button>
+        </div>
+
         <label class="lessons-search">
-          <VIcon icon="tabler-search" size="20" class="lessons-search__icon" />
+          <VIcon icon="tabler-search" size="18" class="lessons-search__icon" />
           <input
             v-model="searchText"
             type="search"
@@ -107,54 +141,6 @@ const goToPage = (page) => {
             @input="applySearch"
           >
         </label>
-
-        <div class="lessons-chips" role="group" :aria-label="$t('Skill')">
-          <button
-            type="button"
-            class="lessons-chip"
-            :class="{ 'lessons-chip--on': !filters.skill }"
-            :aria-pressed="!filters.skill"
-            @click="setFilters({ skill: null })"
-          >
-            {{ $t("All skills") }}
-          </button>
-          <button
-            v-for="skill in SKILLS"
-            :key="skill.value"
-            type="button"
-            class="lessons-chip"
-            :class="{ 'lessons-chip--on': filters.skill === skill.value }"
-            :aria-pressed="filters.skill === skill.value"
-            @click="setFilters({ skill: skill.value })"
-          >
-            {{ $t(skill.title) }}
-          </button>
-        </div>
-
-        <div v-if="levels.length" class="lessons-chips" role="group" :aria-label="$t('Level')">
-          <button
-            type="button"
-            class="lessons-chip"
-            :class="{ 'lessons-chip--on': !filters.level }"
-            :aria-pressed="!filters.level"
-            @click="setFilters({ level: null })"
-          >
-            {{ $t("All levels") }}
-          </button>
-          <button
-            v-for="level in levels"
-            :key="level.id"
-            type="button"
-            class="lessons-chip"
-            :class="{ 'lessons-chip--on': filters.level === level.code }"
-            :aria-pressed="filters.level === level.code"
-            :title="levelName(level)"
-            @click="setFilters({ level: level.code })"
-          >
-            <strong>{{ level.code }}</strong>
-            <span class="lessons-chip__name">{{ levelName(level) }}</span>
-          </button>
-        </div>
       </div>
 
       <!-- Result -->
@@ -195,29 +181,128 @@ const goToPage = (page) => {
 
 <style lang="scss" scoped>
 .lessons-page {
-  padding-block-start: clamp(40px, 7vw, 72px);
+  padding-block: clamp(32px, 5vw, 56px);
+
+  .site-section__head {
+    margin-block-end: 24px;
+  }
+
+  .site-lead {
+    margin-block-start: 6px;
+  }
 }
 
-.lessons-filters {
+.lessons-back {
+  margin-block-end: 12px;
+}
+
+// ── Skill tabs ──
+.lessons-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-block-end: 32px;
+  gap: 28px;
+  border-block-end: 1px solid var(--rien-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Phones: the tabs scroll sideways from edge to edge
+  @media (max-width: 599px) {
+    margin-inline: -20px;
+    padding-inline: 20px;
+  }
+}
+
+.lessons-tabs__tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  margin-block-end: -1px;
+  padding: 0;
+  border: 0;
+  border-block-end: 2px solid transparent;
+  background: none;
+  color: var(--rien-grey);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: var(--rien-ink);
+  }
+
+  &.is-on {
+    border-block-end-color: var(--rien-blue);
+    color: var(--rien-ink);
+  }
+}
+
+// ── Level switch + search ──
+.lessons-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-block: 20px 24px;
+}
+
+// Same look as the English | ខ្មែរ switch on the lesson page
+.lessons-levels {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--rien-bg-alt);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  button {
+    flex: 0 0 auto;
+    min-width: 52px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--rien-grey);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--rien-ink);
+    }
+
+    &.is-on {
+      background: #fff;
+      color: var(--rien-ink);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+  }
 }
 
 .lessons-search {
   display: flex;
+  flex: 0 1 300px;
   align-items: center;
-  gap: 10px;
-  max-width: 480px;
-  min-height: 48px;
-  padding-inline: 16px;
-  border-radius: 12px;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 14px;
+  border-radius: 999px;
   background: var(--rien-bg-alt);
   cursor: text;
 
   &:focus-within {
     outline: 2px solid var(--rien-blue);
+  }
+
+  @media (max-width: 599px) {
+    flex-basis: 100%;
   }
 }
 
@@ -228,66 +313,13 @@ const goToPage = (page) => {
 .lessons-search__input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 48px;
+  height: 44px;
   border: 0;
   background: none;
   color: var(--rien-ink);
   font: inherit;
   font-size: 16px; // 16px stops phones from zooming in
   outline: none;
-}
-
-// One row of filter buttons; on phones it scrolls sideways
-.lessons-chips {
-  display: flex;
-  gap: 8px;
-  margin-inline: -20px;
-  padding-inline: 20px;
-  overflow-x: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.lessons-chip {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--rien-line);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--rien-ink);
-  font: inherit;
-  font-size: 15px;
-  cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s;
-
-  &:hover {
-    border-color: var(--rien-blue);
-  }
-
-  &--on {
-    border-color: var(--rien-ink);
-    background: var(--rien-ink);
-    color: #fff;
-
-    &:hover {
-      border-color: var(--rien-ink);
-    }
-
-    .lessons-chip__name {
-      color: rgba(255, 255, 255, 0.75);
-    }
-  }
-}
-
-.lessons-chip__name {
-  color: var(--rien-grey);
 }
 
 .lessons-result {
@@ -299,9 +331,9 @@ const goToPage = (page) => {
 }
 
 .lessons-count {
-  margin-block-end: 16px;
+  margin-block-end: 12px;
   color: var(--rien-grey);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .lessons-grid {
