@@ -62,6 +62,22 @@ const updateActive = () => {
   }
   activeId.value = current;
 };
+// The outline is `position: sticky`. A parent with `overflow: hidden` (cards, tabs)
+// stops sticky from working, so switch those parents to `overflow: clip` — it looks
+// the same but lets the outline stay on screen. Put back when the page closes.
+const outlineEl = ref(null);
+const unclipped = [];
+const allowSticky = () => {
+  for (let el = outlineEl.value?.parentElement; el && el !== document.body; el = el.parentElement) {
+    const style = getComputedStyle(el);
+    if ([style.overflowX, style.overflowY].includes("hidden")) {
+      unclipped.push([el, el.style.overflow]);
+      el.style.overflow = "clip";
+    }
+  }
+};
+watch(outlineEl, (el) => el && allowSticky());
+
 onMounted(() => {
   window.addEventListener("scroll", updateActive, { passive: true });
   nextTick(updateActive);
@@ -82,13 +98,14 @@ const play = (example) => {
 onBeforeUnmount(() => {
   player?.pause();
   window.removeEventListener("scroll", updateActive);
+  unclipped.forEach(([el, overflow]) => (el.style.overflow = overflow));
 });
 </script>
 
 <template>
   <div class="lesson-view" :class="{ 'lesson-view--no-outline': outline.length < 2 }">
     <!-- Side outline (big screens only) -->
-    <aside v-if="outline.length >= 2" class="lesson-outline">
+    <aside v-if="outline.length >= 2" ref="outlineEl" class="lesson-outline">
       <p class="lesson-outline__label">{{ $t("In this lesson") }}</p>
       <nav>
         <a
