@@ -26,19 +26,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <LessonQuiz v-if="lesson" :lesson="lesson" readonly>
-    <template #actions>
-      <IconBtn
-        v-if="canEdit"
-        rounded
-        size="30"
-        class="mr-1"
-        :aria-label="$t('Edit')"
-        :to="{ name: 'admin-lessons-id', params: { id: lesson.id }, query: { tab: 'quiz' } }"
-      >
-        <VIcon icon="tabler-pencil" size="20" />
-        <VTooltip location="top" activator="parent">{{ $t("Edit") }}</VTooltip>
-      </IconBtn>
-    </template>
-  </LessonQuiz>
+  <VCard v-if="lesson" flat border>
+    <LessonQuiz :lesson="lesson" readonly>
+      <template #actions>
+        <IconBtn
+          v-if="canEdit"
+          rounded
+          size="30"
+          class="mr-1"
+          :aria-label="$t('Edit')"
+          :to="{ name: 'admin-lessons-id', params: { id: lesson.id }, query: { tab: 'quiz' } }"
+        >
+          <VIcon icon="tabler-pencil" size="20" />
+          <VTooltip location="top" activator="parent">{{ $t("Edit") }}</VTooltip>
+        </IconBtn>
+      </template>
+    </LessonQuiz>
+  </VCard>
 </template>
