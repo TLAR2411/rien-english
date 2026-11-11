@@ -58,7 +58,7 @@ const height = ref(null);
 const fitToScreen = () => {
   if (!viewEl.value) return;
   const top = viewEl.value.getBoundingClientRect().top + window.scrollY;
-  height.value = `${Math.max(420, window.innerHeight - top - 72)}px`;
+  height.value = `${Math.max(420, window.innerHeight - top - 20)}px`;
 };
 
 // Side outline: jump to a part, and mark the part being read
@@ -276,12 +276,12 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .lesson-sheet {
   overflow: hidden;
   border: 1px solid $line;
-  border-radius: 20px;
+  border-radius: 12px;
   background: rgb(var(--v-theme-surface));
 }
 
 .lesson-sheet__header {
-  padding: clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2rem);
+  padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem);
   border-block-end: 1px solid $line;
   background: rgba(var(--v-theme-on-surface), 0.015);
 }

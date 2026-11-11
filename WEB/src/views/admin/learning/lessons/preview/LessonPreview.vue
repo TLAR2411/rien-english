@@ -48,8 +48,7 @@ watch(() => props.lessonId, load, { immediate: true });
 <style scoped>
 .preview-page {
   margin: -0.5rem -0.25rem 0;
-  padding: clamp(0.75rem, 3vw, 2rem) clamp(0rem, 3vw, 2rem)
-    clamp(1rem, 4vw, 3rem);
+  padding: 0.75rem clamp(0rem, 2vw, 1.5rem) 1rem;
   border-radius: 12px;
   background: rgba(var(--v-theme-on-surface), 0.03);
 }
