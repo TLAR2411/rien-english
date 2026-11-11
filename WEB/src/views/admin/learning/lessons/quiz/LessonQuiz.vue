@@ -7,15 +7,15 @@ import { QUESTION_TYPES, RECOMMENDED_QUESTIONS, findOption } from "@/constants/l
 import QuestionDialog from "@/views/admin/learning/lessons/quiz/QuestionDialog.vue";
 
 // The quiz of one lesson: its settings (AppCard) and its questions (AppCardTable).
-// `readonly`: only look at it (no save, add, edit, move or delete).
+// `isBack`: show a Back button (when it is a page of its own).
 // Slot `actions`: extra buttons in the settings header.
 const props = defineProps({
   lesson: { type: Object, required: true },
-  readonly: { type: Boolean, default: false },
+  isBack: { type: Boolean, default: false },
 });
 
 const { t } = useI18n();
-const canEdit = !props.readonly && hasPermission("edit-quizzes");
+const canEdit = hasPermission("edit-quizzes");
 
 const quiz = ref(null);
 const settings = ref({});
@@ -114,7 +114,7 @@ const countHint = computed(() =>
       :title="quiz ? 'Quiz settings' : 'This lesson has no quiz yet'"
       border=""
       title-icon="tabler-settings"
-      :is-back="readonly"
+      :is-back="isBack"
       :is-submit="canEdit"
       :submit-text="quiz ? 'Save settings' : 'Create quiz'"
       :submit-icon="quiz ? 'tabler-device-floppy' : 'tabler-plus'"
@@ -166,7 +166,7 @@ const countHint = computed(() =>
         :headers="headers"
         :limit="50"
         :is-full-height="false"
-        :save-header-name="canEdit ? 'header-quiz-questions' : 'header-quiz-questions-view'"
+        save-header-name="header-quiz-questions"
         enable-mobile-card
         :create-dialog="canEdit"
         :is-edit="canEdit"
