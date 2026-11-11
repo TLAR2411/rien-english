@@ -138,6 +138,18 @@ class QuizBuilderTest extends TestCase
         $this->assertSame(0, $a->options()->count());
     }
 
+    public function test_questions_table_lists_questions_with_answers(): void
+    {
+        $quiz = $this->makeQuiz();
+        Question::factory()->for($quiz)->withOptions()->count(3)->create();
+
+        $this->getJson("/api/web/admin/quizzes/{$quiz->id}/questions?limit=2")
+            ->assertOk()
+            ->assertJsonCount(2, 'data.data')
+            ->assertJsonPath('data.meta.total', 3)
+            ->assertJsonPath('data.data.0.options.0.is_correct', true);
+    }
+
     public function test_quiz_list_shows_question_counts(): void
     {
         $quiz = $this->makeQuiz();

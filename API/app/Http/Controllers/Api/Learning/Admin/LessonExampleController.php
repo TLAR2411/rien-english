@@ -8,6 +8,7 @@ use App\Http\Resources\Learning\LessonExampleResource;
 use App\Models\Learning\Lesson;
 use App\Models\Learning\LessonExample;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 
 /** Example sentences are part of a lesson: viewing needs view-lessons, any change needs edit-lessons. */
@@ -21,9 +22,10 @@ class LessonExampleController extends AdminController
         ];
     }
 
-    public function index(Lesson $lesson): JsonResponse
+    /** Paginated, for the examples table (AppCardTable). */
+    public function index(Request $request, Lesson $lesson): JsonResponse
     {
-        return $this->ok(LessonExampleResource::collection($lesson->examples));
+        return $this->paginated(LessonExampleResource::collection($lesson->examples()->paginate($this->perPage($request))));
     }
 
     public function store(LessonExampleRequest $request, Lesson $lesson): JsonResponse

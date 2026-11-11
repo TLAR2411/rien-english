@@ -35,36 +35,37 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <VAlert type="info" variant="tonal" density="compact" class="mb-6" icon="tabler-eye">
-      <div class="d-flex align-center flex-wrap gap-3">
-        <span class="flex-grow-1">{{ $t("Preview — this is what students see.") }}</span>
-        <StatusChip v-if="status" :status="status" />
-        <VBtn
-          size="small"
-          variant="text"
-          prepend-icon="tabler-pencil"
-          :to="{ name: 'admin-lessons-id', params: { id: route.params.id } }"
-        >
-          {{ $t("Back to editing") }}
-        </VBtn>
-      </div>
+  <AppCard title="Preview" title-icon="tabler-eye" :loading="isLoading">
+    <template #card-header>
+      <StatusChip v-if="status" :status="status" class="me-2" />
+      <IconBtn
+        rounded
+        size="30"
+        class="mr-1"
+        :aria-label="$t('Back to editing')"
+        :to="{ name: 'admin-lessons-id', params: { id: route.params.id } }"
+      >
+        <VIcon icon="tabler-pencil" size="20" />
+        <VTooltip location="top" activator="parent">{{ $t("Back to editing") }}</VTooltip>
+      </IconBtn>
+    </template>
+
+    <VAlert type="info" variant="tonal" density="compact" icon="tabler-eye" class="mb-6">
+      {{ $t("Preview — this is what students see.") }}
     </VAlert>
 
-    <VCard class="preview-page" :loading="isLoading">
-      <VCardText v-if="lesson" class="preview-page__body">
-        <LessonView :lesson="lesson">
-          <div v-if="lesson.quiz?.questions?.length" class="mt-12">
-            <QuizView :quiz="lesson.quiz" preview />
-          </div>
-        </LessonView>
-      </VCardText>
-    </VCard>
-  </div>
+    <div v-if="lesson" class="preview-page__body">
+      <LessonView :lesson="lesson">
+        <div v-if="lesson.quiz?.questions?.length" class="mt-12">
+          <QuizView :quiz="lesson.quiz" preview />
+        </div>
+      </LessonView>
+    </div>
+  </AppCard>
 </template>
 
 <style scoped>
 .preview-page__body {
-  padding: clamp(1.25rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2rem);
+  padding: clamp(0.5rem, 4vw, 2.5rem) clamp(0rem, 3vw, 1.5rem);
 }
 </style>

@@ -45,14 +45,10 @@ const onSubmit = async (validation) => {
   >
     <VRow>
       <VCol cols="12">
-        <AppTextField v-model="form.sentence" placeholder="I am a student." :rules="[requiredValidator]">
-          <template #label>{{ $t("Sentence") }} <span class="text-error">*</span></template>
-        </AppTextField>
+        <AppTextField v-model="form.sentence" label="Sentence" placeholder="I am a student." :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12">
-        <AppTextField v-model="form.translation_km" placeholder="ខ្ញុំជាសិស្ស។">
-          <template #label>{{ $t("Khmer translation") }}</template>
-        </AppTextField>
+        <AppTextField v-model="form.translation_km" label="Khmer translation" placeholder="ខ្ញុំជាសិស្ស។" />
       </VCol>
       <VCol cols="12">
         <AudioField v-model="form.audio_url" />

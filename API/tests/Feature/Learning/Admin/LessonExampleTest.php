@@ -31,7 +31,7 @@ class LessonExampleTest extends TestCase
 
         $this->getJson("/api/web/admin/lessons/{$lesson->id}/examples")
             ->assertOk()
-            ->assertJsonPath('data.0.audio_url', $audio);
+            ->assertJsonPath('data.data.0.audio_url', $audio);
 
         // Saved as a short path, so a new domain keeps working
         $this->assertDatabaseHas('lesson_examples', ['id' => $id, 'audio_url' => 'learning/audio/2026/11/i-am.mp3']);

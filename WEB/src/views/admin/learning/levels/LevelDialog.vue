@@ -44,19 +44,13 @@ const onSubmit = async (validation) => {
   >
     <VRow>
       <VCol cols="12" sm="4">
-        <AppTextField v-model="form.code" placeholder="A1" maxlength="10" :rules="[requiredValidator]">
-          <template #label>{{ $t("Code") }} <span class="text-error">*</span></template>
-        </AppTextField>
+        <AppTextField v-model="form.code" label="Code" placeholder="A1" maxlength="10" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12" sm="8">
-        <AppTextField v-model="form.name" placeholder="Beginner" :rules="[requiredValidator]">
-          <template #label>{{ $t("Name English") }} <span class="text-error">*</span></template>
-        </AppTextField>
+        <AppTextField v-model="form.name" label="Name English" placeholder="Beginner" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12">
-        <AppTextField v-model="form.name_km" placeholder="កម្រិតដំបូង">
-          <template #label>{{ $t("Name Khmer") }}</template>
-        </AppTextField>
+        <AppTextField v-model="form.name_km" label="Name Khmer" placeholder="កម្រិតដំបូង" />
       </VCol>
     </VRow>
   </AppDialog>

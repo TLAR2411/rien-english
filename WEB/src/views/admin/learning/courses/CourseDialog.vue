@@ -57,49 +57,40 @@ const onSubmit = async (validation) => {
       <VCol cols="12" sm="6">
         <AppSelect
           v-model="form.level_id"
+          label="Level"
           :items="levels"
           :item-title="levelTitle"
           item-value="id"
           :rules="[requiredValidator]"
-        >
-          <template #label>{{ $t("Level") }} <span class="text-error">*</span></template>
-        </AppSelect>
+        />
       </VCol>
       <VCol cols="12" sm="6">
         <AppSelect
           v-model="form.status"
+          label="Status"
           :items="PUBLISH_STATUSES"
           :item-title="(item) => $t(item.title)"
           item-value="value"
           :rules="[requiredValidator]"
-        >
-          <template #label>{{ $t("Status") }} <span class="text-error">*</span></template>
-        </AppSelect>
+        />
       </VCol>
       <VCol cols="12" sm="6">
-        <AppTextField v-model="form.title" placeholder="Grammar A1" :rules="[requiredValidator]">
-          <template #label>{{ $t("Title English") }} <span class="text-error">*</span></template>
-        </AppTextField>
+        <AppTextField v-model="form.title" label="Title English" placeholder="Grammar A1" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12" sm="6">
-        <AppTextField v-model="form.title_km" placeholder="វេយ្យាករណ៍ A1">
-          <template #label>{{ $t("Title Khmer") }}</template>
-        </AppTextField>
+        <AppTextField v-model="form.title_km" label="Title Khmer" placeholder="វេយ្យាករណ៍ A1" />
       </VCol>
       <VCol cols="12">
-        <AppTextarea v-model="form.description" rows="3" auto-grow>
-          <template #label>{{ $t("Description") }}</template>
-        </AppTextarea>
+        <AppTextarea v-model="form.description" label="Description" rows="3" auto-grow />
       </VCol>
       <VCol cols="12">
         <AppTextField
           v-model="form.slug"
+          label="Slug"
           placeholder="grammar-a1"
           :hint="$t('Web address name. Leave empty to make it from the title.')"
           persistent-hint
-        >
-          <template #label>{{ $t("Slug") }}</template>
-        </AppTextField>
+        />
       </VCol>
     </VRow>
   </AppDialog>

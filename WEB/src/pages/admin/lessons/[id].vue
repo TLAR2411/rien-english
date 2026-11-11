@@ -25,13 +25,16 @@ const tabs = [
 <template>
   <LessonEditor :lesson-id="route.params.id" :tabs="tabs">
     <template #actions>
-      <VBtn
-        variant="text"
-        prepend-icon="tabler-eye"
+      <IconBtn
+        rounded
+        size="30"
+        class="mr-1"
+        :aria-label="$t('Preview')"
         :to="{ name: 'admin-lessons-preview-id', params: { id: route.params.id } }"
       >
-        {{ $t("Preview") }}
-      </VBtn>
+        <VIcon icon="tabler-eye" size="20" />
+        <VTooltip location="top" activator="parent">{{ $t("Preview") }}</VTooltip>
+      </IconBtn>
     </template>
     <template #tab-examples="{ lesson }">
       <LessonExamples :lesson-id="lesson.id" />

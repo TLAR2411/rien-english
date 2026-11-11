@@ -47,7 +47,6 @@ const emptyForm = () => ({
 const form = ref(emptyForm());
 const courses = ref([]);
 const isLoading = ref(false);
-const formRef = ref(null);
 const textTab = ref("en");
 const { isSaving, save } = useCrud("admin/lessons");
 
@@ -88,9 +87,9 @@ const insertTemplate = () => {
   if (!form.value.content_km) form.value.content_km = GRAMMAR_TEMPLATE_KM;
 };
 
-// ---- Save ----
-const onSave = async () => {
-  const { valid } = await formRef.value.validate();
+// ---- Save (AppCard gives the form validation) ----
+const onSubmit = async (validation) => {
+  const { valid } = (await validation) || { valid: true };
   if (!valid) return;
 
   const saved = await save({ ...form.value, audio_url: form.value.audio_url || null });
@@ -106,32 +105,9 @@ const onSave = async () => {
 </script>
 
 <template>
-  <div class="lesson-editor">
-    <!-- Header: back, title, one main button -->
-    <div class="d-flex align-center flex-wrap gap-3 mb-6">
-      <IconBtn :to="{ name: 'admin-lessons' }" :aria-label="t('Back')">
-        <VIcon icon="tabler-arrow-left" />
-      </IconBtn>
-      <div class="flex-grow-1 overflow-hidden">
-        <h1 class="text-h5 font-weight-bold text-truncate mb-0">
-          {{ isEdit ? form.title_en || t("Edit Lesson") : t("New Lesson") }}
-        </h1>
-        <StatusChip v-if="isEdit" :status="form.status" class="mt-1" />
-      </div>
-      <slot name="actions" :lesson="form" />
-      <VBtn
-        v-if="tab === 'lesson'"
-        color="primary"
-        prepend-icon="tabler-device-floppy"
-        :loading="isSaving"
-        :disabled="isLoading"
-        @click="onSave"
-      >
-        {{ isEdit ? t("Save") : t("Create") }}
-      </VBtn>
-    </div>
-
-    <VTabs v-if="isEdit && tabs.length" v-model="tab" class="mb-6">
+  <div>
+    <!-- Tabs for a saved lesson: Lesson · Examples · Quiz -->
+    <VTabs v-if="isEdit && tabs.length" v-model="tab" class="mb-4">
       <VTab value="lesson" prepend-icon="tabler-notebook">{{ t("Lesson") }}</VTab>
       <VTab v-for="item in tabs" :key="item.value" :value="item.value" :prepend-icon="item.icon">
         {{ t(item.title) }}
@@ -142,144 +118,152 @@ const onSave = async () => {
       <slot v-if="isEdit && tab === item.value" :name="`tab-${item.value}`" :lesson="form" />
     </template>
 
-    <VRow v-show="tab === 'lesson' || !isEdit">
-      <VCol cols="12" :lg="isGrammar ? 8 : 12">
-        <VForm ref="formRef" @submit.prevent="onSave">
-          <!-- Details -->
-          <VCard class="mb-6" :loading="isLoading">
-            <VCardItem :title="t('Details')" />
-            <VCardText>
-              <VRow>
-                <VCol cols="12" md="6">
-                  <AppSelect
-                    v-model="form.course_id"
-                    :items="courses"
-                    :item-title="courseTitle"
-                    item-value="id"
-                    :rules="[requiredValidator]"
-                  >
-                    <template #label>{{ t("Course") }} <span class="text-error">*</span></template>
-                  </AppSelect>
-                </VCol>
-                <VCol cols="6" md="3">
-                  <AppSelect
-                    v-model="form.skill"
-                    :items="SKILLS"
-                    :item-title="(item) => t(item.title)"
-                    item-value="value"
-                    :rules="[requiredValidator]"
-                  >
-                    <template #label>{{ t("Skill") }} <span class="text-error">*</span></template>
-                  </AppSelect>
-                </VCol>
-                <VCol cols="6" md="3">
-                  <AppSelect
-                    v-model="form.status"
-                    :items="PUBLISH_STATUSES"
-                    :item-title="(item) => t(item.title)"
-                    item-value="value"
-                    :rules="[requiredValidator]"
-                  >
-                    <template #label>{{ t("Status") }} <span class="text-error">*</span></template>
-                  </AppSelect>
-                </VCol>
-                <VCol cols="12" md="6">
-                  <AppTextField v-model="form.title_en" placeholder="Present Simple" :rules="[requiredValidator]">
-                    <template #label>{{ t("Title English") }} <span class="text-error">*</span></template>
-                  </AppTextField>
-                </VCol>
-                <VCol cols="12" md="6">
-                  <AppTextField v-model="form.title_km" placeholder="បច្ចុប្បន្នកាលសាមញ្ញ">
-                    <template #label>{{ t("Title Khmer") }}</template>
-                  </AppTextField>
-                </VCol>
-                <VCol cols="12">
-                  <AppTextarea v-model="form.summary" rows="2" auto-grow :placeholder="t('One or two sentences shown in the lesson list')">
-                    <template #label>{{ t("Summary") }}</template>
-                  </AppTextarea>
-                </VCol>
-                <VCol cols="12">
-                  <AudioField v-model="form.audio_url" :label="t('Lesson audio (optional)')" />
-                </VCol>
-                <VCol cols="12">
-                  <AppTextField
-                    v-model="form.slug"
-                    placeholder="present-simple"
-                    :hint="t('Web address name. Leave empty to make it from the title.')"
-                    persistent-hint
-                  >
-                    <template #label>{{ t("Slug") }}</template>
-                  </AppTextField>
-                </VCol>
-              </VRow>
-            </VCardText>
-          </VCard>
+    <AppCard
+      v-show="tab === 'lesson' || !isEdit"
+      :title="isEdit ? 'Edit Lesson' : 'New Lesson'"
+      title-icon="tabler-notebook"
+      is-submit
+      :submit-text="isEdit ? 'Save' : 'Create'"
+      submit-icon="tabler-device-floppy"
+      :loading="isLoading || isSaving"
+      @on-submit="onSubmit"
+    >
+      <template #card-header>
+        <StatusChip v-if="isEdit" :status="form.status" class="me-2" />
+        <slot name="actions" :lesson="form" />
+      </template>
 
-          <!-- Lesson text -->
-          <VCard>
-            <VCardItem :title="t('Lesson text')">
-              <template #append>
+      <VRow>
+        <VCol cols="12" :lg="isGrammar ? 8 : 12">
+          <VRow>
+            <!-- Details -->
+            <AppLabel title="Details" />
+            <VCol cols="12" md="6">
+              <AppSelect
+                v-model="form.course_id"
+                label="Course"
+                :items="courses"
+                :item-title="courseTitle"
+                item-value="id"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol cols="6" md="3">
+              <AppSelect
+                v-model="form.skill"
+                label="Skill"
+                :items="SKILLS"
+                :item-title="(item) => t(item.title)"
+                item-value="value"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol cols="6" md="3">
+              <AppSelect
+                v-model="form.status"
+                label="Status"
+                :items="PUBLISH_STATUSES"
+                :item-title="(item) => t(item.title)"
+                item-value="value"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <AppTextField v-model="form.title_en" label="Title English" placeholder="Present Simple" :rules="[requiredValidator]" />
+            </VCol>
+            <VCol cols="12" md="6">
+              <AppTextField v-model="form.title_km" label="Title Khmer" placeholder="បច្ចុប្បន្នកាលសាមញ្ញ" />
+            </VCol>
+            <VCol cols="12">
+              <AppTextarea
+                v-model="form.summary"
+                label="Summary"
+                rows="2"
+                auto-grow
+                :placeholder="t('One or two sentences shown in the lesson list')"
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <AppTextField
+                v-model="form.slug"
+                label="Slug"
+                placeholder="present-simple"
+                :hint="t('Web address name. Leave empty to make it from the title.')"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <AudioField v-model="form.audio_url" label="Lesson audio (optional)" />
+            </VCol>
+
+            <!-- Lesson text -->
+            <AppLabel title="Lesson text" />
+            <VCol cols="12">
+              <div class="d-flex align-center flex-wrap gap-2 mb-3">
+                <VTabs v-model="textTab" density="compact" class="flex-grow-1">
+                  <VTab value="en">{{ t("English") }}</VTab>
+                  <VTab value="km">{{ t("Khmer") }}</VTab>
+                </VTabs>
                 <VBtn
                   v-if="isGrammar && !form.content"
-                  variant="text"
+                  variant="tonal"
                   size="small"
                   prepend-icon="tabler-template"
                   @click="insertTemplate"
                 >
                   {{ t("Insert grammar template") }}
                 </VBtn>
-              </template>
-            </VCardItem>
-            <VCardText>
-              <VTabs v-model="textTab" class="mb-4">
-                <VTab value="en">{{ t("English") }}</VTab>
-                <VTab value="km">{{ t("Khmer") }}</VTab>
-              </VTabs>
-              <VWindow v-model="textTab">
-                <VWindowItem value="en">
-                  <RichTextEditor v-model="form.content" :upload-image="uploadImage" :placeholder="t('Write the lesson in simple English…')" />
-                </VWindowItem>
-                <VWindowItem value="km">
-                  <RichTextEditor v-model="form.content_km" :upload-image="uploadImage" :placeholder="t('Khmer explanation…')" />
-                </VWindowItem>
-              </VWindow>
-            </VCardText>
-          </VCard>
-        </VForm>
-      </VCol>
+              </div>
+              <RichTextEditor
+                v-show="textTab === 'en'"
+                v-model="form.content"
+                :upload-image="uploadImage"
+                :placeholder="t('Write the lesson in simple English…')"
+              />
+              <RichTextEditor
+                v-show="textTab === 'km'"
+                v-model="form.content_km"
+                :upload-image="uploadImage"
+                :placeholder="t('Khmer explanation…')"
+              />
+            </VCol>
+          </VRow>
+        </VCol>
 
-      <!-- Guide: the Grammar Lesson Template -->
-      <VCol v-if="isGrammar" cols="12" lg="4">
-        <VCard class="guide">
-          <VCardItem :title="t('Grammar lesson guide')" :subtitle="t('Every grammar lesson has these parts')" />
-          <VList density="compact" class="pt-0">
-            <VListItem v-for="(section, index) in sections" :key="section.title">
-              <template #prepend>
-                <VIcon
-                  v-if="section.done !== null"
-                  :icon="section.done ? 'tabler-circle-check-filled' : 'tabler-circle'"
-                  :color="section.done ? 'success' : 'disabled'"
-                  size="20"
-                />
-                <span v-else class="guide__number">{{ index + 1 }}</span>
-              </template>
-              <VListItemTitle class="font-weight-medium">{{ t(section.title) }}</VListItemTitle>
-              <VListItemSubtitle class="guide__hint">
-                {{ t(section.hint) }}
-                <template v-if="section.where"> · {{ t(section.where) }}</template>
-              </VListItemSubtitle>
-            </VListItem>
-          </VList>
-        </VCard>
-      </VCol>
-    </VRow>
+        <!-- Guide: the Grammar Lesson Template (PLAN.md Appendix A) -->
+        <VCol v-if="isGrammar" cols="12" lg="4">
+          <VRow>
+            <AppLabel title="Grammar lesson guide" />
+            <VCol cols="12">
+              <VList density="compact" class="guide py-0">
+                <VListItem v-for="(section, index) in sections" :key="section.title" class="px-0">
+                  <template #prepend>
+                    <VIcon
+                      v-if="section.done !== null"
+                      :icon="section.done ? 'tabler-circle-check-filled' : 'tabler-circle'"
+                      :color="section.done ? 'success' : 'disabled'"
+                      size="20"
+                    />
+                    <span v-else class="guide__number">{{ index + 1 }}</span>
+                  </template>
+                  <VListItemTitle class="font-weight-medium">{{ t(section.title) }}</VListItemTitle>
+                  <VListItemSubtitle class="guide__hint">
+                    {{ t(section.hint) }}
+                    <template v-if="section.where"> · {{ t(section.where) }}</template>
+                  </VListItemSubtitle>
+                </VListItem>
+              </VList>
+            </VCol>
+          </VRow>
+        </VCol>
+      </VRow>
+    </AppCard>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .guide {
-  position: sticky;
-  top: 80px;
+  background: transparent;
 }
 
 .guide__number {
@@ -287,7 +271,6 @@ const onSave = async () => {
   place-items: center;
   width: 20px;
   height: 20px;
-  margin-inline-end: 0;
   font-size: 12px;
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }

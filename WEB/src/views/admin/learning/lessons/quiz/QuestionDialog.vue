@@ -30,6 +30,13 @@ const answerError = ref("");
 const isEdit = computed(() => !!form.value.id);
 const type = computed(() => findOption(QUESTION_TYPES, form.value.type));
 
+// Icon cards for the type picker (AppTowRadioIcon)
+const typeCards = QUESTION_TYPES.map((item) => ({
+  value: item.value,
+  title: item.title,
+  icon: { icon: item.icon, size: 24 },
+}));
+
 watch(
   () => [props.isDialogVisible, props.question],
   () => {
@@ -85,41 +92,39 @@ const onSubmit = async (validation) => {
     :loading="loading"
     @on-submit="onSubmit"
   >
-    <div class="question-form">
+    <VRow>
       <!-- Type -->
-      <div>
-        <div class="text-body-2 mb-2">{{ t("Question type") }}</div>
-        <VChipGroup :model-value="form.type" mandatory selected-class="text-primary" column @update:model-value="changeType">
-          <VChip v-for="item in QUESTION_TYPES" :key="item.value" :value="item.value" :prepend-icon="item.icon" variant="outlined" filter>
-            {{ t(item.title) }}
-          </VChip>
-        </VChipGroup>
+      <AppLabel title="Question type" />
+      <VCol cols="12">
+        <AppTowRadioIcon
+          :selected-radio="form.type"
+          :radio-content="typeCards"
+          :grid-column="{ cols: 6, sm: 4, md: true }"
+          @update:selected-radio="changeType"
+        />
         <p class="text-body-2 text-medium-emphasis mt-2 mb-0">{{ t(type.help) }}</p>
-      </div>
+      </VCol>
 
       <!-- Question -->
-      <AppTextarea v-model="form.prompt" rows="2" auto-grow :placeholder="type.promptHint" :rules="[requiredValidator]">
-        <template #label>{{ t("Question") }} <span class="text-error">*</span></template>
-      </AppTextarea>
+      <AppLabel title="Question" />
+      <VCol cols="12">
+        <AppTextarea v-model="form.prompt" rows="2" auto-grow :placeholder="type.promptHint" :rules="[requiredValidator]" />
+      </VCol>
 
       <!-- Answers -->
-      <div>
-        <div class="d-flex align-center justify-space-between mb-2">
-          <span class="text-body-2">
-            {{ type.answer === "typed" ? t("Accepted answers") : t("Answers — mark the correct one") }}
-          </span>
-          <VBtn
-            v-if="form.type === 'find_error'"
-            variant="text"
-            size="small"
-            prepend-icon="tabler-cut"
-            :disabled="!form.prompt.trim()"
-            @click="splitPrompt"
-          >
-            {{ t("Make parts from the sentence") }}
-          </VBtn>
-        </div>
-
+      <AppLabel :title="type.answer === 'typed' ? 'Accepted answers' : 'Answers — mark the correct one'" />
+      <VCol cols="12">
+        <VBtn
+          v-if="form.type === 'find_error'"
+          variant="tonal"
+          size="small"
+          prepend-icon="tabler-cut"
+          class="mb-3"
+          :disabled="!form.prompt.trim()"
+          @click="splitPrompt"
+        >
+          {{ t("Make parts from the sentence") }}
+        </VBtn>
         <AcceptedAnswers v-if="type.answer === 'typed'" v-model="form.options" :limits="type.limits" />
         <ChoiceAnswers
           v-else
@@ -129,34 +134,25 @@ const onSubmit = async (validation) => {
           :placeholder="form.type === 'find_error' ? 'Part of the sentence' : 'Answer'"
         />
         <p v-if="answerError" class="text-error text-body-2 mt-1 mb-0">{{ answerError }}</p>
-      </div>
+      </VCol>
 
       <!-- Explanation -->
-      <VRow>
-        <VCol cols="12" md="6">
-          <AppTextarea v-model="form.explanation" rows="2" auto-grow :placeholder="t('Why is this the answer?')">
-            <template #label>{{ t("Explanation (English)") }}</template>
-          </AppTextarea>
-        </VCol>
-        <VCol cols="12" md="6">
-          <AppTextarea v-model="form.explanation_km" rows="2" auto-grow>
-            <template #label>{{ t("Explanation (Khmer)") }}</template>
-          </AppTextarea>
-        </VCol>
-        <VCol cols="6" sm="3">
-          <AppTextField v-model="form.points" type="number" min="1" max="100">
-            <template #label>{{ t("Points") }}</template>
-          </AppTextField>
-        </VCol>
-      </VRow>
-    </div>
+      <AppLabel title="Explanation" />
+      <VCol cols="12" md="6">
+        <AppTextarea
+          v-model="form.explanation"
+          label="Explanation (English)"
+          rows="2"
+          auto-grow
+          :placeholder="t('Why is this the answer?')"
+        />
+      </VCol>
+      <VCol cols="12" md="6">
+        <AppTextarea v-model="form.explanation_km" label="Explanation (Khmer)" rows="2" auto-grow />
+      </VCol>
+      <VCol cols="6" sm="3">
+        <AppTextField v-model="form.points" label="Points" type="number" min="1" max="100" />
+      </VCol>
+    </VRow>
   </AppDialog>
 </template>
-
-<style scoped>
-.question-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-</style>

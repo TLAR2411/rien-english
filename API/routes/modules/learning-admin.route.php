@@ -44,7 +44,8 @@ Route::get('lessons/{lesson}/quiz', [QuizController::class, 'show']);
 Route::put('lessons/{lesson}/quiz', [QuizController::class, 'save']);
 Route::delete('lessons/{lesson}/quiz', [QuizController::class, 'destroy']);
 
-// Questions with their options: /quizzes/{quiz}/questions (add), /questions/{question} (edit, move, delete)
+// Questions with their options: /quizzes/{quiz}/questions (list, add), /questions/{question} (edit, move, delete)
+Route::get('quizzes/{quiz}/questions', [QuestionController::class, 'index']);
 Route::post('quizzes/{quiz}/questions', [QuestionController::class, 'store']);
 Route::put('questions/{question}', [QuestionController::class, 'update']);
 Route::patch('questions/{question}/move', [QuestionController::class, 'move']);
