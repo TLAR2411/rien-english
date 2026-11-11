@@ -4,9 +4,13 @@
 export const isAnswered = (answer) =>
   Array.isArray(answer) ? answer.length > 0 : answer != null && String(answer).trim() !== "";
 
-/** { [questionId]: answer } → the list the API wants: [{ question_id, answer }] */
-export const toAnswerList = (answers) =>
-  Object.entries(answers).map(([questionId, answer]) => ({
-    question_id: Number(questionId),
-    answer: isAnswered(answer) ? answer : null,
+/**
+ * { [questionId]: answer } → the list the API wants: [{ question_id, answer }].
+ * Only the quiz's current questions are sent (a saved draft may still hold a
+ * question the teacher removed; the API rejects questions not in the quiz).
+ */
+export const toAnswerList = (answers, questions) =>
+  questions.map(({ id }) => ({
+    question_id: id,
+    answer: isAnswered(answers[id]) ? answers[id] : null,
   }));

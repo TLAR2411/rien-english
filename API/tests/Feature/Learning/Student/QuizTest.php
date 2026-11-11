@@ -153,11 +153,59 @@ class QuizTest extends TestCase
             ->assertJsonPath('data.questions.4.is_correct', false);
     }
 
-    public function test_an_option_of_another_question_is_not_accepted(): void
+    /** T27 — a picked option must be one of that question's own options. */
+    public function test_an_option_of_another_question_is_rejected(): void
     {
         Passport::actingAs($this->student);
 
-        $this->submit(['choice' => $this->optionId('find_error', 'are')])->assertJsonPath('data.score', 0);
+        $this->submit(['choice' => $this->optionId('find_error', 'are')])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['answers.0.answer']);
+
+        $this->assertSame(0, QuizAttempt::count());
+    }
+
+    /** T27 — every question must be in this quiz. */
+    public function test_a_question_of_another_quiz_is_rejected(): void
+    {
+        $other = Quiz::factory()->for(Lesson::factory()->create())->create();
+        $foreign = Question::factory()->for($other)->create(['type' => QuestionType::FillBlank]);
+        Passport::actingAs($this->student);
+
+        $this->postJson("/api/web/student/quizzes/{$this->quiz->id}/submit", ['answers' => [
+            ['question_id' => $this->q['fill_blank']->id, 'answer' => 'is not'],
+            ['question_id' => $foreign->id, 'answer' => 'is not'],
+        ]])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['answers.1.question_id']);
+
+        $this->assertSame(0, QuizAttempt::count());
+    }
+
+    /** T27 — the answer must have the right shape for its question type. */
+    public function test_an_answer_of_the_wrong_type_is_rejected(): void
+    {
+        Passport::actingAs($this->student);
+
+        $this->submit(['choice' => 'am'])->assertJsonValidationErrors(['answers.0.answer']);
+        $this->submit(['fill_blank' => ['is', 'not']])->assertJsonValidationErrors(['answers.0.answer']);
+        $this->submit(['word_order' => 'Where are you from?'])->assertJsonValidationErrors(['answers.0.answer']);
+
+        $this->assertSame(0, QuizAttempt::count());
+    }
+
+    /** T27 — too many submits in one minute are blocked. */
+    public function test_quiz_submit_is_rate_limited(): void
+    {
+        Passport::actingAs($this->student);
+        $limit = config('learning.quiz.submit_per_minute');
+
+        for ($i = 0; $i < $limit; $i++) {
+            $this->submit(['choice' => $this->optionId('choice', 'am')])->assertCreated();
+        }
+
+        $this->submit(['choice' => $this->optionId('choice', 'am')])->assertTooManyRequests();
+        $this->assertSame($limit, QuizAttempt::count());
     }
 
     public function test_points_decide_the_percent_and_pass_score(): void

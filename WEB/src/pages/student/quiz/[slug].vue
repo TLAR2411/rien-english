@@ -51,7 +51,7 @@ const submit = async () => {
   isSubmitting.value = true;
   try {
     const result = await submitQuiz(quiz.value.id, {
-      answers: toAnswerList(answers.value),
+      answers: toAnswerList(answers.value, quiz.value.questions),
       started_at: startedAt.value,
     });
     draft.clear();

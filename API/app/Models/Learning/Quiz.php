@@ -40,4 +40,10 @@ class Quiz extends Model
     {
         return $this->hasMany(QuizAttempt::class);
     }
+
+    /** Students may take it: its lesson is visible (published) and it has questions. */
+    public function isOpen(): bool
+    {
+        return Lesson::visible()->whereKey($this->lesson_id)->exists() && $this->questions()->exists();
+    }
 }

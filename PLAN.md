@@ -44,13 +44,13 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
-| 5 | Student system: dashboard & quizzes | T23–T27 | 4/5 |
+| 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T27
+**Current task:** T28
 
 ---
 
@@ -229,7 +229,7 @@ After login, students see a **system-style layout** (side menu), like the admin 
   - "My Quizzes" page: history of all attempts; open any old result.
   - ✅ Done when: result page shows after submit and from history.
 
-- [ ] **T27 — Rate limiting & validation**
+- [x] **T27 — Rate limiting & validation**
   - Throttle quiz submit. Validate every answer belongs to the quiz.
   - ✅ Done when: tests pass.
 
@@ -467,3 +467,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T25 — (owner: before T22) Quiz page `/student/quiz/<lesson-slug>` (student system): one question at a time (`QuizPlayer.vue`), "Question 3 of 10" + progress bar, Back / Next, numbered dots to jump to any question (answered ones filled in), Submit on the last question with a check first ("You answered 8 of 10… questions without an answer count as wrong"); one question = `questions/QuizQuestion.vue` (also used by the admin preview); word order: tap words to build the sentence, tap again to remove, answer kept when going back; answers kept in the browser tab until submit (`useQuizDraft`, refresh-safe); after submit a short score (full result page = T26); submit reply has no "Saved" pop-up; checked on a phone screen (iPhone size): 10-question mixed quiz done, no errors — tests: pass (156), build: pass
 - 2026-11-11 — T26 — (owner: before T22) Result page `/student/quiz-results/<id>` (opens right after submit and from history): stars (3 = passed with 90%+, 2 = passed, 1 = 50%+; `config/learning.php` → quiz), big %, Passed / Not passed yet (needs X%), questions right + points + date; buttons Retry, Back to the lesson, Next lesson (next published lesson of the same skill in learning order); every question with ✓/✗, your answer, correct answer, explanation with English / ខ្មែរ switch (`QuizResultQuestion.vue`); "My Quizzes" `/student/my-quizzes` in the side menu (newest first, %, points, date, pages); API `GET /api/web/student/quiz-attempts` + `/quiz-attempts/{id}` (own attempts only, someone else's → 404); checked on a phone screen; test student removed from the local database afterwards — tests: pass (162), build: pass
 - 2026-11-11 — T22 — Forgot password: "Forgot password?" link on the login page (keeps a typed email); `/forgot-password` (email → "Check your email", same reply for every email so nobody can find out who has an account; disabled accounts get no email); email (`Notifications/Auth/ResetPasswordNotification`, English + one Khmer line) with a button to `/reset-password?token=…&email=…` on the website (`FRONTEND_URL` in `.env`); `/reset-password` (new password + confirm, same rule as sign-up via `Password::defaults()`; link works 60 minutes, one time; bad / used / old link → "Send me a new link"); after a reset all old logins are logged out; API `POST /api/web/forgot-password`, `POST /api/web/reset-password` (`ForgotPasswordRequest`, `ResetPasswordRequest`, `PASSWORD_RESET_PER_MINUTE`=5 per IP); mail settings only from `.env` (`MAIL_*`); `{ silent: true }` API calls now also skip the success pop-up; sign-up / forgot / reset pages share `assets/styles/_auth-page.scss` — tests: pass (172), build: pass
+- 2026-11-11 — T27 — Quiz submit is rate limited: 10 per minute per student (`QUIZ_SUBMIT_PER_MINUTE`, `config/learning.php` → quiz; over the limit → 429 "Too Many Attempts" pop-up); `SubmitQuizRequest` now checks every answer belongs to the quiz: question not in this quiz → 422, picked option not of that question → 422, wrong answer shape for the type (text for a choice, list for fill blank, text for word order) → 422, nothing saved; hidden / empty quizzes still 404 (`Quiz::isOpen()`); the quiz page sends only the quiz's current questions (an old saved draft can't send a removed question) — tests: pass (175), build: pass

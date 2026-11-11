@@ -31,10 +31,13 @@ class QuizController extends Controller
         ]);
     }
 
-    /** Grade the answers, save the attempt, return the result with the correct answers. */
+    /**
+     * Grade the answers, save the attempt, return the result with the correct answers.
+     * SubmitQuizRequest already checked the quiz is open and every answer belongs to it
+     * (and loaded its lesson, questions and options).
+     */
     public function submit(SubmitQuizRequest $request, Quiz $quiz, QuizGrader $grader): JsonResponse
     {
-        $quiz = $this->openQuiz($quiz);
         $attempt = $grader->submit($request->user(), $quiz, $request->answers(), $request->validated('started_at'));
 
         // No message: the page shows the result itself (no "Saved" pop-up)
@@ -44,11 +47,8 @@ class QuizController extends Controller
     /** Only quizzes of visible (published) lessons that have questions. */
     private function openQuiz(?Quiz $quiz): Quiz
     {
-        abort_if(! $quiz || ! Lesson::visible()->whereKey($quiz->lesson_id)->exists(), 404);
+        abort_if(! $quiz?->isOpen(), 404);
 
-        $quiz->load(['lesson', 'questions.options']);
-        abort_if($quiz->questions->isEmpty(), 404);
-
-        return $quiz;
+        return $quiz->load(['lesson', 'questions.options']);
     }
 }

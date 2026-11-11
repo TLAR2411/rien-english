@@ -25,6 +25,8 @@ return [
         // Stars on the result page: 3 stars from this %, 2 stars = passed, 1 star from this %
         'three_stars' => 90,
         'one_star' => 50,
+        // Quiz submits allowed per minute for one student (stops answer-guessing scripts)
+        'submit_per_minute' => (int) env('QUIZ_SUBMIT_PER_MINUTE', 10),
     ],
 
     // Longest lesson text accepted (characters of HTML, per language)

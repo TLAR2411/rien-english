@@ -20,7 +20,8 @@ Route::post('lessons/{lesson}/complete', [LessonProgressController::class, 'comp
 
 // Quizzes: questions without answers; answers graded on the server
 Route::get('lessons/{lesson:slug}/quiz', [QuizController::class, 'show']);
-Route::post('quizzes/{quiz}/submit', [QuizController::class, 'submit']);
+Route::post('quizzes/{quiz}/submit', [QuizController::class, 'submit'])
+    ->middleware('throttle:'.config('learning.quiz.submit_per_minute').',1');
 
 // My Quizzes: the student's own attempts and old results
 Route::get('quiz-attempts', [QuizAttemptController::class, 'index']);
