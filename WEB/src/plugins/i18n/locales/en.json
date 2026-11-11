@@ -2202,5 +2202,10 @@
   "Done on {date}": "Done on {date}",
   "No quiz score yet": "No quiz score yet",
   "Pick a lesson. Finished lessons have a ✓.": "Pick a lesson. Finished lessons have a ✓.",
-  "Read again": "Read again"
+  "Read again": "Read again",
+  "My level": "My level",
+  "Choose your level": "Choose your level",
+  "Level {code} lessons. Change your level in the top bar.": "Level {code} lessons. Change your level in the top bar.",
+  "Choose your level in the top bar to see only the lessons for you.": "Choose your level in the top bar to see only the lessons for you.",
+  "Level {code}": "Level {code}"
 }

@@ -71,6 +71,7 @@ class User extends Authenticatable implements LaratrustUser
         'village_code',
         'dob',
         'default_part',
+        'level_id',
         'image_path',
         'parent_user_id',
         'type',
@@ -251,6 +252,12 @@ class User extends Authenticatable implements LaratrustUser
     public function quizAttempts()
     {
         return $this->hasMany(QuizAttempt::class);
+    }
+
+    /** The level a student chose (their lessons follow it). */
+    public function level()
+    {
+        return $this->belongsTo(\App\Models\Learning\Level::class);
     }
 
     public function lessonProgress()

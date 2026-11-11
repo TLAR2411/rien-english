@@ -50,10 +50,10 @@ class StudentProgress
         });
     }
 
-    /** The first lesson (in learning order) the student has not finished yet. */
+    /** The first lesson (in learning order, in the student's level) they have not finished yet. */
     public function nextLesson(User $student): ?Lesson
     {
-        return Lesson::visible()
+        return $this->inStudentLevel($student)
             ->select(LessonCardResource::COLUMNS)
             ->whereDoesntHave('progress', fn (Builder $q) => $q->where('user_id', $student->id))
             ->with('course.level')
@@ -62,14 +62,23 @@ class StudentProgress
             ->first();
     }
 
-    /** Numbers for the dashboard. */
+    /** Numbers for the dashboard. Lessons count in the student's level (all levels if none chosen). */
     public function stats(User $student): array
     {
         return [
-            'lessons_done' => Lesson::visible()->whereHas('progress', fn (Builder $q) => $q->where('user_id', $student->id))->count(),
-            'lessons_total' => Lesson::visible()->count(),
+            'lessons_done' => $this->inStudentLevel($student)->whereHas('progress', fn (Builder $q) => $q->where('user_id', $student->id))->count(),
+            'lessons_total' => $this->inStudentLevel($student)->count(),
             'quizzes_passed' => $student->quizAttempts()->where('passed', true)->distinct()->count('quiz_id'),
         ];
+    }
+
+    /** Visible lessons of the level the student chose; every level when they chose none. */
+    private function inStudentLevel(User $student): Builder
+    {
+        return Lesson::visible()->when(
+            $student->level_id,
+            fn (Builder $q, int $levelId) => $q->whereHas('course', fn (Builder $course) => $course->where('level_id', $levelId))
+        );
     }
 
     /** lesson_id => {best_percent, passed} from the student's quiz attempts. */

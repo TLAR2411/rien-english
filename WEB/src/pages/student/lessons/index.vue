@@ -3,12 +3,14 @@ import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue"
 import StudentLessonCard from "@/components/learning/student/StudentLessonCard.vue";
 import { SKILLS } from "@/constants/learning";
 import { useLessonList } from "@/composables/useLessonList";
+import { useStudentLevelStore } from "@/stores/studentLevelStore";
 import { studentLessonsRoute } from "@/utils/studentRoutes";
 
 /**
  * All lessons, inside the student system (side menu stays).
- * Same filters as the public list (composables/useLessonList.js), with a ✓ Done
- * on the lessons the student finished.
+ * Only the level the student chose in the top bar (NavbarStudentLevel.vue);
+ * every level until they choose one. Same skill tabs and search as the public
+ * list (composables/useLessonList.js), with a ✓ Done on finished lessons.
  */
 definePage({
   meta: {
@@ -18,8 +20,11 @@ definePage({
   },
 });
 
-const { filters, setFilters, levels, lessons, meta, isLoading, searchText, applySearch, hasFilters, clearFilters, levelName, goToPage } =
-  useLessonList(studentLessonsRoute);
+const levelStore = useStudentLevelStore();
+await levelStore.loadLevels().catch(() => {}); // know the level's code before the first load
+
+const { filters, setFilters, lessons, meta, isLoading, searchText, applySearch, hasFilters, clearFilters, goToPage } =
+  useLessonList(studentLessonsRoute, { fixedLevel: () => levelStore.level?.code });
 
 const skillTabs = computed(() => [{ value: null, title: "All skills" }, ...SKILLS]);
 </script>
@@ -28,8 +33,15 @@ const skillTabs = computed(() => [{ value: null, title: "All skills" }, ...SKILL
   <section>
     <header class="mb-4">
       <h1 class="text-h4 font-weight-bold">{{ $t("All lessons") }}</h1>
-      <p class="text-body-1 text-medium-emphasis mb-0">{{ $t("Pick a lesson. Finished lessons have a ✓.") }}</p>
+      <p class="text-body-1 text-medium-emphasis mb-0">
+        <template v-if="levelStore.level">{{ $t("Level {code} lessons. Change your level in the top bar.", { code: levelStore.level.code }) }}</template>
+        <template v-else>{{ $t("Pick a lesson. Finished lessons have a ✓.") }}</template>
+      </p>
     </header>
+
+    <VAlert v-if="!levelStore.level" type="info" variant="tonal" class="mb-4">
+      {{ $t("Choose your level in the top bar to see only the lessons for you.") }}
+    </VAlert>
 
     <VCard class="mb-4">
       <VTabs :model-value="filters.skill" show-arrows @update:model-value="(skill) => setFilters({ skill })">
@@ -37,18 +49,6 @@ const skillTabs = computed(() => [{ value: null, title: "All skills" }, ...SKILL
       </VTabs>
       <VDivider />
       <VCardText class="d-flex flex-wrap align-center gap-3">
-        <VBtnToggle
-          v-if="levels.length"
-          :model-value="filters.level"
-          density="comfortable"
-          color="primary"
-          variant="outlined"
-          divided
-          @update:model-value="(level) => setFilters({ level })"
-        >
-          <VBtn :value="null">{{ $t("All") }}</VBtn>
-          <VBtn v-for="level in levels" :key="level.id" :value="level.code" :title="levelName(level)">{{ level.code }}</VBtn>
-        </VBtnToggle>
 
         <AppTextField
           v-model="searchText"
@@ -95,14 +95,6 @@ const skillTabs = computed(() => [{ value: null, title: "All skills" }, ...SKILL
 <style scoped>
 .lessons-search {
   flex: 1 1 240px;
-  max-width: 360px;
-  margin-inline-start: auto;
-}
-
-@media (max-width: 599px) {
-  .lessons-search {
-    max-width: none;
-    margin-inline-start: 0;
-  }
+  max-width: 420px;
 }
 </style>

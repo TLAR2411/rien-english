@@ -23,6 +23,7 @@ class DashboardController extends Controller
         $next = $progress->nextLesson($student);
 
         return $this->ok([
+            'level' => $student->level()->first(['id', 'code', 'name', 'name_km']),
             'next_lesson' => $next ? new LessonCardResource($next) : null,
             'stats' => $progress->stats($student),
             'recent' => DoneLessonResource::collection($progress->doneLessons($student, self::RECENT)),

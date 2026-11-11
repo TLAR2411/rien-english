@@ -3,6 +3,7 @@ import AppStatTile from "@/components/AppStatTile.vue";
 import DoneLessonRow from "@/components/learning/student/DoneLessonRow.vue";
 import { getStudentDashboard } from "@/services/site";
 import { useAuthStore } from "@/stores/authStore";
+import { useStudentLevelStore } from "@/stores/studentLevelStore";
 import { myLessonsRoute, studentLessonRoute, studentLessonsRoute } from "@/utils/studentRoutes";
 
 /** Student home page: what to learn next, numbers, recently finished lessons. */
@@ -20,13 +21,17 @@ const { locale } = useI18n({ useScope: "global" });
 const data = ref(null);
 const isLoading = ref(true);
 
-onMounted(async () => {
+// "Continue learning" and the numbers follow the level chosen in the top bar
+const load = async () => {
+  isLoading.value = true;
   try {
     data.value = await getStudentDashboard();
   } finally {
     isLoading.value = false;
   }
-});
+};
+onMounted(load);
+watch(() => useStudentLevelStore().levelId, load);
 
 const name = computed(() => auth.user?.name_en || auth.user?.name_kh || "");
 const next = computed(() => data.value?.next_lesson);
@@ -86,6 +91,7 @@ const percentDone = computed(() =>
               color="success"
               :value="`${stats.lessons_done ?? 0} / ${stats.lessons_total ?? 0}`"
               :progress="percentDone"
+              :caption="data?.level ? $t('Level {code}', { code: data.level.code }) : null"
               :loading="isLoading"
               dense
             />

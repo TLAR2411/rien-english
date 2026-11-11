@@ -7,8 +7,11 @@ import { getSiteLessons, getSiteLevels } from "@/services/site";
  * public lesson list and the student system's lesson list.
  * The filters live in the address (?skill=grammar&level=A1&search=…&page=2),
  * so a filtered list can be shared. `makeRoute(query)` builds that page's link.
+ *
+ * `fixedLevel` (optional ref / getter, a level code): the list shows only that
+ * level, whatever the address says — the student system uses the student's level.
  */
-export function useLessonList(makeRoute) {
+export function useLessonList(makeRoute, { fixedLevel = null } = {}) {
   const route = useRoute();
   const router = useRouter();
   const { locale } = useI18n({ useScope: "global" });
@@ -16,7 +19,7 @@ export function useLessonList(makeRoute) {
   // Current filters, read from the address
   const filters = computed(() => ({
     skill: SKILLS.some((skill) => skill.value === route.query.skill) ? route.query.skill : null,
-    level: typeof route.query.level === "string" ? route.query.level : null,
+    level: fixedLevel ? toValue(fixedLevel) ?? null : typeof route.query.level === "string" ? route.query.level : null,
     search: typeof route.query.search === "string" ? route.query.search : "",
     page: Math.max(1, Number(route.query.page) || 1),
   }));
@@ -24,7 +27,9 @@ export function useLessonList(makeRoute) {
   /** Change some filters; any change except the page goes back to page 1. */
   const setFilters = (changes) => {
     const next = { ...filters.value, page: 1, ...changes };
-    const query = Object.fromEntries(Object.entries(next).filter(([key, value]) => value && !(key === "page" && value === 1)));
+    const query = Object.fromEntries(
+      Object.entries(next).filter(([key, value]) => value && !(key === "page" && value === 1) && !(key === "level" && fixedLevel)),
+    );
     router.replace(makeRoute(query));
   };
 
@@ -64,7 +69,7 @@ export function useLessonList(makeRoute) {
     if (value !== (searchText.value ?? "").trim()) searchText.value = value;
   });
 
-  const hasFilters = computed(() => Boolean(filters.value.skill || filters.value.level || filters.value.search));
+  const hasFilters = computed(() => Boolean(filters.value.skill || (!fixedLevel && filters.value.level) || filters.value.search));
   const clearFilters = () => {
     searchText.value = "";
     router.replace(makeRoute());

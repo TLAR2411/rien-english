@@ -130,4 +130,29 @@ class MyLearningTest extends TestCase
         $this->assertNotNull($lessons[$this->toBe->slug]['completed_at']);
         $this->assertNull($lessons[$this->family->slug]['completed_at']);
     }
+
+    public function test_student_chooses_a_level_and_the_dashboard_follows_it(): void
+    {
+        $b1 = $this->past->course->level_id;
+        Passport::actingAs($this->student);
+
+        $this->putJson('/api/web/student/level', ['level_id' => $b1])
+            ->assertOk()
+            ->assertJsonPath('data.code', 'B1');
+        $this->assertSame($b1, $this->student->fresh()->level_id);
+
+        $this->getJson('/api/web/student/dashboard')
+            ->assertJsonPath('data.level.code', 'B1')
+            ->assertJsonPath('data.next_lesson.slug', $this->past->slug) // not the A1 lessons
+            ->assertJsonPath('data.stats.lessons_total', 1);
+    }
+
+    public function test_level_must_exist_and_needs_a_student(): void
+    {
+        $this->putJson('/api/web/student/level', ['level_id' => 1])->assertUnauthorized();
+
+        Passport::actingAs($this->student);
+        $this->putJson('/api/web/student/level', ['level_id' => 999])->assertJsonValidationErrors('level_id');
+        $this->putJson('/api/web/student/level', [])->assertJsonValidationErrors('level_id');
+    }
 }
