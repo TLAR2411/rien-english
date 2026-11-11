@@ -62,6 +62,16 @@ class StudentProgress
             ->first();
     }
 
+    /** The lesson after this one in learning order, with the same skill (e.g. the next grammar lesson). */
+    public function lessonAfter(Lesson $lesson): ?Lesson
+    {
+        $ids = Lesson::visible()->where('skill', $lesson->skill)->learningOrder()->pluck('id');
+        $position = $ids->search($lesson->id);
+        $nextId = $position === false ? null : $ids->get($position + 1);
+
+        return $nextId ? Lesson::find($nextId, ['id', 'slug', 'title_en', 'title_km']) : null;
+    }
+
     /** Numbers for the dashboard. Lessons count in the student's level (all levels if none chosen). */
     public function stats(User $student): array
     {

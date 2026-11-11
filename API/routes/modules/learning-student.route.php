@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Learning\Student\DashboardController;
 use App\Http\Controllers\Api\Learning\Student\LessonProgressController;
 use App\Http\Controllers\Api\Learning\Student\LevelController;
 use App\Http\Controllers\Api\Learning\Student\MyLessonController;
+use App\Http\Controllers\Api\Learning\Student\QuizAttemptController;
 use App\Http\Controllers\Api\Learning\Student\QuizController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,7 @@ Route::post('lessons/{lesson}/complete', [LessonProgressController::class, 'comp
 // Quizzes: questions without answers; answers graded on the server
 Route::get('lessons/{lesson:slug}/quiz', [QuizController::class, 'show']);
 Route::post('quizzes/{quiz}/submit', [QuizController::class, 'submit']);
+
+// My Quizzes: the student's own attempts and old results
+Route::get('quiz-attempts', [QuizAttemptController::class, 'index']);
+Route::get('quiz-attempts/{attempt}', [QuizAttemptController::class, 'show']);

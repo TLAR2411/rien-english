@@ -3,11 +3,12 @@ import QuizPlayer from "@/components/learning/student/QuizPlayer.vue";
 import { useQuizDraft } from "@/composables/useQuizDraft";
 import { getStudentQuiz, submitQuiz } from "@/services/site";
 import { toAnswerList } from "@/utils/quiz";
-import { studentLessonRoute, studentLessonsRoute } from "@/utils/studentRoutes";
+import { quizResultRoute, studentLessonRoute, studentLessonsRoute } from "@/utils/studentRoutes";
 
 /**
  * Take a lesson's quiz (students, inside the student system). A visitor is sent
- * to log in / sign up and comes back here after. Answers are graded by the API.
+ * to log in / sign up and comes back here after. Answers are graded by the API,
+ * then the result page opens.
  */
 definePage({
   meta: {
@@ -18,20 +19,19 @@ definePage({
 });
 
 const route = useRoute();
+const router = useRouter();
 const slug = computed(() => route.params.slug);
 
 const quiz = ref(null);
 const notFound = ref(false);
 const answers = ref({});
 const startedAt = ref(null);
-const result = ref(null);
 const isSubmitting = ref(false);
 
 const draft = useQuizDraft(() => quiz.value?.id);
 
 const load = async () => {
   quiz.value = null;
-  result.value = null;
   notFound.value = false;
   try {
     quiz.value = await getStudentQuiz(slug.value);
@@ -50,20 +50,15 @@ watch(answers, (value) => quiz.value && draft.write(value, startedAt.value), { d
 const submit = async () => {
   isSubmitting.value = true;
   try {
-    result.value = await submitQuiz(quiz.value.id, {
+    const result = await submitQuiz(quiz.value.id, {
       answers: toAnswerList(answers.value),
       started_at: startedAt.value,
     });
     draft.clear();
-    window.scrollTo({ top: 0 });
+    router.replace(quizResultRoute(result.id));
   } finally {
     isSubmitting.value = false;
   }
-};
-
-const retry = () => {
-  draft.clear();
-  load();
 };
 </script>
 
@@ -84,26 +79,7 @@ const retry = () => {
             </p>
           </header>
 
-          <!-- Short result (T26 adds the full result page) -->
-          <div v-if="result" class="text-center py-6">
-            <VIcon
-              :icon="result.passed ? 'tabler-circle-check-filled' : 'tabler-circle-x'"
-              :color="result.passed ? 'success' : 'warning'"
-              size="56"
-              class="mb-3"
-            />
-            <p class="text-h3 font-weight-bold mb-1">{{ result.percent }}%</p>
-            <p class="text-body-1 text-medium-emphasis mb-6">
-              {{ $t("{score} of {total} points", { score: result.score, total: result.total }) }} ·
-              {{ result.passed ? $t("Passed") : $t("Not passed yet") }}
-            </p>
-            <div class="d-flex flex-wrap justify-center gap-3">
-              <VBtn variant="outlined" prepend-icon="tabler-refresh" @click="retry">{{ $t("Try again") }}</VBtn>
-              <VBtn :to="studentLessonRoute(slug)" color="primary">{{ $t("Back to the lesson") }}</VBtn>
-            </div>
-          </div>
-
-          <QuizPlayer v-else v-model:answers="answers" :quiz="quiz" :submitting="isSubmitting" @submit="submit" />
+          <QuizPlayer v-model:answers="answers" :quiz="quiz" :submitting="isSubmitting" @submit="submit" />
         </VCardText>
       </VCard>
     </template>

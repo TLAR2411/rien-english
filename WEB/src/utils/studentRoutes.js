@@ -12,3 +12,11 @@ export const studentLessonRoute = (slug) => ({ name: "student-lessons-slug", par
 export const studentDashboardRoute = () => ({ name: "student-dashboard" });
 
 export const myLessonsRoute = () => ({ name: "student-my-lessons" });
+
+/** Take a lesson's quiz: /student/quiz/present-simple */
+export const studentQuizRoute = (slug) => ({ name: "student-quiz-slug", params: { slug } });
+
+/** One quiz result (also old ones): /student/quiz-results/12 */
+export const quizResultRoute = (id) => ({ name: "student-quiz-results-id", params: { id } });
+
+export const myQuizzesRoute = () => ({ name: "student-my-quizzes" });

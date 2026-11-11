@@ -2236,5 +2236,17 @@
   "You answered {answered} of {total} questions.": "អ្នកបានឆ្លើយ {answered} នៃ {total} សំណួរ។",
   "You cannot change your answers after you submit.": "អ្នកមិនអាចកែចម្លើយបានទេ បន្ទាប់ពីផ្ញើ។",
   "{score} of {total} points": "{score} នៃ {total} ពិន្ទុ",
-  "Quiz progress": "វឌ្ឍនភាពតេស្ត"
+  "Quiz progress": "វឌ្ឍនភាពតេស្ត",
+  "My Quizzes": "តេស្តរបស់ខ្ញុំ",
+  "Next lesson": "មេរៀនបន្ទាប់",
+  "No answer": "មិនបានឆ្លើយ",
+  "No quizzes yet. Read a lesson, then take its quiz.": "មិនទាន់មានតេស្តទេ។ អានមេរៀនមួយ រួចធ្វើតេស្តរបស់វា។",
+  "Not passed yet — you need {score}%": "មិនទាន់ជាប់ — ត្រូវការ {score}%",
+  "Result not found": "រកមិនឃើញលទ្ធផល",
+  "Retry": "ធ្វើម្តងទៀត",
+  "Your answers": "ចម្លើយរបស់អ្នក",
+  "{count} quizzes taken": "បានធ្វើតេស្ត {count} ដង",
+  "{right} of {total} questions right": "ត្រូវ {right} នៃ {total} សំណួរ",
+  "Quiz result": "លទ្ធផលតេស្ត",
+  "{count} of 3 stars": "{count} ក្នុងចំណោម 3 ផ្កាយ"
 }

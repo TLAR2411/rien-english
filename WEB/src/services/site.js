@@ -32,3 +32,9 @@ export const getStudentQuiz = async (slug) =>
 
 /** Send the answers ({ answers: [{ question_id, answer }], started_at }) → the graded result */
 export const submitQuiz = async (quizId, payload) => (await api.post(`student/quizzes/${quizId}/submit`, payload)).data.data;
+
+/** My Quizzes: { data, meta } — params: page */
+export const getQuizAttempts = async (params) => (await api.get("student/quiz-attempts", { params })).data.data;
+
+/** One quiz result with the correct answers. Not mine / missing → 404, no pop-up. */
+export const getQuizResult = async (id) => (await api.get(`student/quiz-attempts/${id}`, { silent: true })).data.data;

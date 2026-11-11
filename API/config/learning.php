@@ -22,6 +22,9 @@ return [
     'quiz' => [
         // % needed to pass a new quiz (each quiz can change its own)
         'pass_score' => 70,
+        // Stars on the result page: 3 stars from this %, 2 stars = passed, 1 star from this %
+        'three_stars' => 90,
+        'one_star' => 50,
     ],
 
     // Longest lesson text accepted (characters of HTML, per language)

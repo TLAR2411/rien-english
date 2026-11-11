@@ -2222,5 +2222,17 @@
   "You answered {answered} of {total} questions.": "You answered {answered} of {total} questions.",
   "You cannot change your answers after you submit.": "You cannot change your answers after you submit.",
   "{score} of {total} points": "{score} of {total} points",
-  "Quiz progress": "Quiz progress"
+  "Quiz progress": "Quiz progress",
+  "My Quizzes": "My Quizzes",
+  "Next lesson": "Next lesson",
+  "No answer": "No answer",
+  "No quizzes yet. Read a lesson, then take its quiz.": "No quizzes yet. Read a lesson, then take its quiz.",
+  "Not passed yet — you need {score}%": "Not passed yet — you need {score}%",
+  "Result not found": "Result not found",
+  "Retry": "Retry",
+  "Your answers": "Your answers",
+  "{count} quizzes taken": "{count} quizzes taken",
+  "{right} of {total} questions right": "{right} of {total} questions right",
+  "Quiz result": "Quiz result",
+  "{count} of 3 stars": "{count} of 3 stars"
 }
