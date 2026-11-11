@@ -20,6 +20,9 @@ return [
 
         // May manage the system: users, roles, branches, settings, logs
         'admin_only' => ['admin'],
+
+        // Student features: mark lessons completed (later: quizzes, progress)
+        'student_area' => ['student'],
     ],
 
     // Permissions each role gets from RoleSeeder.

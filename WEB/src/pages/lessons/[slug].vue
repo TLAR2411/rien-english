@@ -1,0 +1,258 @@
+<script setup>
+import LessonView from "@/components/learning/student/LessonView.vue";
+import { completeLesson, getSiteLesson } from "@/services/site";
+import { useAuthStore } from "@/stores/authStore";
+import { lessonsRoute, quizRoute, signUpRoute } from "@/utils/siteRoutes";
+
+/**
+ * Public lesson page (no login): the lesson text with a Khmer/English switch,
+ * examples with sound, and "Take the quiz". The API never sends the quiz
+ * questions here — the quiz needs login.
+ */
+definePage({
+  meta: {
+    title: "Lesson",
+    layout: "public",
+    public: true,
+  },
+});
+
+const route = useRoute();
+const auth = useAuthStore();
+const { locale, t } = useI18n({ useScope: "global" });
+
+const lesson = ref(null);
+const notFound = ref(false);
+
+const load = async () => {
+  lesson.value = null;
+  notFound.value = false;
+  try {
+    lesson.value = await getSiteLesson(route.params.slug);
+    document.title = `${lesson.value.title_en} — Rien English`;
+  } catch {
+    notFound.value = true;
+  }
+};
+watch(() => route.params.slug, load, { immediate: true });
+
+// Explanation language: starts with the site language, the reader can switch
+const language = ref(locale.value === "km" ? "km" : "en");
+const hasKhmer = computed(() => Boolean(lesson.value?.content_km));
+
+// Take the quiz: a visitor signs up first, then comes back to this quiz
+const isLoggedIn = computed(() => auth.isAuthenticated && Boolean(auth.user));
+const quizLink = computed(() => {
+  const quiz = quizRoute(lesson.value.slug);
+  return isLoggedIn.value ? quiz : signUpRoute(quiz.path);
+});
+
+// Mark as completed: students only
+const isStudent = computed(() => isLoggedIn.value && auth.user?.default_part === "student");
+const isSaving = ref(false);
+const markCompleted = async () => {
+  isSaving.value = true;
+  try {
+    lesson.value.completed_at = (await completeLesson(lesson.value.id)).completed_at;
+  } finally {
+    isSaving.value = false;
+  }
+};
+const completedDate = computed(() =>
+  lesson.value?.completed_at
+    ? new Date(lesson.value.completed_at).toLocaleDateString(locale.value === "km" ? "km-KH" : "en-GB", { day: "numeric", month: "long", year: "numeric" })
+    : null,
+);
+</script>
+
+<template>
+  <div class="site-section lesson-page">
+    <div class="site-container">
+      <div class="lesson-page__bar">
+        <RouterLink :to="lessonsRoute()" class="site-link">
+          <VIcon icon="tabler-arrow-left" size="18" />
+          {{ $t("All lessons") }}
+        </RouterLink>
+
+        <!-- Khmer explanation switch -->
+        <div v-if="hasKhmer" class="lesson-page__lang" role="group" :aria-label="$t('Explanation language')">
+          <button
+            type="button"
+            :class="{ 'is-on': language === 'en' }"
+            :aria-pressed="language === 'en'"
+            @click="language = 'en'"
+          >
+            English
+          </button>
+          <button
+            type="button"
+            :class="{ 'is-on': language === 'km' }"
+            :aria-pressed="language === 'km'"
+            @click="language = 'km'"
+          >
+            ខ្មែរ
+          </button>
+        </div>
+      </div>
+
+      <LessonView v-if="lesson" :lesson="lesson" :language="language" :fit-screen="false">
+        <template v-if="lesson.quiz || isStudent" #default>
+          <div v-if="lesson.quiz" class="lesson-quiz">
+            <h2 class="lesson-quiz__title">{{ $t("Check what you learned") }}</h2>
+            <p class="lesson-quiz__facts">
+              {{ $t("{count} questions", { count: lesson.quiz.questions_count ?? 0 }) }}
+              · {{ $t("Pass score {score}%", { score: lesson.quiz.pass_score }) }}
+            </p>
+            <RouterLink :to="quizLink" class="site-btn lesson-quiz__btn">{{ $t("Take the quiz") }}</RouterLink>
+            <p v-if="!isLoggedIn" class="lesson-quiz__hint">
+              {{ $t("Sign up free to take the quiz. You come back here right after.") }}
+            </p>
+          </div>
+
+          <div v-if="isStudent" class="lesson-done">
+            <p v-if="lesson.completed_at" class="lesson-done__ok">
+              <VIcon icon="tabler-circle-check-filled" size="22" />
+              {{ $t("Completed on {date}", { date: completedDate }) }}
+            </p>
+            <button v-else type="button" class="lesson-done__btn" :disabled="isSaving" @click="markCompleted">
+              <VIcon icon="tabler-check" size="20" />
+              {{ $t("Mark as completed") }}
+            </button>
+          </div>
+        </template>
+      </LessonView>
+
+      <div v-else-if="notFound" class="lesson-page__missing">
+        <h1 class="site-h2">{{ $t("Lesson not found") }}</h1>
+        <p class="site-lead">{{ $t("This lesson does not exist or is not published yet.") }}</p>
+        <RouterLink :to="lessonsRoute()" class="site-btn lesson-page__missing-btn">{{ $t("See all lessons") }}</RouterLink>
+      </div>
+
+      <p v-else class="lesson-page__loading" aria-live="polite">{{ t("Loading...") }}</p>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.lesson-page {
+  padding-block-start: clamp(20px, 4vw, 40px);
+}
+
+.lesson-page__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1080px;
+  margin: 0 auto 20px;
+}
+
+// Two-button switch: English | ខ្មែរ
+.lesson-page__lang {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--rien-bg-alt);
+
+  button {
+    min-width: 84px;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--rien-grey);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+
+    &.is-on {
+      background: #fff;
+      color: var(--rien-ink);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+.lesson-quiz {
+  padding: clamp(24px, 4vw, 32px);
+  border-radius: var(--rien-radius);
+  background: var(--rien-blue-soft);
+}
+
+.lesson-quiz__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.lesson-quiz__facts {
+  margin: 6px 0 0;
+  color: var(--rien-grey);
+}
+
+.lesson-quiz__btn {
+  margin-block-start: 20px;
+}
+
+.lesson-quiz__hint {
+  margin: 12px 0 0;
+  color: var(--rien-grey);
+  font-size: 15px;
+}
+
+.lesson-done {
+  margin-block-start: 24px;
+}
+
+.lesson-done__ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--rien-green);
+  font-weight: 500;
+}
+
+.lesson-done__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1.5px solid var(--rien-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rien-ink);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--rien-green);
+    color: var(--rien-green);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.lesson-page__missing {
+  max-width: 560px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.lesson-page__missing-btn {
+  margin-block-start: 28px;
+}
+
+.lesson-page__loading {
+  padding-block: 64px;
+  color: var(--rien-grey);
+  text-align: center;
+}
+</style>

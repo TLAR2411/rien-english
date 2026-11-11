@@ -11,6 +11,9 @@ export const lessonsRoute = (query = {}) => ({ path: "/lessons", query });
 /** One lesson's page: /lessons/present-simple */
 export const lessonRoute = (slug) => ({ path: `/lessons/${slug}` });
 
+/** A lesson's quiz. Needs login (T25 builds the quiz page). */
+export const quizRoute = (slug) => ({ path: `/student/quiz/${slug}` });
+
 export const loginRoute = (redirect = null) => ({
   name: "login",
   query: redirect ? { redirect } : {},

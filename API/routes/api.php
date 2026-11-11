@@ -21,6 +21,11 @@ Route::group(['prefix' => '/web'], function () {
     // Public website, no login: /api/web/site/...
     Route::prefix('site')->name('site.')->middleware('throttle:120,1')->group(base_path('routes/modules/learning-site.route.php'));
 
+    // Student features: /api/web/student/... (config/roles.php → groups.student_area)
+    Route::prefix('student')->name('student.')
+        ->middleware(['auth:api', AccessGroup::middleware(AccessGroup::STUDENT_AREA)])
+        ->group(base_path('routes/modules/learning-student.route.php'));
+
     // Session routes skip branch.access: right after a user switch the app still
     // sends the previous user's branch.
     Route::group(['middleware' => ['auth:api']], function () {

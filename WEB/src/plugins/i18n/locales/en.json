@@ -2155,5 +2155,19 @@
   "All levels": "All levels",
   "Page {page} of {pages}": "Page {page} of {pages}",
   "No lessons found.": "No lessons found.",
-  "Show all lessons": "Show all lessons"
+  "Show all lessons": "Show all lessons",
+  "All lessons": "All lessons",
+  "Explanation language": "Explanation language",
+  "Check what you learned": "Check what you learned",
+  "Pass score {score}%": "Pass score {score}%",
+  "Take the quiz": "Take the quiz",
+  "Sign up free to take the quiz. You come back here right after.": "Sign up free to take the quiz. You come back here right after.",
+  "Completed on {date}": "Completed on {date}",
+  "Mark as completed": "Mark as completed",
+  "Lesson not found": "Lesson not found",
+  "This lesson does not exist or is not published yet.": "This lesson does not exist or is not published yet.",
+  "Loading...": "Loading...",
+  "Quizzes open soon": "Quizzes open soon",
+  "You are logged in. The quiz for this lesson will be ready very soon.": "You are logged in. The quiz for this lesson will be ready very soon.",
+  "Back to the lesson": "Back to the lesson"
 }

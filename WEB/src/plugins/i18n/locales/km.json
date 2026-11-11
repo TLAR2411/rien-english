@@ -2169,5 +2169,19 @@
   "All levels": "គ្រប់កម្រិត",
   "Page {page} of {pages}": "ទំព័រ {page} នៃ {pages}",
   "No lessons found.": "រកមិនឃើញមេរៀនទេ។",
-  "Show all lessons": "បង្ហាញមេរៀនទាំងអស់"
+  "Show all lessons": "បង្ហាញមេរៀនទាំងអស់",
+  "All lessons": "មេរៀនទាំងអស់",
+  "Explanation language": "ភាសាពន្យល់",
+  "Check what you learned": "ពិនិត្យអ្វីដែលអ្នកបានរៀន",
+  "Pass score {score}%": "ពិន្ទុជាប់ {score}%",
+  "Take the quiz": "ធ្វើតេស្ត",
+  "Sign up free to take the quiz. You come back here right after.": "ចុះឈ្មោះឥតគិតថ្លៃ ដើម្បីធ្វើតេស្ត។ បន្ទាប់មក អ្នកនឹងត្រឡប់មកទីនេះវិញភ្លាម។",
+  "Completed on {date}": "បានបញ្ចប់នៅ {date}",
+  "Mark as completed": "សម្គាល់ថាបានបញ្ចប់",
+  "Lesson not found": "រកមិនឃើញមេរៀន",
+  "This lesson does not exist or is not published yet.": "មេរៀននេះមិនមាន ឬមិនទាន់បានផ្សព្វផ្សាយនៅឡើយទេ។",
+  "Loading...": "កំពុងផ្ទុក...",
+  "Quizzes open soon": "តេស្តនឹងបើកឆាប់ៗនេះ",
+  "You are logged in. The quiz for this lesson will be ready very soon.": "អ្នកបានចូលគណនីហើយ។ តេស្តសម្រាប់មេរៀននេះនឹងរួចរាល់ក្នុងពេលឆាប់ៗ។",
+  "Back to the lesson": "ត្រឡប់ទៅមេរៀនវិញ"
 }

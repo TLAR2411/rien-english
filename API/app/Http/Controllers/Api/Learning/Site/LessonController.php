@@ -6,10 +6,12 @@ use App\Http\Controllers\Concerns\ApiResponses;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Learning\Site\LessonListRequest;
 use App\Http\Resources\Learning\Site\LessonCardResource;
+use App\Http\Resources\Learning\Student\StudentLessonResource;
 use App\Models\Learning\Course;
 use App\Models\Learning\Lesson;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /** Public lessons (no login). Only Lesson::visible() lessons. */
 class LessonController extends Controller
@@ -43,5 +45,23 @@ class LessonController extends Controller
             ->paginate(self::PER_PAGE);
 
         return $this->paginated(LessonCardResource::collection($lessons));
+    }
+
+    /**
+     * One lesson to read: text, examples, and only the size of its quiz —
+     * never the questions or answers (those need login, see T24).
+     * A logged-in student also gets `completed_at`.
+     */
+    public function show(Request $request, Lesson $lesson): JsonResponse
+    {
+        abort_unless(Lesson::visible()->whereKey($lesson->id)->exists(), 404);
+
+        $lesson->load(['course.level', 'examples', 'quiz' => fn ($quiz) => $quiz->withCount('questions')]);
+        $student = $request->user('api');
+
+        return $this->ok([
+            ...(new StudentLessonResource($lesson))->resolve($request),
+            'completed_at' => $student?->lessonProgress()->where('lesson_id', $lesson->id)->first()?->completed_at,
+        ]);
     }
 }

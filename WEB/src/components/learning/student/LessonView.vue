@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
+import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
 
 /**
@@ -7,14 +8,19 @@ import { SKILLS, findOption } from "@/constants/learning";
  * public lesson page / student system later. `lesson` is the API's
  * StudentLessonResource. Put the quiz (or a "Take the quiz" button) in the default slot.
  *
- * The language follows the language switch in the top bar: Khmer shows
- * `content_km` when the lesson has it.
+ * The lesson text language: `language` ("en" / "km") when given, otherwise the
+ * language switch in the top bar. Khmer shows `content_km` when the lesson has it.
+ *
+ * `fitScreen` (admin preview): on big screens the lesson card fills the screen
+ * and scrolls inside. The public website sets it off and the page scrolls.
  *
  * The lesson HTML is shown with v-html: that is safe because the API cleans it
  * when it is saved (API/config/purify.php → lesson).
  */
 const props = defineProps({
   lesson: { type: Object, required: true },
+  language: { type: String, default: null },
+  fitScreen: { type: Boolean, default: true },
 });
 
 const slots = useSlots();
@@ -22,7 +28,7 @@ const { locale, t } = useI18n();
 
 const skill = computed(() => findOption(SKILLS, props.lesson.skill));
 const rawContent = computed(() =>
-  locale.value === "km" && props.lesson.content_km ? props.lesson.content_km : props.lesson.content,
+  (props.language ?? locale.value) === "km" && props.lesson.content_km ? props.lesson.content_km : props.lesson.content,
 );
 
 // Give every <h2> an id so the side outline can jump to it, and count words for the read time
@@ -41,7 +47,7 @@ const body = computed(() => {
 });
 
 const exampleCount = computed(() => props.lesson.examples?.length ?? 0);
-const questionCount = computed(() => props.lesson.quiz?.questions?.length ?? 0);
+const questionCount = computed(() => props.lesson.quiz?.questions?.length ?? props.lesson.quiz?.questions_count ?? 0);
 const minutes = computed(() => Math.max(1, Math.round(body.value.words / 150 + exampleCount.value * 0.25)));
 
 const outline = computed(() => [
@@ -56,7 +62,7 @@ const viewEl = ref(null);
 const sheetEl = ref(null);
 const height = ref(null);
 const fitToScreen = () => {
-  if (!viewEl.value) return;
+  if (!props.fitScreen || !viewEl.value) return;
   const rect = viewEl.value.getBoundingClientRect();
   const top = rect.top + window.scrollY;
   // Whatever the page still shows under the lesson (card padding, footer…)
@@ -69,7 +75,8 @@ const activeId = ref(null);
 const goTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 const updateActive = () => {
-  const sheetTop = Math.max(sheetEl.value?.getBoundingClientRect().top ?? 0, 0);
+  // Where reading starts: the card's top, or below the site top bar when the page scrolls
+  const sheetTop = props.fitScreen ? Math.max(sheetEl.value?.getBoundingClientRect().top ?? 0, 0) : 88;
   let current = outline.value[0]?.id ?? null;
   for (const item of outline.value) {
     const el = document.getElementById(item.id);
@@ -88,19 +95,9 @@ onMounted(() => {
 });
 watch(outline, () => nextTick(updateActive));
 
-// One shared player, so starting an example stops the one before
-let player = null;
-const playing = ref(null);
-const play = (example) => {
-  player?.pause();
-  if (playing.value === example.id) return (playing.value = null);
-  player = new Audio(example.audio_url);
-  player.onended = () => (playing.value = null);
-  player.play();
-  playing.value = example.id;
-};
+// Uploaded audio, or the browser reads the sentence (one at a time)
+const speech = useSpeech();
 onBeforeUnmount(() => {
-  player?.pause();
   window.removeEventListener("scroll", updateActive);
   window.removeEventListener("resize", fitToScreen);
 });
@@ -110,7 +107,7 @@ onBeforeUnmount(() => {
   <div
     ref="viewEl"
     class="lesson-view"
-    :class="{ 'lesson-view--no-outline': outline.length < 2 }"
+    :class="{ 'lesson-view--no-outline': outline.length < 2, 'lesson-view--flow': !fitScreen }"
     :style="{ '--lesson-view-height': height }"
   >
     <!-- Side outline (big screens only) -->
@@ -167,15 +164,15 @@ onBeforeUnmount(() => {
                 <p v-if="example.translation_km" class="examples__translation">{{ example.translation_km }}</p>
               </div>
               <VBtn
-                v-if="example.audio_url"
+                v-if="speech.canPlay(example)"
                 icon
                 variant="text"
                 color="primary"
-                size="40"
+                size="44"
                 :aria-label="$t('Listen')"
-                @click="play(example)"
+                @click="speech.toggle(example)"
               >
-                <VIcon :icon="playing === example.id ? 'tabler-player-pause' : 'tabler-volume'" size="20" />
+                <VIcon :icon="speech.isPlaying(example) ? 'tabler-player-stop' : 'tabler-volume'" size="22" />
               </VBtn>
             </li>
           </ul>
@@ -211,7 +208,7 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 
   // Big screens: fixed height, the lesson card scrolls inside
   @media (min-width: 960px) {
-    &:not(.lesson-view--no-outline) {
+    &:not(.lesson-view--no-outline):not(.lesson-view--flow) {
       height: var(--lesson-view-height, calc(100dvh - 14rem));
 
       .lesson-sheet {
@@ -227,6 +224,12 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .lesson-outline {
   align-self: start;
   padding-block-start: 0.5rem;
+
+  // Page scrolls: the outline stays in view below the site top bar
+  .lesson-view--flow & {
+    position: sticky;
+    inset-block-start: calc(var(--rien-header-height, 64px) + 1.5rem);
+  }
 
   @media (max-width: 959px) {
     display: none;
@@ -360,6 +363,11 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
   :deep(h2),
   .lesson-sheet__section {
     scroll-margin-top: 1.5rem;
+  }
+
+  .lesson-view--flow & :deep(h2),
+  .lesson-view--flow & .lesson-sheet__section {
+    scroll-margin-top: calc(var(--rien-header-height, 64px) + 1.5rem);
   }
 }
 

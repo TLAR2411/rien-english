@@ -20,6 +20,7 @@ class StudentQuizResource extends JsonResource
             'title' => $this->title,
             'pass_score' => $this->pass_score,
             'time_limit_minutes' => $this->time_limit_minutes,
+            'questions_count' => $this->whenCounted('questions'),
             'questions' => StudentQuestionResource::collection($this->whenLoaded('questions')),
         ];
     }

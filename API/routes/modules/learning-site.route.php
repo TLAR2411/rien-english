@@ -14,3 +14,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('home', HomeController::class);
 Route::get('levels', LevelController::class);
 Route::get('lessons', [LessonController::class, 'index']);
+Route::get('lessons/{lesson:slug}', [LessonController::class, 'show']);

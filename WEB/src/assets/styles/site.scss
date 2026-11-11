@@ -31,13 +31,6 @@
     line-height: 1.7;
   }
 
-  h1,
-  h2,
-  h3,
-  p {
-    margin: 0;
-  }
-
   // The admin theme gives headings their own font and grey color
   h1,
   h2,
@@ -54,6 +47,12 @@
     outline: 2px solid var(--rien-blue);
     outline-offset: 2px;
   }
+}
+
+// No default margins on the site's own text. :where() keeps this weak, so the
+// lesson text (assets/styles/lesson-content.scss) keeps its own spacing.
+:where(.site) :where(h1, h2, h3, p) {
+  margin: 0;
 }
 
 .site-main {

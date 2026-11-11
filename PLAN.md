@@ -43,14 +43,14 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
-| 4 | Public website & student sign-up | T18–T22 | 2/5 |
+| 4 | Public website & student sign-up | T18–T22 | 3/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T20
+**Current task:** T21
 
 ---
 
@@ -181,7 +181,7 @@ The public website looks like a normal, friendly website (not a system). No logi
   - Public page shows the list.
   - ✅ Done when: tests — a guest sees published lessons; draft lessons are hidden.
 
-- [ ] **T20 — Public lesson page**
+- [x] **T20 — Public lesson page**
   - Show content, Khmer explanation toggle, examples with 🔊 audio (use uploaded audio, or browser `speechSynthesis` en-US as fallback).
   - Button "Take the quiz": a guest goes to the sign-up page, and after sign-up/login comes back to this quiz.
   - Button "Mark as completed": only shown to logged-in students.
@@ -447,3 +447,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — UI — Lessons page: the tab bar grew tall and left a big empty space above the Quizzes/Lessons list; tab bar now keeps its own height (`flex-0-0`) — build: pass
 - 2026-11-11 — T18 — Rien logo (`public/logo/learning-english/`: logo.svg wordmark, icon.svg, PNG icons, favicon; `components/site/RienLogo.vue`), brand color `#2563EB` + name "Rien English" in `WEB/.env(.example)`; public layout `layouts/public.vue` (top bar: logo, Lessons, language, Log in, Sign up free; phone menu; footer; brand styles `assets/styles/site.scss`); landing page `/` (welcome, real example sentence with 🔊, skills, levels, latest lessons, real quiz question without answers, sign-up call); API `GET /api/web/site/home` (no login, `Lesson::visible()` = published lesson in a published course); guests sent to login come back after login (`?redirect=`); links in `utils/siteRoutes.js` ("Sign up" opens login until T21); local DB: the 3 sample lessons set to Published to show content — tests: pass (113), build: pass
 - 2026-11-11 — T19 — Public lesson list: API `GET /api/web/site/lessons` (no login; filters `skill`, `level` = level code, `search` in English/Khmer title, 12 per page, A1 first; checked by `LessonListRequest`) + `GET /api/web/site/levels`; page `/lessons` (search box, skill and level buttons, pages; filters kept in the address so a list can be shared) — tests: pass (119), build: pass
+- 2026-11-11 — T20 — Public lesson page `/lessons/<slug>`: API `GET /api/web/site/lessons/{slug}` (no login; 404 for draft lessons / draft courses; quiz only as `questions_count` + pass score — no questions or answers; `completed_at` for a logged-in student); `POST /api/web/student/lessons/{id}/complete` (new role group `student_area` = student; keeps the first date); page with English/ខ្មែរ explanation switch, 🔊 on every example (uploaded audio, else the browser voice en-US — `composables/useSpeech.js`), "Take the quiz" (visitor → sign-up/login → comes back to `/student/quiz/<slug>`, a "coming soon" page until T25), "Mark as completed" for students only; `LessonView` got `language` + `fitScreen` options; API calls can skip the error pop-up with `{ silent: true }` — tests: pass (124), build: pass

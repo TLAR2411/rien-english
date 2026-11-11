@@ -13,6 +13,8 @@ final class AccessGroup
 
     public const ADMIN_ONLY = 'admin_only';
 
+    public const STUDENT_AREA = 'student_area';
+
     /** @return list<string> */
     public static function roles(string $group): array
     {
