@@ -24,6 +24,8 @@ class StudentLessonResource extends JsonResource
             'content' => $this->content,
             'content_km' => $this->content_km,
             'audio_url' => $this->audio_url,
+            // Only the video ID: the page plays it with YouTube's player
+            'youtube_id' => $this->youtubeId(),
             'course' => $this->whenLoaded('course', fn () => [
                 'id' => $this->course->id,
                 'slug' => $this->course->slug,

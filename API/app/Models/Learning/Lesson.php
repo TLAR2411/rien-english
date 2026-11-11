@@ -7,6 +7,7 @@ use App\Enums\LessonSkill;
 use App\Models\Concerns\HasPublishStatus;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasSortOrder;
+use App\Support\YouTube;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,7 @@ class Lesson extends Model
 
     protected $fillable = [
         'course_id', 'skill', 'title_en', 'title_km', 'slug', 'summary',
-        'content', 'content_km', 'audio_url', 'sort_order', 'status',
+        'content', 'content_km', 'audio_url', 'video_url', 'sort_order', 'status',
     ];
 
     protected $casts = [
@@ -61,6 +62,12 @@ class Lesson extends Model
             )
             ->orderBy('course_id')
             ->ordered();
+    }
+
+    /** The YouTube video ID from `video_url` (null when there is no video). */
+    public function youtubeId(): ?string
+    {
+        return YouTube::videoId($this->video_url);
     }
 
     public function course(): BelongsTo

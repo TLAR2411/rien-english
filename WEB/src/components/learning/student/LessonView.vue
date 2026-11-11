@@ -2,6 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
+import { youtubeEmbedUrl } from "@/utils/youtube";
 
 /**
  * A lesson as students see it. Used by the admin preview now, and by the
@@ -54,6 +55,7 @@ const questionCount = computed(() => props.lesson.quiz?.questions?.length ?? pro
 const minutes = computed(() => Math.max(1, Math.round(body.value.words / 150 + exampleCount.value * 0.25)));
 
 const outline = computed(() => [
+  ...(props.lesson.youtube_id ? [{ id: "lesson-video", title: t("Video") }] : []),
   ...body.value.sections,
   ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
   ...(slots.default ? [{ id: "lesson-quiz", title: t("Quiz") }] : []),
@@ -155,6 +157,18 @@ onBeforeUnmount(() => {
       </header>
 
       <div class="lesson-sheet__body">
+        <!-- YouTube video (the teacher's link) -->
+        <section v-if="lesson.youtube_id" id="lesson-video" class="lesson-video">
+          <iframe
+            :src="youtubeEmbedUrl(lesson.youtube_id)"
+            :title="lesson.title_en"
+            loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          />
+        </section>
+
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="lesson-content" v-html="body.html" />
 
@@ -364,11 +378,13 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 
   // Space above a part when the outline jumps to it
   :deep(h2),
+  .lesson-video,
   .lesson-sheet__section {
     scroll-margin-top: 1.5rem;
   }
 
   .lesson-view--flow & :deep(h2),
+  .lesson-view--flow & .lesson-video,
   .lesson-view--flow & .lesson-sheet__section {
     scroll-margin-top: calc(var(--rien-header-height, 64px) + 1.5rem);
   }
@@ -376,6 +392,24 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 
 .lesson-sheet__section {
   margin-block-start: 3rem;
+}
+
+// 16:9 video box, full width of the lesson text
+.lesson-video {
+  position: relative;
+  margin-block-end: 2rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #000;
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
 }
 
 .lesson-sheet__quiz {

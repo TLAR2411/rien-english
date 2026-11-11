@@ -2221,5 +2221,10 @@
   "Choose your level": "ជ្រើសរើសកម្រិតរបស់អ្នក",
   "Level {code} lessons. Change your level in the top bar.": "មេរៀនកម្រិត {code}។ អ្នកអាចប្តូរកម្រិតនៅរបារខាងលើ។",
   "Choose your level in the top bar to see only the lessons for you.": "សូមជ្រើសរើសកម្រិតរបស់អ្នកនៅរបារខាងលើ ដើម្បីមើលតែមេរៀនសម្រាប់អ្នក។",
-  "Level {code}": "កម្រិត {code}"
+  "Level {code}": "កម្រិត {code}",
+  "YouTube video (optional)": "វីដេអូ YouTube (ស្រេចចិត្ត)",
+  "Paste the video link. Students watch it on the lesson page.": "បិទភ្ជាប់តំណវីដេអូ។ សិស្សមើលវានៅលើទំព័រមេរៀន។",
+  "Please paste a link to a YouTube video": "សូមបិទភ្ជាប់តំណវីដេអូ YouTube",
+  "Video added — open on YouTube": "បានបន្ថែមវីដេអូ — បើកនៅលើ YouTube",
+  "Video": "វីដេអូ"
 }

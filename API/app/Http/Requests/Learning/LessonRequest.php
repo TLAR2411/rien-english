@@ -4,6 +4,7 @@ namespace App\Http\Requests\Learning;
 
 use App\Enums\LessonSkill;
 use App\Enums\PublishStatus;
+use App\Rules\YouTubeUrl;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +25,7 @@ class LessonRequest extends FormRequest
             'content' => ['nullable', 'string', $maxHtml],
             'content_km' => ['nullable', 'string', $maxHtml],
             'audio_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'video_url' => ['nullable', 'string', 'max:2048', new YouTubeUrl],
             'status' => ['required', Rule::enum(PublishStatus::class)],
         ];
     }

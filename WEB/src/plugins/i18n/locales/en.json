@@ -2207,5 +2207,10 @@
   "Choose your level": "Choose your level",
   "Level {code} lessons. Change your level in the top bar.": "Level {code} lessons. Change your level in the top bar.",
   "Choose your level in the top bar to see only the lessons for you.": "Choose your level in the top bar to see only the lessons for you.",
-  "Level {code}": "Level {code}"
+  "Level {code}": "Level {code}",
+  "YouTube video (optional)": "YouTube video (optional)",
+  "Paste the video link. Students watch it on the lesson page.": "Paste the video link. Students watch it on the lesson page.",
+  "Please paste a link to a YouTube video": "Please paste a link to a YouTube video",
+  "Video added — open on YouTube": "Video added — open on YouTube",
+  "Video": "Video"
 }

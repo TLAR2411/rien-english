@@ -13,6 +13,7 @@ import {
   headingsIn,
 } from "@/constants/lessonTemplates";
 import { uploadImage } from "@/services/uploads";
+import { youtubeId, youtubeThumbnail, youtubeValidator } from "@/utils/youtube";
 import AudioField from "@/components/learning/AudioField.vue";
 import RichTextEditor from "@/components/learning/RichTextEditor.vue";
 import StatusChip from "@/components/learning/StatusChip.vue";
@@ -51,6 +52,7 @@ const emptyForm = () => ({
   content: "",
   content_km: "",
   audio_url: "",
+  video_url: "",
   status: "draft",
 });
 
@@ -66,6 +68,8 @@ const allTabs = computed(() => [
   ...props.tabs,
 ]);
 const isGrammar = computed(() => form.value.skill === "grammar");
+const videoId = computed(() => youtubeId(form.value.video_url));
+const videoRule = (value) => youtubeValidator(value) === true || t(youtubeValidator(value));
 
 const load = async () => {
   if (!props.lessonId) return (form.value = emptyForm());
@@ -109,6 +113,7 @@ const onSubmit = async (validation) => {
   const saved = await save({
     ...form.value,
     audio_url: form.value.audio_url || null,
+    video_url: form.value.video_url?.trim() || null,
   });
   if (!saved) return;
 
@@ -254,6 +259,29 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                   label="Lesson audio (optional)"
                 />
               </VCol>
+              <VCol cols="12" md="6">
+                <AppTextField
+                  v-model="form.video_url"
+                  label="YouTube video (optional)"
+                  placeholder="https://www.youtube.com/watch?v=…"
+                  prepend-inner-icon="tabler-brand-youtube"
+                  :rules="[videoRule]"
+                  :hint="t('Paste the video link. Students watch it on the lesson page.')"
+                  persistent-hint
+                  clearable
+                />
+              </VCol>
+              <VCol v-if="videoId" cols="12" md="6" class="d-flex align-end">
+                <a
+                  :href="form.video_url"
+                  target="_blank"
+                  rel="noopener"
+                  class="video-preview"
+                >
+                  <img :src="youtubeThumbnail(videoId)" alt="" />
+                  <span class="text-body-2">{{ t("Video added — open on YouTube") }}</span>
+                </a>
+              </VCol>
 
               <!-- Lesson text -->
               <AppLabel title="Lesson text" />
@@ -349,6 +377,22 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
   height: 20px;
   font-size: 12px;
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+}
+
+.video-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+
+  img {
+    width: 120px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
 }
 
 .guide__hint {

@@ -27,6 +27,7 @@ class LessonResource extends JsonResource
             'content' => $this->whenHas('content'),
             'content_km' => $this->whenHas('content_km'),
             'audio_url' => $this->whenHas('audio_url'),
+            'video_url' => $this->whenHas('video_url'),
             'sort_order' => $this->sort_order,
             'status' => $this->status,
             'examples_count' => $this->whenCounted('examples'),
