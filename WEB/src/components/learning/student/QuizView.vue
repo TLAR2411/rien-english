@@ -1,15 +1,12 @@
 <script setup>
-import ChoiceQuestion from "@/components/learning/student/questions/ChoiceQuestion.vue";
-import WordOrderQuestion from "@/components/learning/student/questions/WordOrderQuestion.vue";
+import QuizQuestion from "@/components/learning/student/questions/QuizQuestion.vue";
+import { isAnswered } from "@/utils/quiz";
 
 /**
- * A quiz as students take it. `quiz` is the API's StudentQuizResource
+ * All questions of a quiz on one page (admin preview). Students take the quiz
+ * one question at a time: QuizPlayer.vue. `quiz` is the API's StudentQuizResource
  * (no correct answers in it — grading happens on the server).
- *
- * Answers are kept by question id, in the shape the API grades:
- *   multiple_choice, true_false, find_error → option id
- *   fill_blank → typed text
- *   word_order → list of words
+ * Answers are kept by question id (shapes: QuizQuestion.vue).
  *
  * Emits "submit" with { [questionId]: answer }. `preview` = admin preview: answering
  * works, but the button only says that answers are not checked.
@@ -26,15 +23,8 @@ const answers = ref({});
 const answeredCount = computed(
   () => props.quiz.questions.filter((question) => isAnswered(answers.value[question.id])).length,
 );
-const isAnswered = (answer) => (Array.isArray(answer) ? answer.length > 0 : answer != null && String(answer).trim() !== "");
 
 const reset = () => (answers.value = {});
-
-// "She ___ a teacher." → ["She ", " a teacher."], to put an input in the gap
-const blankParts = (prompt) => {
-  const index = prompt.indexOf("___");
-  return index === -1 ? null : [prompt.slice(0, index), prompt.slice(index).replace(/^_+/, "")];
-};
 </script>
 
 <template>
@@ -52,43 +42,7 @@ const blankParts = (prompt) => {
       <li v-for="(question, index) in quiz.questions" :key="question.id" class="question">
         <p class="question__number">{{ $t("Question {number}", { number: index + 1 }) }}</p>
 
-        <!-- Fill in the blank: the input sits in the sentence -->
-        <template v-if="question.type === 'fill_blank'">
-          <p class="question__prompt">
-            <template v-if="blankParts(question.prompt)">
-              {{ blankParts(question.prompt)[0] }}
-              <input
-                v-model="answers[question.id]"
-                class="question__blank"
-                :aria-label="$t('Your answer')"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-              />
-              {{ blankParts(question.prompt)[1] }}
-            </template>
-            <template v-else>{{ question.prompt }}</template>
-          </p>
-          <AppTextField
-            v-if="!blankParts(question.prompt)"
-            v-model="answers[question.id]"
-            :placeholder="$t('Your answer')"
-            autocomplete="off"
-          />
-        </template>
-
-        <template v-else>
-          <p class="question__prompt">
-            {{ question.type === "find_error" ? $t("Find the mistake in this sentence:") : question.prompt }}
-          </p>
-          <ChoiceQuestion
-            v-if="question.options"
-            v-model="answers[question.id]"
-            :question="question"
-            :inline="question.type === 'find_error' || question.type === 'true_false'"
-          />
-          <WordOrderQuestion v-else-if="question.words" v-model="answers[question.id]" :question="question" />
-        </template>
+        <QuizQuestion v-model="answers[question.id]" :question="question" />
       </li>
     </ol>
 
@@ -151,31 +105,6 @@ const blankParts = (prompt) => {
   margin: 0 0 0.25rem;
   font-size: 0.8125rem;
   font-weight: 500;
-}
-
-.question__prompt {
-  margin: 0 0 1rem;
-  font-size: 1.125rem;
-  font-weight: 500;
-  line-height: 1.7;
-}
-
-.question__blank {
-  width: 9rem;
-  max-width: 100%;
-  min-height: 40px;
-  padding: 0.25rem 0.5rem;
-  border: 0;
-  border-block-end: 2px solid rgb(var(--v-theme-primary));
-  background: rgba(var(--v-theme-primary), 0.05);
-  color: inherit;
-  font: inherit;
-  text-align: center;
-
-  &:focus {
-    outline: none;
-    background: rgba(var(--v-theme-primary), 0.1);
-  }
 }
 
 .quiz-view__footer {

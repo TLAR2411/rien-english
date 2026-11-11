@@ -10,10 +10,22 @@ const emit = defineEmits(["update:modelValue"]);
 
 // Words are picked by their position, so the same word can appear twice
 const picked = ref([]);
+
+// Show an answer given before (e.g. the student went back to this question)
+const fromAnswer = (words = []) => {
+  const used = [];
+  for (const word of words) {
+    const index = props.question.words.findIndex((w, i) => w === word && !used.includes(i));
+    if (index !== -1) used.push(index);
+  }
+  return used;
+};
+picked.value = fromAnswer(props.modelValue ?? []);
+
 watch(
   () => props.modelValue,
   (value) => {
-    if (!value.length) picked.value = [];
+    if (!value?.length) picked.value = [];
   },
 );
 

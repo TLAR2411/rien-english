@@ -2156,8 +2156,6 @@
   "Lesson not found": "Lesson not found",
   "This lesson does not exist or is not published yet.": "This lesson does not exist or is not published yet.",
   "Loading...": "Loading...",
-  "Quizzes open soon": "Quizzes open soon",
-  "You are logged in. The quiz for this lesson will be ready very soon.": "You are logged in. The quiz for this lesson will be ready very soon.",
   "Back to the lesson": "Back to the lesson",
   "Soon": "Soon",
   "Example": "Example",
@@ -2212,5 +2210,17 @@
   "Paste the video link. Students watch it on the lesson page.": "Paste the video link. Students watch it on the lesson page.",
   "Please paste a link to a YouTube video": "Please paste a link to a YouTube video",
   "Video added — open on YouTube": "Video added — open on YouTube",
-  "Video": "Video"
+  "Video": "Video",
+  "Not passed yet": "Not passed yet",
+  "Passed": "Passed",
+  "Question {number} of {total}": "Question {number} of {total}",
+  "Questions without an answer count as wrong.": "Questions without an answer count as wrong.",
+  "Quiz not found": "Quiz not found",
+  "Submit your answers?": "Submit your answers?",
+  "This lesson has no quiz yet, or it is not published.": "This lesson has no quiz yet, or it is not published.",
+  "Yes, submit": "Yes, submit",
+  "You answered {answered} of {total} questions.": "You answered {answered} of {total} questions.",
+  "You cannot change your answers after you submit.": "You cannot change your answers after you submit.",
+  "{score} of {total} points": "{score} of {total} points",
+  "Quiz progress": "Quiz progress"
 }

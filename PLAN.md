@@ -44,7 +44,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
 | 4 | Public website & student sign-up | T18–T22 | 4/5 |
-| 5 | Student system: dashboard & quizzes | T23–T27 | 2/5 |
+| 5 | Student system: dashboard & quizzes | T23–T27 | 3/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
@@ -218,7 +218,7 @@ After login, students see a **system-style layout** (side menu), like the admin 
   - Fill-blank compare: trim, case-insensitive, collapse spaces.
   - ✅ Done when: tests prove answers are not leaked, guests get 401, and scoring is correct for each question type.
 
-- [ ] **T25 — Quiz page (Vue)**
+- [x] **T25 — Quiz page (Vue)** _(owner: done before T22)_
   - One question at a time, progress bar, back/next, submit at end, confirm before submit.
   - Word order: tap words to build the sentence (works on touch screens).
   - ✅ Done when: student can complete a mixed quiz on a phone.
@@ -464,3 +464,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T23 (fix) — owner: level is chosen in the top bar, not on the lessons page: new `users.level_id` (migration, empty for everyone), `PUT /api/web/student/level` (`LevelRequest`), top-bar menu "My level: B1" / "Choose your level" (`NavbarStudentLevel.vue`, `stores/studentLevelStore.js`) in place of the branch select; student lesson list shows only that level (level buttons removed; all levels + a hint until chosen); dashboard Continue learning + Lessons done follow the level — tests: pass (141), build: pass
 - 2026-11-11 — EXTRA — owner: lessons can have a YouTube video: new `lessons.video_url` (migration); lesson editor field "YouTube video (optional)" with a small picture of the video; only YouTube video links accepted (`Rules/YouTubeUrl`, `Support/YouTube`: watch, youtu.be, embed, shorts, live); lesson page (public, student, admin preview) plays it at the top in a 16:9 box (youtube-nocookie player), "Video" in the side outline; the browser gets only the video ID (`youtube_id`) — tests: pass (146), build: pass
 - 2026-11-11 — T24 — (owner: before T22) Quiz API for students: `GET /api/web/student/lessons/{slug}/quiz` (questions + options, word-order words mixed up; no `is_correct`, no explanations, no typed answers; 404 for draft lessons / quizzes without questions); `POST /api/web/student/quizzes/{quiz}/submit` (`SubmitQuizRequest`: answers = [{question_id, answer}]) graded in `Services/Learning/QuizGrader` (choice = option id of that question; fill blank + word order: no capitals, extra spaces or ’ vs ' differences; points → score / total / percent / passed by the quiz's pass score), saves `quiz_attempts` + `attempt_answers`, returns `QuizResultResource` (your answer, correct answer, explanation EN + KM); plan changed: quiz is opened by the lesson slug (the quiz page link uses the slug) — tests: pass (156), build: pass
+- 2026-11-11 — T25 — (owner: before T22) Quiz page `/student/quiz/<lesson-slug>` (student system): one question at a time (`QuizPlayer.vue`), "Question 3 of 10" + progress bar, Back / Next, numbered dots to jump to any question (answered ones filled in), Submit on the last question with a check first ("You answered 8 of 10… questions without an answer count as wrong"); one question = `questions/QuizQuestion.vue` (also used by the admin preview); word order: tap words to build the sentence, tap again to remove, answer kept when going back; answers kept in the browser tab until submit (`useQuizDraft`, refresh-safe); after submit a short score (full result page = T26); submit reply has no "Saved" pop-up; checked on a phone screen (iPhone size): 10-question mixed quiz done, no errors — tests: pass (156), build: pass

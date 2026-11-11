@@ -25,3 +25,10 @@ export const getStudentDashboard = async () => (await api.get("student/dashboard
 
 /** Finished lessons grouped by course → [{ course, level, lessons }] */
 export const getMyLessons = async () => (await api.get("student/my-lessons")).data.data;
+
+/** A lesson's quiz to take, by the lesson slug: questions without answers. Missing → 404, no pop-up. */
+export const getStudentQuiz = async (slug) =>
+  (await api.get(`student/lessons/${encodeURIComponent(slug)}/quiz`, { silent: true })).data.data;
+
+/** Send the answers ({ answers: [{ question_id, answer }], started_at }) → the graded result */
+export const submitQuiz = async (quizId, payload) => (await api.post(`student/quizzes/${quizId}/submit`, payload)).data.data;

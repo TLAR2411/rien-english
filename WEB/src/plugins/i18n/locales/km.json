@@ -2170,8 +2170,6 @@
   "Lesson not found": "រកមិនឃើញមេរៀន",
   "This lesson does not exist or is not published yet.": "មេរៀននេះមិនមាន ឬមិនទាន់បានផ្សព្វផ្សាយនៅឡើយទេ។",
   "Loading...": "កំពុងផ្ទុក...",
-  "Quizzes open soon": "តេស្តនឹងបើកឆាប់ៗនេះ",
-  "You are logged in. The quiz for this lesson will be ready very soon.": "អ្នកបានចូលគណនីហើយ។ តេស្តសម្រាប់មេរៀននេះនឹងរួចរាល់ក្នុងពេលឆាប់ៗ។",
   "Back to the lesson": "ត្រឡប់ទៅមេរៀនវិញ",
   "Soon": "ឆាប់ៗ",
   "Example": "ឧទាហរណ៍",
@@ -2226,5 +2224,17 @@
   "Paste the video link. Students watch it on the lesson page.": "បិទភ្ជាប់តំណវីដេអូ។ សិស្សមើលវានៅលើទំព័រមេរៀន។",
   "Please paste a link to a YouTube video": "សូមបិទភ្ជាប់តំណវីដេអូ YouTube",
   "Video added — open on YouTube": "បានបន្ថែមវីដេអូ — បើកនៅលើ YouTube",
-  "Video": "វីដេអូ"
+  "Video": "វីដេអូ",
+  "Not passed yet": "មិនទាន់ជាប់",
+  "Passed": "ជាប់",
+  "Question {number} of {total}": "សំណួរ {number} នៃ {total}",
+  "Questions without an answer count as wrong.": "សំណួរដែលមិនបានឆ្លើយ រាប់ថាខុស។",
+  "Quiz not found": "រកមិនឃើញតេស្ត",
+  "Submit your answers?": "ផ្ញើចម្លើយរបស់អ្នក?",
+  "This lesson has no quiz yet, or it is not published.": "មេរៀននេះមិនទាន់មានតេស្ត ឬមិនទាន់ផ្សព្វផ្សាយ។",
+  "Yes, submit": "បាទ/ចាស ផ្ញើ",
+  "You answered {answered} of {total} questions.": "អ្នកបានឆ្លើយ {answered} នៃ {total} សំណួរ។",
+  "You cannot change your answers after you submit.": "អ្នកមិនអាចកែចម្លើយបានទេ បន្ទាប់ពីផ្ញើ។",
+  "{score} of {total} points": "{score} នៃ {total} ពិន្ទុ",
+  "Quiz progress": "វឌ្ឍនភាពតេស្ត"
 }

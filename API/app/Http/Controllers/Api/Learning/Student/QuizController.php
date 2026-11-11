@@ -37,7 +37,8 @@ class QuizController extends Controller
         $quiz = $this->openQuiz($quiz);
         $attempt = $grader->submit($request->user(), $quiz, $request->answers(), $request->validated('started_at'));
 
-        return $this->created(new QuizResultResource($attempt->load('answers')->setRelation('quiz', $quiz)), 'Quiz submitted.');
+        // No message: the page shows the result itself (no "Saved" pop-up)
+        return $this->ok(new QuizResultResource($attempt->load('answers')->setRelation('quiz', $quiz)), code: 201);
     }
 
     /** Only quizzes of visible (published) lessons that have questions. */
