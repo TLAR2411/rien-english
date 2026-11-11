@@ -7,6 +7,10 @@
 */
 
 use App\Http\Controllers\Api\Learning\Site\HomeController;
+use App\Http\Controllers\Api\Learning\Site\LessonController;
+use App\Http\Controllers\Api\Learning\Site\LevelController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('home', HomeController::class);
+Route::get('levels', LevelController::class);
+Route::get('lessons', [LessonController::class, 'index']);
