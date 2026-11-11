@@ -7,12 +7,15 @@ import { QUESTION_TYPES, RECOMMENDED_QUESTIONS, findOption } from "@/constants/l
 import QuestionDialog from "@/views/admin/learning/lessons/quiz/QuestionDialog.vue";
 
 // The quiz of one lesson: its settings (AppCard) and its questions (AppCardTable).
+// `readonly`: only look at it (no save, add, edit, move or delete).
+// Slot `actions`: extra buttons in the settings header.
 const props = defineProps({
   lesson: { type: Object, required: true },
+  readonly: { type: Boolean, default: false },
 });
 
 const { t } = useI18n();
-const canEdit = hasPermission("edit-quizzes");
+const canEdit = !props.readonly && hasPermission("edit-quizzes");
 
 const quiz = ref(null);
 const settings = ref({});
@@ -77,7 +80,7 @@ const headers = [
   { title: t("Correct answer"), key: "answer", visible: true },
   { title: t("Points"), key: "points", visible: true },
   { title: t("Action"), key: "actions", align: "center", visible: true },
-];
+].filter((header) => canEdit || header.key !== "actions");
 
 watch(isDialogVisible, (open) => {
   if (!open) editing.value = {};
@@ -111,7 +114,7 @@ const countHint = computed(() =>
       :title="quiz ? 'Quiz settings' : 'This lesson has no quiz yet'"
       border=""
       title-icon="tabler-settings"
-      :is-back="false"
+      :is-back="readonly"
       :is-submit="canEdit"
       :submit-text="quiz ? 'Save settings' : 'Create quiz'"
       :submit-icon="quiz ? 'tabler-device-floppy' : 'tabler-plus'"
@@ -119,6 +122,9 @@ const countHint = computed(() =>
       :disabled="!canEdit"
       @on-submit="onSaveSettings"
     >
+      <template #card-header>
+        <slot name="actions" :quiz="quiz" />
+      </template>
       <VRow>
         <VCol cols="12" md="6">
           <AppTextField v-model="settings.title" label="Quiz title" :rules="[(v) => !!v || t('Required')]" />
@@ -160,16 +166,13 @@ const countHint = computed(() =>
         :headers="headers"
         :limit="50"
         :is-full-height="false"
-        save-header-name="header-quiz-questions"
+        :save-header-name="canEdit ? 'header-quiz-questions' : 'header-quiz-questions-view'"
         enable-mobile-card
-        create-dialog
-        can-create="edit-quizzes"
-        is-edit
-        can-edit="edit-quizzes"
-        is-move-up
-        is-move-down
-        is-delete
-        can-delete="edit-quizzes"
+        :create-dialog="canEdit"
+        :is-edit="canEdit"
+        :is-move-up="canEdit"
+        :is-move-down="canEdit"
+        :is-delete="canEdit"
         :is-back="false"
         @update:response="(res) => (totals.count = res?.data?.meta?.total ?? 0)"
         @on-edit="onEdit"

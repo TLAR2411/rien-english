@@ -3,7 +3,6 @@ import { useI18n } from "vue-i18n";
 import { getCourses, getLevels } from "@/services/dataService";
 import StatusChip from "@/components/learning/StatusChip.vue";
 import AddQuizDialog from "@/views/admin/learning/quizzes/AddQuizDialog.vue";
-import { lessonPreviewRoute } from "@/utils/lessonRoutes";
 
 // Every lesson quiz. A quiz is built on its lesson page (Quiz tab);
 // "Add" picks a lesson without a quiz and opens that tab.
@@ -32,7 +31,7 @@ const headers = [
   { title: t("Action"), key: "actions", align: "center", visible: true },
 ];
 
-const viewQuiz = (quiz) => router.push(lessonPreviewRoute(quiz.lesson_id));
+const viewQuiz = (quiz) => router.push({ name: "admin-quizzes-view-id", params: { id: quiz.lesson_id } });
 const openQuiz = (quiz) =>
   router.push({ name: "admin-lessons-id", params: { id: quiz.lesson_id }, query: { tab: "quiz" } });
 </script>
