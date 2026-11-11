@@ -7,6 +7,10 @@ use App\Models\Auth\PermissionUser;
 use App\Models\Auth\Role;
 use App\Models\Auth\UserBranch;
 use App\Models\Core\Branch;
+use App\Models\Learning\Enrollment;
+use App\Models\Learning\LessonProgress;
+use App\Models\Learning\QuizAttempt;
+use App\Models\Learning\WritingSubmission;
 use App\Traits\TracksUserActions;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -240,5 +244,27 @@ class User extends Authenticatable implements LaratrustUser
             ->where('id', '!=', auth()->id())
             ->where('is_active', true)
             ->orderByDesc('created_at');
+    }
+
+    // ---- Learning ----
+
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    public function writingSubmissions()
+    {
+        return $this->hasMany(WritingSubmission::class);
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
     }
 }

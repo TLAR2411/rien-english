@@ -41,7 +41,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 |---|---|---|---|
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
 | 1 | Roles & admin area | T04–T06 | 3/3 |
-| 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 3/4 |
+| 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 0/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T10
+**Current task:** T11
 
 ---
 
@@ -119,7 +119,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - For `fill_blank` / `word_order`: correct answer stored in `question_options` with `is_correct = true` (allow several accepted answers).
   - ✅ Done when: models + relationships + factories exist.
 
-- [ ] **T10 — Attempts, progress, enrollments**
+- [x] **T10 — Attempts, progress, enrollments**
   - `quiz_attempts`: id, user_id, quiz_id, score, total, percent, passed, started_at, finished_at.
   - `attempt_answers`: id, quiz_attempt_id, question_id, answer (text/json), is_correct.
   - `lesson_progress`: id, user_id, lesson_id, completed_at (unique user+lesson).
@@ -430,3 +430,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T07 — tables `levels` (+ `name_km`) and `courses`; models in `app/Models/Learning`; shared model helpers `HasSortOrder`, `HasSlug`, `HasPublishStatus` + `PublishStatus` enum (status stored as text, so new values need no migration); `config/learning.php` (levels list, quiz pass score, rows per page); `LevelSeeder` A1–C1 + one free published "Grammar <level>" course each; factories — tests: pass (43), migrate:fresh --seed: pass
 - 2026-11-11 — T08 — tables `lessons` + `lesson_examples`; `LessonSkill` enum (skill stored as text); models `Lesson`, `LessonExample` (examples sorted per lesson, deleted with their lesson; a course with lessons cannot be deleted); factories — tests: pass (46), migrate:fresh --seed: pass
 - 2026-11-11 — T09 — tables `quizzes` (one per lesson, pass score default from `config/learning.php`), `questions`, `question_options`; `QuestionType` enum (choice vs typed answers); `QuestionOption.is_correct` hidden from JSON by default so answers cannot leak; factories — tests: pass (50), migrate:fresh --seed: pass
+- 2026-11-11 — T10 — tables `quiz_attempts`, `attempt_answers`, `lesson_progress` (unique user+lesson), `writing_submissions`, `enrollments` (for later paid courses); models + `WritingStatus` enum; `User` has quizAttempts / lessonProgress / writingSubmissions / enrollments — tests: pass (52), migrate:fresh --seed: pass
