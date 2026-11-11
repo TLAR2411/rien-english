@@ -1,9 +1,14 @@
 <script setup>
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 import { api } from "@/utils/api";
 import { useCrud } from "@/composables/useCrud";
 import hasPermission from "@/utils/hasPermission";
-import { QUESTION_TYPES, RECOMMENDED_QUESTIONS, findOption } from "@/constants/learning";
+import {
+  QUESTION_TYPES,
+  RECOMMENDED_QUESTIONS,
+  findOption,
+} from "@/constants/learning";
 import QuestionDialog from "@/views/admin/learning/lessons/quiz/QuestionDialog.vue";
 
 // The quiz of one lesson: its settings (AppCard) and its questions (AppCardTable).
@@ -98,17 +103,56 @@ const typeOf = (question) => findOption(QUESTION_TYPES, question.type);
 
 // Short "right answer" text for the table
 const answerSummary = (question) => {
-  const correct = (question.options ?? []).filter((option) => option.is_correct).map((option) => option.text);
-  return typeOf(question)?.answer === "typed" ? correct.join(" / ") : correct[0];
+  const correct = (question.options ?? [])
+    .filter((option) => option.is_correct)
+    .map((option) => option.text);
+  return typeOf(question)?.answer === "typed"
+    ? correct.join(" / ")
+    : correct[0];
 };
 
+// Big screens: tabs and settings stay still, only the questions table scrolls.
+// The table fills the screen from where it starts down to the bottom.
+const { mdAndUp } = useDisplay();
+const rootEl = ref(null);
+const tableBox = ref(null);
+const tableHeight = ref(null);
+const fitToScreen = () => {
+  const box = tableBox.value;
+  if (!box || !box.offsetParent) return; // not on screen (closed tab)
+  const rect = box.getBoundingClientRect();
+  const top = rect.top + window.scrollY;
+  // Whatever the page still shows under the table (card padding, footer…)
+  const below = Math.max(
+    0,
+    document.documentElement.scrollHeight - (rect.bottom + window.scrollY),
+  );
+  tableHeight.value = `${Math.max(360, window.innerHeight - top - below)}px`;
+};
+
+// Re-measure when the page changes size (tab opens, settings grow, window resizes)
+let observer = null;
+onMounted(() => {
+  observer = new ResizeObserver(() => fitToScreen());
+  if (rootEl.value) observer.observe(rootEl.value);
+  window.addEventListener("resize", fitToScreen);
+});
+watch(quiz, () => nextTick(fitToScreen));
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  window.removeEventListener("resize", fitToScreen);
+});
+
 const countHint = computed(() =>
-  t("{count} of {min}–{max} recommended", { count: totals.value.count, ...RECOMMENDED_QUESTIONS }),
+  t("{count} of {min}–{max} recommended", {
+    count: totals.value.count,
+    ...RECOMMENDED_QUESTIONS,
+  }),
 );
 </script>
 
 <template>
-  <div class="d-flex flex-column">
+  <div ref="rootEl" class="d-flex flex-column">
     <!-- Settings -->
     <AppCard
       :title="quiz ? 'Quiz settings' : 'This lesson has no quiz yet'"
@@ -127,10 +171,21 @@ const countHint = computed(() =>
       </template>
       <VRow>
         <VCol cols="12" md="6">
-          <AppTextField v-model="settings.title" label="Quiz title" :rules="[(v) => !!v || t('Required')]" />
+          <AppTextField
+            v-model="settings.title"
+            label="Quiz title"
+            :rules="[(v) => !!v || t('Required')]"
+          />
         </VCol>
         <VCol cols="6" md="3">
-          <AppTextField v-model="settings.pass_score" label="Pass score" type="number" min="1" max="100" suffix="%" />
+          <AppTextField
+            v-model="settings.pass_score"
+            label="Pass score"
+            type="number"
+            min="1"
+            max="100"
+            suffix="%"
+          />
         </VCol>
         <VCol cols="6" md="3">
           <AppTextField
@@ -155,49 +210,84 @@ const countHint = computed(() =>
         @save="onSave"
       />
 
-      <AppCardTable
-        ref="tableRef"
-        v-model:is-dialog-create-visible="isDialogVisible"
-        v-model:loading="isTableLoading"
-        title="Questions"
-        border=""
-        title-icon="tabler-checklist"
-        :api-url="`admin/quizzes/${quiz.id}/questions`"
-        :headers="headers"
-        :limit="50"
-        :is-full-height="false"
-        save-header-name="header-quiz-questions"
-        enable-mobile-card
-        :create-dialog="canEdit"
-        :is-edit="canEdit"
-        :is-move-up="canEdit"
-        :is-move-down="canEdit"
-        :is-delete="canEdit"
-        :is-back="false"
-        @update:response="(res) => (totals.count = res?.data?.meta?.total ?? 0)"
-        @on-edit="onEdit"
-        @on-move-up="(item) => move(item, 'up')"
-        @on-move-down="(item) => move(item, 'down')"
-        @on-delete="remove"
+      <div
+        ref="tableBox"
+        :class="{ 'quiz-questions--fit': mdAndUp }"
+        :style="{ height: mdAndUp ? tableHeight : null }"
       >
-        <template #card-header>
-          <span
-            class="text-body-2 text-no-wrap me-3"
-            :class="totals.count >= RECOMMENDED_QUESTIONS.min ? 'text-success' : 'text-medium-emphasis'"
-          >
-            {{ countHint }}
-          </span>
-        </template>
+        <AppCardTable
+          ref="tableRef"
+          v-model:is-dialog-create-visible="isDialogVisible"
+          v-model:loading="isTableLoading"
+          title="Questions"
+          border=""
+          title-icon="tabler-checklist"
+          :api-url="`admin/quizzes/${quiz.id}/questions`"
+          :headers="headers"
+          :limit="50"
+          :is-full-height="mdAndUp"
+          :is-full-height-tab="mdAndUp"
+          save-header-name="header-quiz-questions"
+          enable-mobile-card
+          :create-dialog="canEdit"
+          :is-edit="canEdit"
+          :is-move-up="canEdit"
+          :is-move-down="canEdit"
+          :is-delete="canEdit"
+          :is-back="false"
+          @update:response="
+            (res) => (totals.count = res?.data?.meta?.total ?? 0)
+          "
+          @on-edit="onEdit"
+          @on-move-up="(item) => move(item, 'up')"
+          @on-move-down="(item) => move(item, 'down')"
+          @on-delete="remove"
+        >
+          <template #card-header>
+            <span
+              class="text-body-2 text-no-wrap me-3"
+              :class="
+                totals.count >= RECOMMENDED_QUESTIONS.min
+                  ? 'text-success'
+                  : 'text-medium-emphasis'
+              "
+            >
+              {{ countHint }}
+            </span>
+          </template>
 
-        <template #item.number="{ item }">{{ item.sort_order }}</template>
-        <template #item.prompt="{ item }"><span class="text-wrap">{{ item.prompt }}</span></template>
-        <template #item.type="{ item }">
-          <VChip size="small" label :prepend-icon="typeOf(item)?.icon">{{ t(typeOf(item)?.title ?? item.type) }}</VChip>
-        </template>
-        <template #item.answer="{ item }">
-          <span class="text-success">{{ answerSummary(item) }}</span>
-        </template>
-      </AppCardTable>
+          <template #item.number="{ item }">{{ item.sort_order }}</template>
+          <template #item.prompt="{ item }"
+            ><span class="text-wrap">{{ item.prompt }}</span></template
+          >
+          <template #item.type="{ item }">
+            <VChip size="small" label :prepend-icon="typeOf(item)?.icon">{{
+              t(typeOf(item)?.title ?? item.type)
+            }}</VChip>
+          </template>
+          <template #item.answer="{ item }">
+            <span class="text-success">{{ answerSummary(item) }}</span>
+          </template>
+        </AppCardTable>
+      </div>
     </template>
   </div>
 </template>
+
+<style scoped>
+/* Fill the measured box; the table rows scroll inside, the column titles stay on top */
+.quiz-questions--fit :deep(.list-tab-height) {
+  height: 100%;
+}
+.quiz-questions--fit :deep(.v-table) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.quiz-questions--fit :deep(.v-table__wrapper) {
+  flex: 1 1 0;
+  height: auto !important;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+</style>
