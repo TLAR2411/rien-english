@@ -4,6 +4,7 @@ import { registerPlugins } from "@core/utils/plugins"
 import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar';
 import "@core/scss/template/index.scss"
 import "@styles/styles.scss"
+import "@styles/lesson-content.scss"
 import 'vue3-perfect-scrollbar/style.css';
 import Notifications, { notify } from "@kyvg/vue3-notification"
 import { router } from "@/router"

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Stevebauman\Purify\Casts\PurifyHtmlOnSet;
 
 /** One lesson of a course, e.g. "Present Simple" (skill: grammar). */
 class Lesson extends Model
@@ -24,6 +25,9 @@ class Lesson extends Model
 
     protected $casts = [
         'skill' => LessonSkill::class,
+        // Lesson HTML is cleaned when saved (rules: config/purify.php → lesson)
+        'content' => PurifyHtmlOnSet::class.':lesson',
+        'content_km' => PurifyHtmlOnSet::class.':lesson',
     ];
 
     public function sortGroupColumn(): ?string

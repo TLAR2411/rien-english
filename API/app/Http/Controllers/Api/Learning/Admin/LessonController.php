@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Learning\Admin;
 
+use App\Http\Requests\Learning\LessonRequest;
 use App\Http\Requests\Learning\MoveRequest;
 use App\Http\Resources\Learning\LessonResource;
 use App\Models\Learning\Lesson;
@@ -34,6 +35,24 @@ class LessonController extends AdminController
             ->paginate($this->perPage($request));
 
         return $this->paginated(LessonResource::collection($lessons));
+    }
+
+    /** Everything the editor needs. */
+    public function show(Lesson $lesson): JsonResponse
+    {
+        return $this->ok(new LessonResource($lesson->load('course.level')));
+    }
+
+    public function store(LessonRequest $request): JsonResponse
+    {
+        return $this->created(new LessonResource(Lesson::create($request->validated())));
+    }
+
+    public function update(LessonRequest $request, Lesson $lesson): JsonResponse
+    {
+        $lesson->update($request->validated());
+
+        return $this->ok(new LessonResource($lesson), 'Saved.');
     }
 
     public function move(MoveRequest $request, Lesson $lesson): JsonResponse

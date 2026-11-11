@@ -6,6 +6,7 @@ import { PUBLISH_STATUSES, SKILLS, findOption } from "@/constants/learning";
 import StatusChip from "@/components/learning/StatusChip.vue";
 
 const { t } = useI18n();
+const router = useRouter();
 const tableRef = ref(null);
 const isLoading = ref(false);
 const levels = ref([]);
@@ -44,6 +45,8 @@ const headers = [
   { title: t("Action"), key: "actions", align: "center", visible: true },
 ];
 
+const onEdit = (lesson) => router.push({ name: "admin-lessons-id", params: { id: lesson.id } });
+
 const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
 </script>
 
@@ -59,12 +62,16 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     save-header-name="header-lessons-list"
     enable-mobile-card
     is-filter
+    create-page="admin-lessons-create"
+    can-create="add-lessons"
+    is-edit
     is-move-up
     is-move-down
     can-edit="edit-lessons"
     is-delete
     can-delete="delete-lessons"
     :is-back="false"
+    @on-edit="onEdit"
     @on-move-up="(item) => move(item, 'up')"
     @on-move-down="(item) => move(item, 'down')"
     @on-delete="remove"

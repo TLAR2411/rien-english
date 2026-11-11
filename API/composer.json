@@ -26,6 +26,7 @@
         "santigarcor/laratrust": "^8.3",
         "spatie/image": "^3.8",
         "spatie/laravel-activitylog": "^4.10",
+        "stevebauman/purify": "^6.3",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "torann/geoip": "^3.0"
     },

@@ -25,7 +25,5 @@ $crud = function (string $name, string $controller, string $parameter) {
 $crud('levels', LevelController::class, 'level');
 $crud('courses', CourseController::class, 'course');
 
-// Lessons: list here; create / edit in the lesson editor (T13)
-Route::get('lessons', [LessonController::class, 'index']);
 Route::patch('lessons/{lesson}/move', [LessonController::class, 'move']);
-Route::delete('lessons/{lesson}', [LessonController::class, 'destroy']);
+Route::apiResource('lessons', LessonController::class);

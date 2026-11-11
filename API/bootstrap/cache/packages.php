@@ -140,6 +140,17 @@
       0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
+  'stevebauman/purify' => 
+  array (
+    'aliases' => 
+    array (
+      'Purify' => 'Stevebauman\\Purify\\Facades\\Purify',
+    ),
+    'providers' => 
+    array (
+      0 => 'Stevebauman\\Purify\\PurifyServiceProvider',
+    ),
+  ),
   'torann/geoip' => 
   array (
     'aliases' => 

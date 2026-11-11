@@ -24,6 +24,9 @@ return [
         'pass_score' => 70,
     ],
 
+    // Longest lesson text accepted (characters of HTML, per language)
+    'lesson_max_length' => 200000,
+
     // Rows per page in admin lists
     'per_page' => 25,
 
