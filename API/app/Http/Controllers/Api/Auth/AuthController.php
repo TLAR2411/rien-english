@@ -68,32 +68,39 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
+        $user = User::query()
+            ->whereUsername($request->username)
+            ->orWhere('email', $request->username)
+            ->with('branch')
+            ->first();
+
+        // Wrong input = 422, so the browser does not show it as a server crash
+        if (! $user) {
+            LoginHistory::recordFailed($request->username, $request, 'user_not_found');
+
+            return $this->loginRefused('ពុំមានគណនីក្នុងប្រព័ន្ធ!', 422);
+        }
+        if (! Hash::check($request->password, $user->password)) {
+            LoginHistory::record($user, $request, successful: false, reason: 'wrong_password');
+
+            return $this->loginRefused('អ្នកបានបញ្ចូលលេខសម្ងាត់ខុស!', 422);
+        }
+        if ($user->is_active == false) {
+            LoginHistory::record($user, $request, successful: false, reason: 'account_disabled');
+
+            return $this->loginRefused('គណនីរបស់អ្នកត្រូវបានបិទ!', 403);
+        }
+
         try {
-
-            $user = User::query()
-                ->whereUsername($request->username)
-                ->orWhere('email', $request->username)
-                ->with('branch')
-                ->first();
-
-            if (! $user) {
-                LoginHistory::recordFailed($request->username, $request, 'user_not_found');
-                abort(500, 'ពុំមានគណនីក្នុងប្រព័ន្ធ!');
-            } elseif (! Hash::check($request->password, $user->password)) {
-                LoginHistory::record($user, $request, successful: false, reason: 'wrong_password');
-                abort(500, 'អ្នកបានបញ្ចូលលេខសម្ងាត់ខុស!');
-            } elseif ($user->is_active == false) {
-                LoginHistory::record($user, $request, successful: false, reason: 'account_disabled');
-                abort(5, 'គណនីរបស់អ្នកត្រូវបានបិទ!');
-            }
-
             return $this->startSession($user, $request->password, $request);
         } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage(),
-            ], 500);
+            return $this->loginRefused($th->getMessage(), 500);
         }
+    }
+
+    private function loginRefused(string $message, int $status)
+    {
+        return response()->json(['status' => false, 'message' => $message], $status);
     }
 
     /**

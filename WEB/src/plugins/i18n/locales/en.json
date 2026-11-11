@@ -2186,5 +2186,19 @@
   "Creating your account...": "Creating your account...",
   "Already have an account?": "Already have an account?",
   "New here?": "New here?",
-  "Log out": "Log out"
+  "Log out": "Log out",
+  "My lessons": "My lessons",
+  "Hello": "Hello",
+  "Keep learning, one lesson at a time.": "Keep learning, one lesson at a time.",
+  "Continue learning": "Continue learning",
+  "You finished every lesson.": "You finished every lesson.",
+  "New lessons come soon. You can read your lessons again.": "New lessons come soon. You can read your lessons again.",
+  "Lessons done": "Lessons done",
+  "Quizzes passed": "Quizzes passed",
+  "Recently finished": "Recently finished",
+  "See all": "See all",
+  "No lessons done yet. Read a lesson, then press “Mark as completed”.": "No lessons done yet. Read a lesson, then press “Mark as completed”.",
+  "{count} lessons done": "{count} lessons done",
+  "Done on {date}": "Done on {date}",
+  "No quiz score yet": "No quiz score yet"
 }

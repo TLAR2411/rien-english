@@ -1,4 +1,5 @@
 <script setup>
+import { formatLearningDate } from "@/utils/learningDate";
 import LessonView from "@/components/learning/student/LessonView.vue";
 import { completeLesson, getSiteLesson } from "@/services/site";
 import { useAuthStore } from "@/stores/authStore";
@@ -58,11 +59,7 @@ const markCompleted = async () => {
     isSaving.value = false;
   }
 };
-const completedDate = computed(() =>
-  lesson.value?.completed_at
-    ? new Date(lesson.value.completed_at).toLocaleDateString(locale.value === "km" ? "km-KH" : "en-GB", { day: "numeric", month: "long", year: "numeric" })
-    : null,
-);
+const completedDate = computed(() => formatLearningDate(lesson.value?.completed_at, locale.value));
 </script>
 
 <template>

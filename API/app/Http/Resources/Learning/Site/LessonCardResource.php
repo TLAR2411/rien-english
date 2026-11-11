@@ -27,6 +27,8 @@ class LessonCardResource extends JsonResource
             'level' => $this->course?->level?->only(['id', 'code', 'name', 'name_km']),
             'examples_count' => $this->whenCounted('examples'),
             'has_quiz' => (bool) $this->quiz_exists,
+            // Only for a logged-in student (set by the controller)
+            'completed_at' => $this->whenHas('completed_at'),
         ];
     }
 }

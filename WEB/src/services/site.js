@@ -15,5 +15,13 @@ export const getSiteLessons = async (params) => (await api.get("site/lessons", {
 /** One lesson to read (no quiz questions). A missing or draft lesson → 404, no error pop-up. */
 export const getSiteLesson = async (slug) => (await api.get(`site/lessons/${encodeURIComponent(slug)}`, { silent: true })).data.data;
 
-/** Students only: mark a lesson as completed → { completed_at } */
+/* Students only: API/routes/modules/learning-student.route.php */
+
+/** Mark a lesson as completed → { completed_at } */
 export const completeLesson = async (lessonId) => (await api.post(`student/lessons/${lessonId}/complete`)).data.data;
+
+/** Student dashboard → { next_lesson, stats, recent } */
+export const getStudentDashboard = async () => (await api.get("student/dashboard")).data.data;
+
+/** Finished lessons grouped by course → [{ course, level, lessons }] */
+export const getMyLessons = async () => (await api.get("student/my-lessons")).data.data;

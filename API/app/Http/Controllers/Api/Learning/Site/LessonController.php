@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Learning\Site\LessonListRequest;
 use App\Http\Resources\Learning\Site\LessonCardResource;
 use App\Http\Resources\Learning\Student\StudentLessonResource;
-use App\Models\Learning\Course;
 use App\Models\Learning\Lesson;
+use App\Services\Learning\StudentProgress;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,8 +20,11 @@ class LessonController extends Controller
 
     private const PER_PAGE = 12;
 
-    /** The lesson list: filter by skill and level, search by title, pages. Easiest level first. */
-    public function index(LessonListRequest $request): JsonResponse
+    /**
+     * The lesson list: filter by skill and level, search by title, pages. Easiest level first.
+     * A logged-in user also gets `completed_at` on each lesson they finished.
+     */
+    public function index(LessonListRequest $request, StudentProgress $progress): JsonResponse
     {
         $lessons = Lesson::visible()
             ->select(LessonCardResource::COLUMNS)
@@ -33,16 +36,14 @@ class LessonController extends Controller
             ->when($request->validated('search'), fn (Builder $q, string $search) => $q->where(
                 fn (Builder $q) => $q->where('title_en', 'like', "%{$search}%")->orWhere('title_km', 'like', "%{$search}%")
             ))
-            // A1 before A2 …: by the level's sort order, then course, then lesson order
-            ->orderBy(
-                Course::query()
-                    ->join('levels', 'levels.id', '=', 'courses.level_id')
-                    ->select('levels.sort_order')
-                    ->whereColumn('courses.id', 'lessons.course_id')
-            )
-            ->orderBy('course_id')
-            ->ordered()
+            ->learningOrder()
             ->paginate(self::PER_PAGE);
+
+        // A logged-in student sees a ✓ on the lessons they finished
+        if ($student = $request->user('api')) {
+            $done = $progress->completedAt($student, $lessons->pluck('id'));
+            $lessons->each(fn (Lesson $lesson) => $lesson->completed_at = $done->get($lesson->id));
+        }
 
         return $this->paginated(LessonCardResource::collection($lessons));
     }

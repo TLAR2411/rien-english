@@ -44,7 +44,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
 | 4 | Public website & student sign-up | T18–T22 | 4/5 |
-| 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
+| 5 | Student system: dashboard & quizzes | T23–T27 | 1/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
@@ -204,11 +204,13 @@ The public website looks like a normal, friendly website (not a system). No logi
 
 After login, students see a **system-style layout** (side menu), like the admin system.
 
-- [ ] **T23 — Student layout & dashboard**
-  - Student side menu: Dashboard, Lessons, My Quizzes, My Progress, My Writing, Profile. No admin links.
-  - Dashboard: welcome, continue last lesson, recent quiz scores, choose skill/level.
-  - Guests who open a student page are sent to the login page.
-  - ✅ Done when: a logged-in student sees the dashboard on phone & desktop; test — guest is redirected / gets 401.
+- [x] **T23 — Student layout, dashboard & My lessons** _(owner: done before T22)_
+  - Student side menu (same system look as admin, no admin links, no branch select). Items appear when their page is built: Dashboard, My lessons, All lessons now; My Quizzes (T26), My Progress (T28), My Writing (T34), Profile later.
+  - Dashboard: welcome, "Continue learning" (next lesson not done yet), numbers (lessons done, quizzes passed), recent lessons done with best quiz score.
+  - **My lessons** page: lessons the student finished, grouped by course, each with ✓ Done + date + best quiz score ("—" until quizzes exist in T24–T26). Grouped by course so bought courses (Phase 9) can be shown here later.
+  - Public lesson list: a ✓ Done mark on lessons the logged-in student finished.
+  - After login / sign-up a student goes to the dashboard. Guests who open a student page are sent to the login page.
+  - ✅ Done when: a logged-in student sees the dashboard and My lessons on phone & desktop; tests — guest gets 401, admin gets 403, only the student's own lessons are shown, only published lessons count.
 
 - [ ] **T24 — Quiz API (secure)**
   - Needs login. `GET /quizzes/{quiz}` returns questions + options **without `is_correct`**.
@@ -457,3 +459,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T21 — Student sign-up `/signup` (public layout; English name, Khmer name optional, email, password + confirm, show/hide password, hidden spam-trap field, errors shown under each field in English/ខ្មែរ); API `POST /api/web/register` (`RegisterRequest`; password 8+ with letters and numbers; email saved in small letters, unique; limited to `SIGNUP_PER_MINUTE`=5 per IP; uses `CreateStudentAccount` → role student; logs in right away, same reply as login); login token call moved to `Services/Auth/PasswordTokenIssuer` (tests use a fake); no Telegram login alert for roles in `config/roles.php` → `no_login_alert` (student); Log in ↔ Sign up links keep `?redirect=`; logged-in users opening /login or /signup go to their home page; student home = `/lessons` until T23 — tests: pass (133), build: pass
 - 2026-11-11 — T21 (fix) — logged-in users: footer hides Sign up / Log in; site top bar has "Log out" (desktop + phone menu), the student stays on the public page — build: pass
 - 2026-11-11 — T21 (fix) — students got 403 errors after login: address lists (provinces, districts, communes, villages) now load only for users who can open the admin system, and only after the user's permissions are loaded — build: pass
+- 2026-11-11 — T23 — (owner: before T22) Student system: side menu (Dashboard, My lessons, All lessons; no branch select) in the same layout as admin; `/student/dashboard` (hello, Continue learning = first lesson not done in learning order, Lessons done x / total with bar, Quizzes passed, Recently finished with best quiz score); `/student/my-lessons` (finished lessons grouped by course, easiest level first, ✓ + date + best score, "—" until quizzes exist); ✓ Done on lesson cards for the logged-in student; API `GET /api/web/student/dashboard`, `GET /api/web/student/my-lessons` (student role only, published lessons only) via `Services/Learning/StudentProgress`; `Lesson::learningOrder()` scope shared with the lesson list; students land on the dashboard after login / sign-up; login: wrong email / password now 422, disabled account 403 (was 500) — tests: pass (139), build: pass

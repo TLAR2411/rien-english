@@ -143,8 +143,11 @@ class RegisterTest extends TestCase
     public function test_wrong_password_is_still_rejected(): void
     {
         $this->postJson('/api/web/login', ['username' => 'admin', 'password' => 'wrong-password'])
-            ->assertStatus(500)
+            ->assertUnprocessable()
             ->assertJsonPath('status', false);
+
+        $this->postJson('/api/web/login', ['username' => 'nobody@example.test', 'password' => 'whatever123'])
+            ->assertUnprocessable();
     }
 
     private function fakeTelegramSettings(): void

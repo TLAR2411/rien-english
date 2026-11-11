@@ -19,6 +19,11 @@ const isKhmer = computed(() => locale.value === "km");
     <div class="lesson-card__tags">
       <span v-if="lesson.level" class="site-tag site-tag--level">{{ lesson.level.code }}</span>
       <span class="site-tag">{{ $t(skill?.title ?? lesson.skill) }}</span>
+      <!-- Only sent for a logged-in student who finished the lesson -->
+      <span v-if="lesson.completed_at" class="lesson-card__done">
+        <VIcon icon="tabler-circle-check-filled" size="16" />
+        {{ $t("Done") }}
+      </span>
     </div>
 
     <h3 class="lesson-card__title">{{ lesson.title_en }}</h3>
@@ -33,6 +38,16 @@ const isKhmer = computed(() => locale.value === "km");
 </template>
 
 <style lang="scss" scoped>
+.lesson-card__done {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: auto;
+  color: var(--rien-green);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .lesson-card {
   display: flex;
   flex-direction: column;

@@ -3,8 +3,7 @@
 // (e.g. the installed PWA, whose start_url is "/").
 const HOME_BY_PART = {
   admin: "/admin",
-  // T23 (student dashboard) changes this to the student's own home page
-  student: "/lessons",
+  student: "/student/dashboard",
 };
 
 export const homePathFor = (part) => HOME_BY_PART[part] ?? "/admin";

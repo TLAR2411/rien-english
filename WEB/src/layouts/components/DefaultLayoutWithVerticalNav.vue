@@ -11,7 +11,12 @@ import { themeConfig } from "@themeConfig";
 import { VerticalNavLayout } from "@layouts";
 import { useRoute } from "vue-router";
 import NavbarClearAppDataButton from "./NavbarClearAppDataButton.vue";
+import { usePartStore } from "@/stores/partStore";
+import { SYSTEM_PART } from "@/composables/useSystemParts";
 const currentNavItems = useSystemPartNavItems();
+
+// Students have one branch: no branch select for them
+const showBranches = computed(() => usePartStore().system_part !== SYSTEM_PART.STUDENT);
 const configStore = useLayoutConfigStore();
 
 const isMobileNav = ref(window.innerWidth < 1280);
@@ -66,7 +71,7 @@ onUnmounted(() => {
         <VSpacer />
 
         <!-- Branch select shrinks first; the icons keep their size -->
-        <NavbarBranches class="me-2" />
+        <NavbarBranches v-if="showBranches" class="me-2" />
         <div class="navbar-actions">
           <NavBarI18n
             v-if="

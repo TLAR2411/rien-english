@@ -49,6 +49,20 @@ class Lesson extends Model
         return $query->published()->whereHas('course', fn (Builder $course) => $course->published());
     }
 
+    /** Learning order: easiest level first (A1 before A2 …), then course, then lesson order. */
+    public function scopeLearningOrder(Builder $query): Builder
+    {
+        return $query
+            ->orderBy(
+                Course::query()
+                    ->join('levels', 'levels.id', '=', 'courses.level_id')
+                    ->select('levels.sort_order')
+                    ->whereColumn('courses.id', 'lessons.course_id')
+            )
+            ->orderBy('course_id')
+            ->ordered();
+    }
+
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
@@ -57,6 +71,12 @@ class Lesson extends Model
     public function examples(): HasMany
     {
         return $this->hasMany(LessonExample::class)->ordered();
+    }
+
+    /** Students who finished this lesson. */
+    public function progress(): HasMany
+    {
+        return $this->hasMany(LessonProgress::class);
     }
 
     public function quiz(): HasOne

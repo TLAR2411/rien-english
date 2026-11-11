@@ -2200,5 +2200,19 @@
   "Creating your account...": "កំពុងបង្កើតគណនី...",
   "Already have an account?": "មានគណនីរួចហើយ?",
   "New here?": "ទើបមកដំបូង?",
-  "Log out": "ចាកចេញ"
+  "Log out": "ចាកចេញ",
+  "My lessons": "មេរៀនរបស់ខ្ញុំ",
+  "Hello": "សួស្តី",
+  "Keep learning, one lesson at a time.": "បន្តរៀន មួយមេរៀនម្តងៗ។",
+  "Continue learning": "បន្តការរៀន",
+  "You finished every lesson.": "អ្នកបានរៀនចប់គ្រប់មេរៀនហើយ។",
+  "New lessons come soon. You can read your lessons again.": "មេរៀនថ្មីនឹងមកដល់ឆាប់ៗ។ អ្នកអាចអានមេរៀនរបស់អ្នកម្តងទៀត។",
+  "Lessons done": "មេរៀនបានរៀនចប់",
+  "Quizzes passed": "តេស្តដែលបានជាប់",
+  "Recently finished": "ទើបរៀនចប់",
+  "See all": "មើលទាំងអស់",
+  "No lessons done yet. Read a lesson, then press “Mark as completed”.": "មិនទាន់មានមេរៀនរៀនចប់នៅឡើយ។ សូមអានមេរៀន រួចចុច “សម្គាល់ថាបានបញ្ចប់”។",
+  "{count} lessons done": "បានរៀនចប់ {count} មេរៀន",
+  "Done on {date}": "រៀនចប់នៅ {date}",
+  "No quiz score yet": "មិនទាន់មានពិន្ទុតេស្ត"
 }
