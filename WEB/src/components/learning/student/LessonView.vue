@@ -50,37 +50,38 @@ const outline = computed(() => [
   ...(slots.default ? [{ id: "lesson-quiz", title: t("Quiz") }] : []),
 ]);
 
+// Big screens: the outline stays still and only the lesson card scrolls.
+// The card fills the screen from where it starts down to the bottom.
+const viewEl = ref(null);
+const sheetEl = ref(null);
+const height = ref(null);
+const fitToScreen = () => {
+  if (!viewEl.value) return;
+  const top = viewEl.value.getBoundingClientRect().top + window.scrollY;
+  height.value = `${Math.max(420, window.innerHeight - top - 72)}px`;
+};
+
 // Side outline: jump to a part, and mark the part being read
 const activeId = ref(null);
 const goTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 const updateActive = () => {
+  const sheetTop = Math.max(sheetEl.value?.getBoundingClientRect().top ?? 0, 0);
   let current = outline.value[0]?.id ?? null;
   for (const item of outline.value) {
     const el = document.getElementById(item.id);
-    if (el && el.getBoundingClientRect().top < 140) current = item.id;
+    if (el && el.getBoundingClientRect().top - sheetTop < 80) current = item.id;
   }
   activeId.value = current;
 };
-// The outline is `position: sticky`. A parent with `overflow: hidden` (cards, tabs)
-// stops sticky from working, so switch those parents to `overflow: clip` — it looks
-// the same but lets the outline stay on screen. Put back when the page closes.
-const outlineEl = ref(null);
-const unclipped = [];
-const allowSticky = () => {
-  for (let el = outlineEl.value?.parentElement; el && el !== document.body; el = el.parentElement) {
-    const style = getComputedStyle(el);
-    if ([style.overflowX, style.overflowY].includes("hidden")) {
-      unclipped.push([el, el.style.overflow]);
-      el.style.overflow = "clip";
-    }
-  }
-};
-watch(outlineEl, (el) => el && allowSticky());
 
 onMounted(() => {
   window.addEventListener("scroll", updateActive, { passive: true });
-  nextTick(updateActive);
+  window.addEventListener("resize", fitToScreen);
+  nextTick(() => {
+    fitToScreen();
+    updateActive();
+  });
 });
 watch(outline, () => nextTick(updateActive));
 
@@ -98,14 +99,19 @@ const play = (example) => {
 onBeforeUnmount(() => {
   player?.pause();
   window.removeEventListener("scroll", updateActive);
-  unclipped.forEach(([el, overflow]) => (el.style.overflow = overflow));
+  window.removeEventListener("resize", fitToScreen);
 });
 </script>
 
 <template>
-  <div class="lesson-view" :class="{ 'lesson-view--no-outline': outline.length < 2 }">
+  <div
+    ref="viewEl"
+    class="lesson-view"
+    :class="{ 'lesson-view--no-outline': outline.length < 2 }"
+    :style="{ '--lesson-view-height': height }"
+  >
     <!-- Side outline (big screens only) -->
-    <aside v-if="outline.length >= 2" ref="outlineEl" class="lesson-outline">
+    <aside v-if="outline.length >= 2" class="lesson-outline">
       <p class="lesson-outline__label">{{ $t("In this lesson") }}</p>
       <nav>
         <a
@@ -125,7 +131,7 @@ onBeforeUnmount(() => {
       </p>
     </aside>
 
-    <article class="lesson-sheet">
+    <article ref="sheetEl" class="lesson-sheet" @scroll.passive="updateActive">
       <header class="lesson-sheet__header">
         <div class="lesson-sheet__tags">
           <span v-if="lesson.course?.level" class="lesson-tag lesson-tag--level">{{ lesson.course.level.code }}</span>
@@ -199,12 +205,23 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
   @media (max-width: 959px) {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  // Big screens: fixed height, the lesson card scrolls inside
+  @media (min-width: 960px) {
+    &:not(.lesson-view--no-outline) {
+      height: var(--lesson-view-height, calc(100dvh - 14rem));
+
+      .lesson-sheet {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+      }
+    }
+  }
 }
 
 // ── Side outline ──
 .lesson-outline {
-  position: sticky;
-  top: 5.5rem;
   align-self: start;
   padding-block-start: 0.5rem;
 
@@ -336,10 +353,10 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .lesson-sheet__body {
   padding: clamp(1.5rem, 5vw, 2.75rem) clamp(1.25rem, 5vw, 3rem) clamp(1.75rem, 5vw, 3rem);
 
-  // Space above a part when the outline jumps to it (the top bar is sticky)
+  // Space above a part when the outline jumps to it
   :deep(h2),
   .lesson-sheet__section {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 1.5rem;
   }
 }
 
