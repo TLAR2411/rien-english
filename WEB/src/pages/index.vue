@@ -6,8 +6,8 @@ import { lessonRoute, lessonsRoute, signUpRoute } from "@/utils/siteRoutes";
 
 /**
  * Public landing page (no login). Five calm sections, real content only
- * (PLAN.md Appendix C): welcome → lesson of the day → level path →
- * latest lessons → try a real quiz question.
+ * (PLAN.md Appendix C): welcome → why Rien English (with a real lesson
+ * sentence) → level path → latest lessons → try a real quiz question.
  */
 definePage({
   meta: {
@@ -44,6 +44,15 @@ const levelName = (level) => (locale.value === "km" && level.name_km ? level.nam
 // Sample question: the visitor may pick an answer; checking it needs an account
 // (quizzes are graded on the server only).
 const picked = ref(null);
+
+// What makes the site different — only things it really does
+const WHY_POINTS = [
+  { icon: "tabler-language", title: "Explained in Khmer", text: "Every rule is explained in Khmer too, so you understand it — not just memorise it." },
+  { icon: "tabler-lock-open", title: "Free to read", text: "Read every lesson without an account. Sign up only when you want to take quizzes." },
+  { icon: "tabler-stairs-up", title: "Step by step, A1 to C1", text: "Lessons follow the world's English levels. Start where you are and move up when you are ready." },
+  { icon: "tabler-volume", title: "Hear every sentence", text: "Listen to every example and learn on your phone, anywhere." },
+];
+const WHO_FOR = ["Complete beginners", "High school students", "University students", "Workers who need English"];
 
 // Decoration around the welcome (wide screens only): simple real sentences
 // in speech bubbles, the same shape as the logo's bubble.
@@ -111,45 +120,56 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
       </button>
     </section>
 
-    <!-- 2. Lesson of the day -->
-    <section v-if="featured" class="landing-section">
-      <div class="site-container">
-        <p class="landing-label">{{ $t("Lesson of the day") }}</p>
+    <!-- 2. Why Rien English: who it is for, what makes it different -->
+    <section class="landing-section">
+      <div class="site-container why" :class="{ 'why--single': !featured?.example }">
+        <div>
+          <p class="landing-label">{{ $t("Why Rien English") }}</p>
+          <h2 class="landing-head__title">{{ $t("Made for Cambodian learners.") }}</h2>
+          <p class="landing-head__lead">{{ $t("English explained in your own language — clear, free, and one step at a time.") }}</p>
 
-        <article class="featured">
-          <div class="featured__text">
-            <div class="featured__tags">
-              <span v-if="featured.level" class="site-tag site-tag--level">{{ featured.level.code }}</span>
-              <span class="site-tag">{{ $t(skillTitle(featured.skill)) }}</span>
-            </div>
-            <h2 class="featured__title">
-              <RouterLink :to="lessonRoute(featured.slug)">{{ featured.title_en }}</RouterLink>
-            </h2>
-            <p v-if="featured.title_km" class="featured__km site-km">{{ featured.title_km }}</p>
-            <p v-if="featured.summary" class="featured__summary">{{ featured.summary }}</p>
-            <RouterLink :to="lessonRoute(featured.slug)" class="site-link featured__more">
-              {{ $t("Read lesson") }}
-              <VIcon icon="tabler-arrow-right" size="18" />
-            </RouterLink>
+          <ul class="why__points">
+            <li v-for="point in WHY_POINTS" :key="point.title" class="why__point">
+              <span class="why__icon"><VIcon :icon="point.icon" size="22" /></span>
+              <span>
+                <strong class="why__title">{{ $t(point.title) }}</strong>
+                <span class="why__text">{{ $t(point.text) }}</span>
+              </span>
+            </li>
+          </ul>
+
+          <div class="why__for">
+            <span class="why__for-label">{{ $t("Who it is for") }}</span>
+            <ul>
+              <li v-for="who in WHO_FOR" :key="who">{{ $t(who) }}</li>
+            </ul>
           </div>
+        </div>
 
-          <figure v-if="featured.example" class="featured__example">
-            <figcaption class="featured__example-label">{{ $t("Example") }}</figcaption>
-            <p class="featured__sentence">{{ featured.example.sentence }}</p>
-            <p v-if="featured.example.translation_km" class="featured__translation site-km">
-              {{ featured.example.translation_km }}
-            </p>
+        <!-- A real piece of a lesson: English, Khmer, sound -->
+        <figure v-if="featured?.example" class="why__sample">
+          <figcaption class="why__sample-head">
+            <span v-if="featured.level" class="site-tag site-tag--level">{{ featured.level.code }}</span>
+            <RouterLink :to="lessonRoute(featured.slug)">{{ featured.title_en }}</RouterLink>
+          </figcaption>
+          <p class="why__sentence">{{ featured.example.sentence }}</p>
+          <p v-if="featured.example.translation_km" class="why__translation site-km">{{ featured.example.translation_km }}</p>
+          <div class="why__sample-foot">
             <button
               v-if="speech.canPlay(featured.example)"
               type="button"
-              class="featured__listen"
+              class="why__listen"
               @click="speech.toggle(featured.example)"
             >
               <VIcon :icon="speech.isPlaying(featured.example) ? 'tabler-player-stop-filled' : 'tabler-volume'" size="20" />
               {{ $t("Listen") }}
             </button>
-          </figure>
-        </article>
+            <RouterLink :to="lessonRoute(featured.slug)" class="site-link">
+              {{ $t("Read lesson") }}
+              <VIcon icon="tabler-arrow-right" size="18" />
+            </RouterLink>
+          </div>
+        </figure>
       </div>
     </section>
 
@@ -298,8 +318,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
 
 // Khmer headings: a little lighter, they look heavy in bold
 .site--km {
-  .landing-head__title,
-  .featured__title {
+  .landing-head__title {
     font-weight: 600;
     letter-spacing: 0;
   }
@@ -575,100 +594,152 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
   }
 }
 
-// ── 2. Lesson of the day ──
-.featured {
+// ── 2. Why Rien English ──
+.why {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  overflow: hidden;
-  border: 1px solid var(--rien-line);
-  border-radius: 16px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 96px);
 
-  @media (max-width: 767px) {
+  &--single {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 760px;
+  }
+
+  @media (max-width: 899px) {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.featured__text {
-  display: flex;
-  flex-direction: column;
-  padding: clamp(24px, 3.5vw, 36px);
-}
+.why__points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 32px;
+  margin: clamp(28px, 4vw, 40px) 0 0;
+  padding: 0;
+  list-style: none;
 
-.featured__tags {
-  display: flex;
-  gap: 8px;
-  margin-block-end: 14px;
-}
-
-.featured__title {
-  font-size: clamp(24px, 3vw, 30px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-
-  a {
-    text-decoration: none;
-
-    &:hover {
-      color: var(--rien-blue);
-    }
+  @media (max-width: 599px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
   }
 }
 
-.featured__km {
-  margin-block-start: 2px;
-  color: var(--rien-grey);
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.featured__summary {
-  margin-block-start: 12px;
-  color: var(--rien-grey);
-}
-
-.featured__more {
-  margin-block-start: auto;
-  padding-block-start: 12px;
-}
-
-.featured__example {
+.why__point {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
-  padding: clamp(24px, 3.5vw, 36px);
-  background: var(--rien-blue-soft);
+  align-items: flex-start;
+  gap: 14px;
 }
 
-.featured__example-label {
+.why__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--rien-blue-soft);
   color: var(--rien-blue);
+}
+
+.why__title {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.why__text {
+  display: block;
+  margin-block-start: 4px;
+  color: var(--rien-grey);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.why__for {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-block-start: clamp(28px, 4vw, 40px);
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--rien-line);
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--rien-bg-alt);
+    font-size: 14px;
+  }
+}
+
+.why__for-label {
+  color: var(--rien-grey);
   font-size: 14px;
   font-weight: 600;
 }
 
-.featured__sentence {
-  margin-block-start: 8px;
-  font-size: clamp(22px, 2.8vw, 28px);
+// The real lesson piece, like a page from the lesson
+.why__sample {
+  margin: 0;
+  padding: clamp(28px, 4vw, 40px);
+  border-radius: 20px;
+  background: var(--rien-blue-soft);
+}
+
+.why__sample-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--rien-grey);
+  font-size: 14px;
+
+  a {
+    color: var(--rien-blue);
+    font-weight: 500;
+    text-decoration: none;
+  }
+}
+
+.why__sentence {
+  margin-block-start: 24px;
+  font-size: clamp(26px, 3.4vw, 34px);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-.featured__translation {
-  margin-block-start: 4px;
+.why__translation {
+  margin-block-start: 10px;
   color: var(--rien-grey);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 18px;
 }
 
-.featured__listen {
+.why__sample-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-start: 28px;
+}
+
+.why__listen {
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
   gap: 8px;
   min-height: 44px;
-  margin-block-start: 16px;
   padding: 0 18px;
   border: 0;
   border-radius: 999px;

@@ -1,4 +1,6 @@
 <script setup>
+import I18n from "@core/components/I18n.vue";
+import { themeConfig } from "@themeConfig";
 import RienLogo from "@/components/site/RienLogo.vue";
 import { useAuthStore } from "@/stores/authStore";
 import { homePathFor } from "@/utils/homePath";
@@ -7,17 +9,12 @@ import { homeRoute, lessonsRoute, loginRoute, signUpRoute } from "@/utils/siteRo
 /** Top bar of the public website: logo, Lessons, language, Log in, Sign up. */
 const auth = useAuthStore();
 const route = useRoute();
-const { locale } = useI18n({ useScope: "global" });
 
 const isLoggedIn = computed(() => auth.isAuthenticated && Boolean(auth.user));
 const dashboard = computed(() => homePathFor(auth.user?.default_part));
 
 // Come back to this page after logging in
 const redirect = computed(() => (route.path === "/" ? null : route.fullPath));
-
-// The button shows the OTHER language, in that language
-const otherLanguage = computed(() => (locale.value === "km" ? { code: "en", label: "English" } : { code: "km", label: "ខ្មែរ" }));
-const switchLanguage = () => (locale.value = otherLanguage.value.code);
 
 const isMenuOpen = ref(false);
 watch(() => route.fullPath, () => (isMenuOpen.value = false));
@@ -35,9 +32,8 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
       </nav>
 
       <div class="site-header__actions">
-        <button type="button" class="site-header__link site-header__lang" @click="switchLanguage">
-          {{ otherLanguage.label }}
-        </button>
+        <!-- Same flag menu as the dashboard -->
+        <I18n :languages="themeConfig.app.i18n.langConfig" />
 
         <template v-if="isLoggedIn">
           <RouterLink :to="dashboard" class="site-btn site-btn--small">{{ $t("My dashboard") }}</RouterLink>
@@ -105,7 +101,7 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .site-header__link {
@@ -126,10 +122,6 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
   &.router-link-active {
     color: var(--rien-blue);
   }
-}
-
-.site-header__lang {
-  color: var(--rien-grey);
 }
 
 .site-header__menu-btn {
