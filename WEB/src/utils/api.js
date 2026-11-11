@@ -210,8 +210,8 @@ api.interceptors.response.use(
 
     const { status, message } = response.data || {};
 
-    // Handle success messages
-    if (status === true && message) {
+    // Handle success messages ({ silent: true }: the page shows its own)
+    if (status === true && message && !response.config?.silent) {
       showDialog({
         title: message,
         icon: 'success',

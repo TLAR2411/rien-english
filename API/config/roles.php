@@ -19,6 +19,9 @@ return [
     // Sign-up tries allowed per minute from one internet address (IP)
     'signup_per_minute' => (int) env('SIGNUP_PER_MINUTE', 5),
 
+    // "Forgot password" + "set new password" tries per minute from one IP
+    'password_reset_per_minute' => (int) env('PASSWORD_RESET_PER_MINUTE', 5),
+
     // Route groups (see App\Support\AccessGroup)
     'groups' => [
         // May open /admin (learning content: levels, courses, lessons, quizzes)

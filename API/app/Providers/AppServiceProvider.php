@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
-use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,9 +33,12 @@ class AppServiceProvider extends ServiceProvider
         Passport::refreshTokensExpireIn(Carbon::now()->addDays($life['refresh_days'] ?? 30));
         Passport::personalAccessTokensExpireIn(Carbon::now()->addHours($life['personal_hours'] ?? 12));
 
+        // Password rule for sign-up and "set a new password"
+        Password::defaults(fn () => Password::min(8)->letters()->numbers());
+
         Builder::macro('getPaginate', function ($limit = 15, $columns = ['*'], $pageName = 'page', $page = null) {
             /** @var \Illuminate\Database\Eloquent\Builder $this */
-            $limit = (int)($limit ?: 15);
+            $limit = (int) ($limit ?: 15);
 
             if ($limit === -1) {
                 // getCountForPagination() correctly computes totals on queries with groupBy()

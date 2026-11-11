@@ -11,6 +11,7 @@ use App\Models\Learning\Enrollment;
 use App\Models\Learning\LessonProgress;
 use App\Models\Learning\QuizAttempt;
 use App\Models\Learning\WritingSubmission;
+use App\Notifications\Auth\ResetPasswordNotification;
 use App\Traits\TracksUserActions;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -107,12 +108,19 @@ class User extends Authenticatable implements LaratrustUser
      * Automatically hash the password when it is set.
      *
      * @param  string  $value
-     * @return void
      */
     // public function setPasswordAttribute($value)
     // {
     //     $this->attributes['password'] = bcrypt($value);
     // }
+
+    /**
+     * "Forgot password" email with a link to the website's reset page.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
     protected static $recordEvents = ['created', 'updated', 'deleted'];
 

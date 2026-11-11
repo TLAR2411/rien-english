@@ -32,7 +32,7 @@ class RegisterRequest extends FormRequest
             'name_en' => ['required', 'string', 'max:100'],
             'name_kh' => ['nullable', 'string', 'max:100'],
             'email' => ['required', 'string', 'email:rfc', 'max:191', 'unique:users,email'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
             // Hidden field on the form: people never see it, spam bots fill it in
             'website' => ['prohibited'],
         ];

@@ -10,7 +10,7 @@ import { debounce } from "lodash";
 import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue";
 import { requiredValidator } from "@/@core/utils/validators";
 import { usePwaInstall } from "@/composables/usePwaInstall";
-import { signUpRoute } from "@/utils/siteRoutes";
+import { forgotPasswordRoute, signUpRoute } from "@/utils/siteRoutes";
 
 const { canInstall, needsIosInstructions } = usePwaInstall();
 const showInstallRow = computed(
@@ -92,6 +92,11 @@ const submit = async () => {
 };
 
 const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
+
+// Keeps the email already typed, so the student does not type it twice
+const forgotPasswordLink = computed(() =>
+  forgotPasswordRoute(form.value.username?.includes("@") ? form.value.username.trim() : null, route.query.redirect),
+);
 </script>
 
 <template>
@@ -170,6 +175,12 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
                 >
                   <template #label>{{ $t("Password") }}</template>
                 </AppTextField>
+              </VCol>
+
+              <VCol cols="12" class="pt-1 pb-0 text-end text-body-2">
+                <RouterLink :to="forgotPasswordLink" class="text-primary">
+                  {{ $t("Forgot password?") }}
+                </RouterLink>
               </VCol>
 
               <VCol cols="12" class="mt-0">

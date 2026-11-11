@@ -24,6 +24,12 @@ export const signUpRoute = (redirect = null) => ({
   query: redirect ? { redirect } : {},
 });
 
+/** "Forgot password?" page, with the email already filled in when known. */
+export const forgotPasswordRoute = (email = null, redirect = null) => ({
+  name: "forgot-password",
+  query: { ...(email ? { email } : {}), ...(redirect ? { redirect } : {}) },
+});
+
 /** A page inside this app to go back to after login (never another website). */
 export const safeRedirect = (value) =>
   typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : null;

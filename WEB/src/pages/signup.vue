@@ -95,11 +95,11 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
 
 <template>
   <div class="site-section">
-    <div class="site-container signup">
+    <div class="site-container auth-page">
       <h1 class="site-h2">{{ $t("Create your free account") }}</h1>
       <p class="site-lead">{{ $t("Take quizzes and keep your progress. Reading lessons stays free.") }}</p>
 
-      <VForm ref="refForm" class="signup__form" @submit.prevent="onSubmit">
+      <VForm ref="refForm" class="auth-page__form" @submit.prevent="onSubmit">
         <AppTextField
           v-model="form.name_en"
           label="Your name (English)"
@@ -153,14 +153,14 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
           </label>
         </div>
 
-        <p v-if="formError" class="signup__error" role="alert">{{ formError }}</p>
+        <p v-if="formError" class="auth-page__error" role="alert">{{ formError }}</p>
 
-        <button type="submit" class="site-btn signup__btn" :disabled="isLoading">
+        <button type="submit" class="site-btn auth-page__btn" :disabled="isLoading">
           {{ isLoading ? $t("Creating your account...") : $t("Sign up free") }}
         </button>
       </VForm>
 
-      <p class="signup__switch">
+      <p class="auth-page__switch">
         {{ $t("Already have an account?") }}
         <RouterLink :to="loginRoute(route.query.redirect)" class="site-link">{{ $t("Log in") }}</RouterLink>
       </p>
@@ -169,31 +169,7 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
 </template>
 
 <style scoped lang="scss">
-.signup {
-  max-width: 440px;
-}
-
-.signup__form {
-  display: grid;
-  gap: 16px;
-  margin-block-start: 32px;
-}
-
-.signup__btn {
-  width: 100%;
-  margin-block-start: 8px;
-}
-
-.signup__error {
-  color: var(--rien-red);
-  font-size: 15px;
-}
-
-.signup__switch {
-  margin-block-start: 24px;
-  color: var(--rien-grey);
-  text-align: center;
-}
+@use "@/assets/styles/auth-page";
 
 // Off screen, not display:none — some bots skip fields that are display:none
 .signup__trap {

@@ -134,6 +134,12 @@ return [
     | Admin account created by the seeder (database/seeders/Auth/UserSeeder.php).
     | Empty password = a random one is generated and printed once.
     */
+    /*
+    | The website (Vue app). Links in emails, e.g. the password reset link,
+    | open this address.
+    */
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
     'admin' => [
         'email' => env('ADMIN_EMAIL', 'admin@admin.com'),
         'password' => env('ADMIN_PASSWORD'),

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\CacheController;
 use App\Http\Controllers\Api\LogViewerController;
 use App\Http\Controllers\ExportController;
@@ -15,6 +16,12 @@ Route::group(['prefix' => '/web'], function () {
     // Student sign-up (public). Few tries per minute per IP: stops spam bots.
     Route::post('register', [AuthController::class, 'register'])
         ->middleware('throttle:'.config('roles.signup_per_minute').',1');
+
+    // Forgot password (public): email a reset link, then set a new password
+    Route::middleware('throttle:'.config('roles.password_reset_per_minute').',1')->group(function () {
+        Route::post('forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('reset-password', [PasswordResetController::class, 'reset']);
+    });
 
     Route::post('refresh', [AuthController::class, 'refresh']);
 
