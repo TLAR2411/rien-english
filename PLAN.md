@@ -39,7 +39,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 
 | Phase | Name | Tasks | Done |
 |---|---|---|---|
-| 0 | Setup, check & clean existing project | T01–T03 | 0/3 |
+| 0 | Setup, check & clean existing project | T01–T03 | 1/3 |
 | 1 | Roles & admin area | T04–T06 | 0/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 0/4 |
 | 3 | Admin: manage content | T11–T17 | 0/7 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T01
+**Current task:** T03 (T01 waiting for owner OK)
 
 ---
 
@@ -63,7 +63,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - **Do not change any code in this task.**
   - ✅ Done when: Project Notes filled in and owner confirms.
 
-- [ ] **T02 — Git & safety**
+- [x] **T02 — Git & safety**
   - Make sure the project is a git repo; create branch `feature/learning-platform`.
   - Make sure `.env` is in `.gitignore`.
   - ✅ Done when: on the new branch, working tree clean.
@@ -383,7 +383,7 @@ _(Filled in by Claude Code in T01 — 2026-11-11)_
 
 **Structure**
 - Two folders: `API/` (Laravel backend) and `WEB/` (Vue frontend). **Separate SPA**, not Inertia. There is no `resources/js/` — the frontend lives in `WEB/src/`.
-- Not a git repo yet (T02).
+- Git repo: GitHub `TLAR2411/rien-english` (**public**). `main` = first commit; work happens on `feature/learning-platform`.
 
 **Backend (`API/`)**
 - PHP 8.4, **Laravel 12.32**, MySQL.
@@ -420,3 +420,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 
 - 2026-11-11 — PLAN — owner decision: lessons are public (no login), quizzes need sign-up (name + email + password), Google sign-in later. Added T18 public landing, T21 sign-up, T22 forgot password, T23 student layout, T37 Google sign-in; renumbered tasks to T01–T46; paid courses moved to Phase 9 — tests: n/a (plan only)
 - 2026-11-11 — PLAN — owner decision: T03 changed from "install packages" (already installed, see Project Notes) to "clean up unused parts" (loan leftovers, Devfin name, HR, company structure pages, user access requests). Do git (T02) first so deleted files can be restored — tests: n/a (plan only)
+- 2026-11-11 — T02 — git init, first commit pushed to GitHub `main`, branch `feature/learning-platform`; removed real secrets from `API/.env.example` + `WEB/.env.example` (repo is public); fixed `laradumps.yaml` ignore — tests: pass
