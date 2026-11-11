@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool)env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return [
     | are secure. You should do this prior to deploying the application.
     |
     */
-//    'api_encryption_key' => env('APP_ENCRYPTION_KEY'),
+    //    'api_encryption_key' => env('APP_ENCRYPTION_KEY'),
 
     // Encrypts the /bootstrap payload (see AuthController::bootstrap)
     'custom_encryption_key' => env('CUSTOM_ENCRYPTION_KEY'),
@@ -128,6 +128,15 @@ return [
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
+
+    /*
+    | Admin account created by the seeder (database/seeders/Auth/UserSeeder.php).
+    | Empty password = a random one is generated and printed once.
+    */
+    'admin' => [
+        'email' => env('ADMIN_EMAIL', 'admin@admin.com'),
+        'password' => env('ADMIN_PASSWORD'),
     ],
 
 ];

@@ -29,10 +29,26 @@ class RoleSeeder extends Seeder
                 'display_name' => 'បុគ្គលិក',
                 'abbr' => 'STF',
             ],
+            // Learning platform roles
+            [
+                'name' => 'admin',
+                'display_name' => 'Admin',
+                'abbr' => 'ADM',
+            ],
+            [
+                'name' => 'teacher',
+                'display_name' => 'Teacher',
+                'abbr' => 'TCH',
+            ],
+            [
+                'name' => 'student',
+                'display_name' => 'Student',
+                'abbr' => 'STU',
+            ],
         ];
 
         foreach ($insert as $value) {
-            Role::create($value);
+            Role::updateOrCreate(['name' => $value['name']], $value);
         }
 
         $role = Role::where('name', 'developer')->first();
