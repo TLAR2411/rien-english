@@ -13,6 +13,12 @@ return [
     // Role every new sign-up gets (see App\Actions\Auth\CreateStudentAccount)
     'student' => 'student',
 
+    // Logins by these roles send no Telegram login alert (too many students)
+    'no_login_alert' => ['student'],
+
+    // Sign-up tries allowed per minute from one internet address (IP)
+    'signup_per_minute' => (int) env('SIGNUP_PER_MINUTE', 5),
+
     // Route groups (see App\Support\AccessGroup)
     'groups' => [
         // May open /admin (learning content: levels, courses, lessons, quizzes)

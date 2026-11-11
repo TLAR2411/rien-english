@@ -43,14 +43,14 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
-| 4 | Public website & student sign-up | T18–T22 | 3/5 |
+| 4 | Public website & student sign-up | T18–T22 | 4/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T21
+**Current task:** T22
 
 ---
 
@@ -188,8 +188,8 @@ The public website looks like a normal, friendly website (not a system). No logi
   - The public lesson API never includes quiz questions or answers.
   - ✅ Done when: a guest can read a full lesson; tests — draft lesson returns 404, no quiz answers in the response.
 
-- [ ] **T21 — Student sign-up**
-  - Sign-up page: name, email, password, confirm password. Form Request validation (unique email, strong-enough password).
+- [x] **T21 — Student sign-up**
+  - Sign-up page: English name, Khmer name (optional — empty = copy of the English name), email, password, confirm password. Form Request validation (unique email, strong-enough password).
   - Sign-up API: throttled; uses the T04 action so the new user gets the `student` role; logs the user in right away.
   - After sign-up, go back to the page the student came from (e.g. the quiz), otherwise to the student dashboard.
   - "Log in" and "Sign up" pages link to each other. Existing admin login keeps working.
@@ -454,3 +454,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — UI (T18) — landing: "Lesson of the day" replaced by "Why Rien English" (made for Cambodian learners; 4 real points: explained in Khmer, free to read, A1→C1 step by step, hear every sentence; who it is for; a real lesson sentence with 🔊); public top bar uses the dashboard's flag language menu (`@core/components/I18n.vue`) — build: pass
 - 2026-11-11 — UI (T18) — public top bar cleaner: plain white with no line at the top of the page, thin line + light see-through white after scrolling; thin divider between the flag menu and Log in / Sign up; empty spacer removed (owner removed the desktop "Lessons" link; it stays in the phone menu) — build: pass
 - 2026-11-11 — UI (T18–T20) — English mode shows no Khmer text on public pages (landing Khmer line, bubble translations, Khmer lesson titles, example translations); on the lesson page they follow the English | ខ្មែរ switch; owner removed the "Why Rien English" section (landing is now 4 sections) — build: pass
+- 2026-11-11 — T21 — Student sign-up `/signup` (public layout; English name, Khmer name optional, email, password + confirm, show/hide password, hidden spam-trap field, errors shown under each field in English/ខ្មែរ); API `POST /api/web/register` (`RegisterRequest`; password 8+ with letters and numbers; email saved in small letters, unique; limited to `SIGNUP_PER_MINUTE`=5 per IP; uses `CreateStudentAccount` → role student; logs in right away, same reply as login); login token call moved to `Services/Auth/PasswordTokenIssuer` (tests use a fake); no Telegram login alert for roles in `config/roles.php` → `no_login_alert` (student); Log in ↔ Sign up links keep `?redirect=`; logged-in users opening /login or /signup go to their home page; student home = `/lessons` until T23 — tests: pass (133), build: pass

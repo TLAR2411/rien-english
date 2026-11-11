@@ -16,15 +16,19 @@ use Illuminate\Support\Str;
  */
 class CreateStudentAccount
 {
-    public function handle(string $name, string $email, string $password): User
+    /**
+     * The Khmer name is optional. The database needs one, so an empty Khmer
+     * name gets the English name (the student can change it later).
+     */
+    public function handle(string $name, string $email, string $password, ?string $nameKh = null): User
     {
-        return DB::transaction(function () use ($name, $email, $password) {
+        return DB::transaction(function () use ($name, $email, $password, $nameKh) {
             $role = Role::where('name', config('roles.student'))->firstOrFail();
             $branch = Branch::where('is_head', true)->first() ?? Branch::firstOrFail();
 
             $user = User::forceCreate([
                 'branch_id' => $branch->id,
-                'name_kh' => $name,
+                'name_kh' => $nameKh ?: $name,
                 'name_en' => $name,
                 'email' => Str::lower($email),
                 'username' => $this->uniqueUsername($email),

@@ -30,50 +30,39 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async login(payload) {
       try {
-        const response = await api.post("login", {
-          ...payload,
-        },
-          {               // Third argument: The config object
-            headers: {
-              'X-CLIENT-ID': import.meta.env.VITE_CLIENT_ID,
-            }
-          }
-        );
-
-        if (response.data.status) {
-
-          const data = response.data.data;
-
-          const token = data.access_token;
-          const refreshToken = data.refresh_token;
-          setAccessToken(token);
-          setRefreshToken(refreshToken);
-
-          this.$patch({
-            isAuthenticated: true,
-            accessToken: response.data.data.access_token,
-            refreshToken: response.data.data.refresh_token,
-            isTokenRefreshing: false,
-          });
-
-          useAppStore().getAllAppStore();
-
-          await this.bootstrap(token);
-          const defaultPart = response?.data?.data?.default_part;
-          const defaultBranch = response?.data?.data?.default_branch;
-          usePartStore().setSystemPart(defaultPart);
-          useSettingStore().setBranchId(defaultBranch);
-
-          // Back to the page that sent the user to login (e.g. a lesson's quiz)
-          const redirect = safeRedirect(router.currentRoute.value.query.redirect);
-          router.push(redirect ?? homePathFor(defaultPart));
-
-        } else {
-          console.error("Login failed with status:", response.data.status);
-        }
+        const response = await api.post("login", { ...payload });
+        if (response.data.status) await this.startSession(response.data.data);
       } catch (error) {
         console.error("Login error:", error);
       }
+    },
+    // Student sign-up: the API creates the account and logs in right away.
+    // Errors go back to the page, so it can show them under each field.
+    async register(payload) {
+      const response = await api.post("register", { ...payload }, { silent: true });
+      if (response.data.status) await this.startSession(response.data.data);
+    },
+    // Save the tokens, load the user, then open the page that sent the user
+    // here (e.g. a lesson's quiz) or their own home page.
+    async startSession(data) {
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+
+      this.$patch({
+        isAuthenticated: true,
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        isTokenRefreshing: false,
+      });
+
+      useAppStore().getAllAppStore();
+
+      await this.bootstrap(data.access_token);
+      usePartStore().setSystemPart(data.default_part);
+      useSettingStore().setBranchId(data.default_branch);
+
+      const redirect = safeRedirect(router.currentRoute.value.query.redirect);
+      router.push(redirect ?? homePathFor(data.default_part));
     },
     async token(payload) {
       try {

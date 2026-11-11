@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Actions\Auth\CreateStudentAccount;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\Auth\LoginHistory;
 use App\Models\Auth\Permission;
 use App\Models\Core\Branch;
 use App\Models\Core\Company;
 use App\Models\Core\Setting;
 use App\Models\User;
+use App\Services\Auth\PasswordTokenIssuer;
 use App\Services\BranchContext;
 use App\Services\TelegramService;
 use Carbon\Carbon;
@@ -21,20 +24,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Jenssegers\Agent\Agent;
 use Laravel\Passport\Passport;
 use Laravel\Passport\RefreshTokenRepository;
 
-// Add this line
-
 class AuthController extends Controller
 {
-    private $telegramService;
-
-    public function __construct(TelegramService $telegramService)
-    {
-        $this->telegramService = $telegramService;
-    }
+    public function __construct(
+        private TelegramService $telegramService,
+        private PasswordTokenIssuer $tokenIssuer,
+    ) {}
 
     private function branchesFor(User $user)
     {
@@ -88,104 +86,137 @@ class AuthController extends Controller
                 LoginHistory::record($user, $request, successful: false, reason: 'account_disabled');
                 abort(5, 'គណនីរបស់អ្នកត្រូវបានបិទ!');
             }
-            $defaultBranch = '*';
 
-            if ($user->manage_branch == 1) {
-                $defaultBranch = $user->branch_id;
-            } elseif (in_array($user->manage_branch, [2, 3]) && $this->branchesFor($user)->count() <= 1) {
-                $defaultBranch = $user->branch_id;
-            }
-
-            $client = new Client;
-
-            $response = $client->request(
-                'POST',
-                config('services.passport.oauth_url').'/oauth/token',
-                [
-                    'form_params' => [
-                        'grant_type' => 'password',
-                        'client_id' => $request->header('X-CLIENT-ID') ?? '',
-                        'client_secret' => config('services.passport.client_secret'),
-                        'username' => $user->email,
-                        'password' => $request->password,
-                    ],
-                ]
-            );
-
-            $user->last_login = Carbon::now();
-            $user->saveQuietly();
-
-            $settings = Cache::remember('system_setting_value', 86400, function () {
-                return Setting::whereIn('key', ['default_login_alert_telegram', 'company_name', 'telegram_bot_token'])->pluck('value', 'key');
-            });
-
-            $companyName = $settings['company_name'] ?? '';
-            $groupId = $settings['default_login_alert_telegram'] ?? null;
-            $botToken = $settings['telegram_bot_token'] ?? null;
-
-            $history = LoginHistory::record($user, $request, successful: true);
-
-            $loc = new Agent;
-            $loc->setUserAgent($request->userAgent());
-
-            $lat = $request->input('latitude');
-            $lng = $request->input('longitude');
-
-            $b = fn ($value) => '<b>'.htmlspecialchars((string) ($value ?? '-'), ENT_NOQUOTES, 'UTF-8').'</b>';
-
-            $codeMsg = '🔐 ចូលប្រើប្រាស់ប្រព័ន្ធ ['.$b($companyName).']';
-            $codeMsg .= "\n";
-            $codeMsg .= "\n---ព័ត៌មានអ្នកប្រើប្រាស់---";
-            $codeMsg .= "\n";
-            $codeMsg .= "\nឈ្មោះ ".$b($user->name_kh);
-            $codeMsg .= "\nលេខសំគាល់ ".$b($user->code);
-            $codeMsg .= "\nសាខា ".$b($user->branch->name_kh);
-            $codeMsg .= "\n";
-            $codeMsg .= "\n---ព័ត៌មានឧបករណ៍---";
-            $codeMsg .= "\n";
-            $codeMsg .= "\n📱 ឧបករណ៍: ".$b(ucfirst($history->device_type).' / '.$history->platform);
-            $codeMsg .= "\n🌐 កម្មវិធីរុករក: ".$b($history->browser);
-            $codeMsg .= "\n📍 ទីតាំង: ".$b(($history->city ?? '-').', '.($history->country ?? '-'));
-            $codeMsg .= "\n🔢 IP: ".$b($history->ip_address);
-            if ($lat && $lng) {
-                $mapLink = "https://www.google.com/maps/search/?api=1&query={$lat},{$lng}";
-                $codeMsg .= "\n🔢 Google Map: ".'<a href="'.htmlspecialchars($mapLink, ENT_QUOTES, 'UTF-8').'">'.$b('មើលទីតាំង').'</a>';
-            }
-            $codeMsg .= "\n🕐 ពេលវេលា: ".$b(Carbon::parse($history->logged_in_at)->format('d-m-Y H:i:s'));
-
-            if ($history->is_new_device) {
-                $codeMsg .= "\n⚠️ ចូលប្រើពីឧបករណ៍ថ្មី!"; // login from a new device
-            }
-
-            try {
-                if ($groupId && $botToken) {
-                    $this->telegramService->sendMessage($codeMsg, [$groupId], $botToken, 'HTML');
-                }
-            } catch (\Throwable $e) {
-                Log::warning('Login Telegram alert failed: '.$e->getMessage());
-            }
-
-            $response = json_decode($response->getBody());
-            $date = Carbon::now()->addSeconds($response->expires_in);
-
-            return response()->json([
-                'status' => true,
-                'is_login' => true,
-                'data' => [
-                    'access_token' => [
-                        'value' => $response->access_token,
-                        'expiry' => $date->valueOf(),
-                    ],
-                    'refresh_token' => $this->refreshTokenPayload($response->refresh_token),
-                    'default_part' => $user->default_part,
-                    'default_branch' => $defaultBranch,
-                ],
-            ]);
+            return $this->startSession($user, $request->password, $request);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Student sign-up: create the account (role `student`) and log in right away.
+     */
+    public function register(RegisterRequest $request, CreateStudentAccount $createStudent)
+    {
+        $user = $createStudent->handle(
+            $request->validated('name_en'),
+            $request->validated('email'),
+            $request->validated('password'),
+            $request->validated('name_kh'),
+        );
+
+        try {
+            return $this->startSession($user->load('branch'), $request->validated('password'), $request, 201);
+        } catch (\Throwable $th) {
+            // The account exists; the student can still log in by hand
+            Log::error('Sign-up login failed: '.$th->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Your account is ready. Please log in.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Login tokens + the user's start page and branch (same reply for login and sign-up).
+     */
+    private function startSession(User $user, string $password, Request $request, int $status = 200)
+    {
+        $tokens = $this->tokenIssuer->issue($user->email, $password, $request->header('X-CLIENT-ID'));
+
+        $user->last_login = Carbon::now();
+        $user->saveQuietly();
+
+        $history = LoginHistory::record($user, $request, successful: true);
+        $this->sendLoginAlert($user, $history, $request);
+
+        return response()->json([
+            'status' => true,
+            'is_login' => true,
+            'data' => [
+                'access_token' => [
+                    'value' => $tokens->access_token,
+                    'expiry' => Carbon::now()->addSeconds($tokens->expires_in)->valueOf(),
+                ],
+                'refresh_token' => $this->refreshTokenPayload($tokens->refresh_token ?? null),
+                'default_part' => $user->default_part,
+                'default_branch' => $this->defaultBranchFor($user),
+            ],
+        ], $status);
+    }
+
+    private function defaultBranchFor(User $user): int|string
+    {
+        if ($user->manage_branch == 1) {
+            return $user->branch_id;
+        }
+
+        if (in_array($user->manage_branch, [2, 3]) && $this->branchesFor($user)->count() <= 1) {
+            return $user->branch_id;
+        }
+
+        return '*';
+    }
+
+    /**
+     * Telegram message to the company group for each login.
+     * Skipped for roles in config('roles.no_login_alert') — e.g. students.
+     */
+    private function sendLoginAlert(User $user, LoginHistory $history, Request $request): void
+    {
+        if ($user->hasRole(config('roles.no_login_alert', []))) {
+            return;
+        }
+
+        $settings = Cache::remember('system_setting_value', 86400, function () {
+            return Setting::whereIn('key', ['default_login_alert_telegram', 'company_name', 'telegram_bot_token'])->pluck('value', 'key');
+        });
+
+        $companyName = $settings['company_name'] ?? '';
+        $groupId = $settings['default_login_alert_telegram'] ?? null;
+        $botToken = $settings['telegram_bot_token'] ?? null;
+
+        if (! $groupId || ! $botToken) {
+            return;
+        }
+
+        $lat = $request->input('latitude');
+        $lng = $request->input('longitude');
+
+        $b = fn ($value) => '<b>'.htmlspecialchars((string) ($value ?? '-'), ENT_NOQUOTES, 'UTF-8').'</b>';
+
+        $codeMsg = '🔐 ចូលប្រើប្រាស់ប្រព័ន្ធ ['.$b($companyName).']';
+        $codeMsg .= "\n";
+        $codeMsg .= "\n---ព័ត៌មានអ្នកប្រើប្រាស់---";
+        $codeMsg .= "\n";
+        $codeMsg .= "\nឈ្មោះ ".$b($user->name_kh);
+        $codeMsg .= "\nលេខសំគាល់ ".$b($user->code);
+        $codeMsg .= "\nសាខា ".$b($user->branch?->name_kh);
+        $codeMsg .= "\n";
+        $codeMsg .= "\n---ព័ត៌មានឧបករណ៍---";
+        $codeMsg .= "\n";
+        $codeMsg .= "\n📱 ឧបករណ៍: ".$b(ucfirst($history->device_type).' / '.$history->platform);
+        $codeMsg .= "\n🌐 កម្មវិធីរុករក: ".$b($history->browser);
+        $codeMsg .= "\n📍 ទីតាំង: ".$b(($history->city ?? '-').', '.($history->country ?? '-'));
+        $codeMsg .= "\n🔢 IP: ".$b($history->ip_address);
+        if ($lat && $lng) {
+            $mapLink = "https://www.google.com/maps/search/?api=1&query={$lat},{$lng}";
+            $codeMsg .= "\n🔢 Google Map: ".'<a href="'.htmlspecialchars($mapLink, ENT_QUOTES, 'UTF-8').'">'.$b('មើលទីតាំង').'</a>';
+        }
+        $codeMsg .= "\n🕐 ពេលវេលា: ".$b(Carbon::parse($history->logged_in_at)->format('d-m-Y H:i:s'));
+
+        if ($history->is_new_device) {
+            $codeMsg .= "\n⚠️ ចូលប្រើពីឧបករណ៍ថ្មី!"; // login from a new device
+        }
+
+        try {
+            $this->telegramService->sendMessage($codeMsg, [$groupId], $botToken, 'HTML');
+        } catch (\Throwable $e) {
+            Log::warning('Login Telegram alert failed: '.$e->getMessage());
         }
     }
 

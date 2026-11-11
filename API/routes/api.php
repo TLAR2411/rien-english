@@ -12,6 +12,10 @@ Route::group(['prefix' => '/web'], function () {
 
     Route::post('login', [AuthController::class, 'login']);
 
+    // Student sign-up (public). Few tries per minute per IP: stops spam bots.
+    Route::post('register', [AuthController::class, 'register'])
+        ->middleware('throttle:'.config('roles.signup_per_minute').',1');
+
     Route::post('refresh', [AuthController::class, 'refresh']);
 
     Route::get('/img', [\App\Http\Controllers\ImageController::class, 'resize']);

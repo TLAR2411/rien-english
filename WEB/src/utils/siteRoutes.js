@@ -1,6 +1,6 @@
 /*
  * Links of the public website, in one place — so a page that moves later
- * (e.g. the sign-up page in T21) changes here only.
+ * later changes here only.
  */
 
 export const homeRoute = () => ({ path: "/" });
@@ -19,8 +19,10 @@ export const loginRoute = (redirect = null) => ({
   query: redirect ? { redirect } : {},
 });
 
-// T21 adds the sign-up page. Until then "Sign up" opens the login page.
-export const signUpRoute = (redirect = null) => loginRoute(redirect);
+export const signUpRoute = (redirect = null) => ({
+  name: "signup",
+  query: redirect ? { redirect } : {},
+});
 
 /** A page inside this app to go back to after login (never another website). */
 export const safeRedirect = (value) =>

@@ -52,10 +52,15 @@ export const setupGuards = (router) => {
       return homePathFor(auth.user?.default_part ?? part.system_part);
     }
 
-    // 6. Public pages (website, lessons): no login needed
+    // 6. Login / sign-up pages: a logged-in user goes to their own home page
+    if (to.meta.unauthenticatedOnly && isLoggedIn) {
+      return homePathFor(auth.user?.default_part ?? part.system_part);
+    }
+
+    // 7. Public pages (website, lessons, sign-up): no login needed
     if (to.meta.public) return true;
 
-    // 7. Redirect Logic: after login, come back to the page asked for
+    // 8. Redirect Logic: after login, come back to the page asked for
     if (!isLoggedIn) {
       if (to.name !== 'login') {
         return { name: 'login', query: to.path === "/" ? {} : { redirect: to.fullPath } };
@@ -63,11 +68,7 @@ export const setupGuards = (router) => {
       return true;
     }
 
-    if (to.meta.unauthenticatedOnly && isLoggedIn) {
-      return { name: 'root' };
-    }
-
-    // 8. Permissions: first the part itself (e.g. only admin/teacher open
+    // 9. Permissions: first the part itself (e.g. only admin/teacher open
     // /admin), then the page. Pages outside a part (not-authorized, ...) skip
     // the part check.
     const partPermission = PERMISSION_BY_PART[SYSTEM_PART_SEGMENT_MAP[firstSegment]];

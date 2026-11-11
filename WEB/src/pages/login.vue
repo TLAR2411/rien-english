@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue";
 import { requiredValidator } from "@/@core/utils/validators";
 import { usePwaInstall } from "@/composables/usePwaInstall";
+import { signUpRoute } from "@/utils/siteRoutes";
 
 const { canInstall, needsIosInstructions } = usePwaInstall();
 const showInstallRow = computed(
@@ -41,6 +42,7 @@ const loadAppName = async () => {
 
 onMounted(loadAppName);
 
+const route = useRoute();
 const refForm = ref();
 const isLoading = ref(false);
 const isPasswordVisible = ref(false);
@@ -180,6 +182,14 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
                 >
                   {{ $t("Login") }}
                 </VBtn>
+              </VCol>
+
+              <!-- New students: sign up (keeps the page to come back to) -->
+              <VCol cols="12" class="pt-0 text-center text-body-2">
+                {{ $t("New here?") }}
+                <RouterLink :to="signUpRoute(route.query.redirect)" class="text-primary font-weight-medium">
+                  {{ $t("Sign up free") }}
+                </RouterLink>
               </VCol>
 
               <VCol v-if="showInstallRow" cols="12" class="pt-0">
