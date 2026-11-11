@@ -26,6 +26,12 @@ const { y: scrollY } = useWindowScroll();
 const isScrolled = computed(() => scrollY.value > 8);
 
 const isMenuOpen = ref(false);
+
+// Students stay on the public page they are reading after logging out
+const logout = async () => {
+  isMenuOpen.value = false;
+  await auth.logout();
+};
 watch(
   () => route.fullPath,
   () => (isMenuOpen.value = false),
@@ -49,6 +55,13 @@ watch(
         <span class="site-header__divider site-header__desktop" aria-hidden="true" />
 
         <template v-if="isLoggedIn">
+          <button
+            type="button"
+            class="site-header__link site-header__desktop"
+            @click="logout"
+          >
+            {{ $t("Log out") }}
+          </button>
           <RouterLink :to="dashboard" class="site-btn site-btn--small">{{
             $t("My dashboard")
           }}</RouterLink>
@@ -97,6 +110,14 @@ watch(
               >{{ $t("Sign up free") }}</RouterLink
             >
           </template>
+          <button
+            v-else
+            type="button"
+            class="site-header__panel-link"
+            @click="logout"
+          >
+            {{ $t("Log out") }}
+          </button>
         </div>
       </div>
     </Transition>
@@ -193,8 +214,15 @@ watch(
 .site-header__panel-link {
   display: flex;
   align-items: center;
+  width: 100%;
   min-height: 52px;
+  padding: 0;
+  border: 0;
   border-block-end: 1px solid var(--rien-line);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
   font-size: 17px;
   font-weight: 500;
   text-decoration: none;

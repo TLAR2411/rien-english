@@ -1,6 +1,10 @@
 <script setup>
 import RienLogo from "@/components/site/RienLogo.vue";
+import { useAuthStore } from "@/stores/authStore";
 import { lessonsRoute, loginRoute, signUpRoute } from "@/utils/siteRoutes";
+
+const auth = useAuthStore();
+const isLoggedIn = computed(() => auth.isAuthenticated && Boolean(auth.user));
 
 const year = new Date().getFullYear();
 </script>
@@ -15,8 +19,10 @@ const year = new Date().getFullYear();
 
       <nav class="site-footer__links" :aria-label="$t('Footer')">
         <RouterLink :to="lessonsRoute()">{{ $t("Lessons") }}</RouterLink>
-        <RouterLink :to="signUpRoute()">{{ $t("Sign up free") }}</RouterLink>
-        <RouterLink :to="loginRoute()">{{ $t("Log in") }}</RouterLink>
+        <template v-if="!isLoggedIn">
+          <RouterLink :to="signUpRoute()">{{ $t("Sign up free") }}</RouterLink>
+          <RouterLink :to="loginRoute()">{{ $t("Log in") }}</RouterLink>
+        </template>
       </nav>
     </div>
     <div class="site-container">
