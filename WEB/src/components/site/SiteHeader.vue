@@ -4,7 +4,12 @@ import { themeConfig } from "@themeConfig";
 import RienLogo from "@/components/site/RienLogo.vue";
 import { useAuthStore } from "@/stores/authStore";
 import { homePathFor } from "@/utils/homePath";
-import { homeRoute, lessonsRoute, loginRoute, signUpRoute } from "@/utils/siteRoutes";
+import {
+  homeRoute,
+  lessonsRoute,
+  loginRoute,
+  signUpRoute,
+} from "@/utils/siteRoutes";
 
 /** Top bar of the public website: logo, Lessons, language, Log in, Sign up. */
 const auth = useAuthStore();
@@ -16,31 +21,49 @@ const dashboard = computed(() => homePathFor(auth.user?.default_part));
 // Come back to this page after logging in
 const redirect = computed(() => (route.path === "/" ? null : route.fullPath));
 
+// At the top of the page the bar is plain white; after scrolling it gets a line
+const { y: scrollY } = useWindowScroll();
+const isScrolled = computed(() => scrollY.value > 8);
+
 const isMenuOpen = ref(false);
-watch(() => route.fullPath, () => (isMenuOpen.value = false));
+watch(
+  () => route.fullPath,
+  () => (isMenuOpen.value = false),
+);
 </script>
 
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--raised': isScrolled || isMenuOpen }">
     <div class="site-container site-header__bar">
-      <RouterLink :to="homeRoute()" class="site-header__logo" aria-label="Rien English — home">
-        <RienLogo :height="30" />
+      <RouterLink
+        :to="homeRoute()"
+        class="site-header__logo"
+        aria-label="Rien English — home"
+      >
+        <RienLogo :height="28" />
       </RouterLink>
-
-      <nav class="site-header__nav" :aria-label="$t('Main menu')">
-        <RouterLink :to="lessonsRoute()" class="site-header__link">{{ $t("Lessons") }}</RouterLink>
-      </nav>
 
       <div class="site-header__actions">
         <!-- Same flag menu as the dashboard -->
         <I18n :languages="themeConfig.app.i18n.langConfig" />
+        <span class="site-header__divider site-header__desktop" aria-hidden="true" />
 
         <template v-if="isLoggedIn">
-          <RouterLink :to="dashboard" class="site-btn site-btn--small">{{ $t("My dashboard") }}</RouterLink>
+          <RouterLink :to="dashboard" class="site-btn site-btn--small">{{
+            $t("My dashboard")
+          }}</RouterLink>
         </template>
         <template v-else>
-          <RouterLink :to="loginRoute(redirect)" class="site-header__link site-header__desktop">{{ $t("Log in") }}</RouterLink>
-          <RouterLink :to="signUpRoute(redirect)" class="site-btn site-btn--small site-header__desktop">{{ $t("Sign up free") }}</RouterLink>
+          <RouterLink
+            :to="loginRoute(redirect)"
+            class="site-header__link site-header__desktop"
+            >{{ $t("Log in") }}</RouterLink
+          >
+          <RouterLink
+            :to="signUpRoute(redirect)"
+            class="site-btn site-btn--small site-header__desktop"
+            >{{ $t("Sign up free") }}</RouterLink
+          >
         </template>
 
         <button
@@ -59,10 +82,20 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
     <Transition name="site-fade">
       <div v-if="isMenuOpen" class="site-header__panel">
         <div class="site-container">
-          <RouterLink :to="lessonsRoute()" class="site-header__panel-link">{{ $t("Lessons") }}</RouterLink>
+          <RouterLink :to="lessonsRoute()" class="site-header__panel-link">{{
+            $t("Lessons")
+          }}</RouterLink>
           <template v-if="!isLoggedIn">
-            <RouterLink :to="loginRoute(redirect)" class="site-header__panel-link">{{ $t("Log in") }}</RouterLink>
-            <RouterLink :to="signUpRoute(redirect)" class="site-btn site-header__panel-btn">{{ $t("Sign up free") }}</RouterLink>
+            <RouterLink
+              :to="loginRoute(redirect)"
+              class="site-header__panel-link"
+              >{{ $t("Log in") }}</RouterLink
+            >
+            <RouterLink
+              :to="signUpRoute(redirect)"
+              class="site-btn site-header__panel-btn"
+              >{{ $t("Sign up free") }}</RouterLink
+            >
           </template>
         </div>
       </div>
@@ -75,15 +108,21 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
   position: sticky;
   z-index: 10;
   inset-block-start: 0;
-  border-block-end: 1px solid var(--rien-line);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: saturate(180%) blur(12px);
+  border-block-end: 1px solid transparent;
+  background: #fff;
+  transition: border-color 0.2s, background-color 0.2s;
+
+  // After scrolling: a thin line and a light see-through white
+  &--raised {
+    border-block-end-color: var(--rien-line);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: saturate(180%) blur(14px);
+  }
 }
 
 .site-header__bar {
   display: flex;
   align-items: center;
-  gap: 32px;
   height: var(--rien-header-height);
 }
 
@@ -92,16 +131,19 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
   padding-block: 6px;
 }
 
-.site-header__nav {
-  display: flex;
-  gap: 24px;
-  margin-inline-end: auto;
-}
-
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
+  margin-inline-start: auto;
+}
+
+// Thin line between the language and the account buttons
+.site-header__divider {
+  width: 1px;
+  height: 20px;
+  margin-inline: -4px;
+  background: var(--rien-line);
 }
 
 .site-header__link {
@@ -163,17 +205,12 @@ watch(() => route.fullPath, () => (isMenuOpen.value = false));
 }
 
 @media (max-width: 767px) {
-  .site-header__bar {
-    gap: 16px;
+  .site-header__actions {
+    gap: 8px;
   }
 
-  .site-header__nav,
   .site-header__desktop {
     display: none;
-  }
-
-  .site-header__actions {
-    margin-inline-start: auto;
   }
 
   .site-header__menu-btn {
