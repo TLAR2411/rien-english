@@ -27,8 +27,11 @@ const slots = useSlots();
 const { locale, t } = useI18n();
 
 const skill = computed(() => findOption(SKILLS, props.lesson.skill));
+// Khmer text (content_km, Khmer title, example translations) only in Khmer;
+// English shows English only
+const isKhmer = computed(() => (props.language ?? locale.value) === "km");
 const rawContent = computed(() =>
-  (props.language ?? locale.value) === "km" && props.lesson.content_km ? props.lesson.content_km : props.lesson.content,
+  isKhmer.value && props.lesson.content_km ? props.lesson.content_km : props.lesson.content,
 );
 
 // Give every <h2> an id so the side outline can jump to it, and count words for the read time
@@ -139,7 +142,7 @@ onBeforeUnmount(() => {
         </div>
 
         <h1 class="lesson-sheet__title">{{ lesson.title_en }}</h1>
-        <p v-if="lesson.title_km" class="lesson-sheet__title-km">{{ lesson.title_km }}</p>
+        <p v-if="isKhmer && lesson.title_km" class="lesson-sheet__title-km">{{ lesson.title_km }}</p>
         <p v-if="lesson.summary" class="lesson-sheet__summary">{{ lesson.summary }}</p>
 
         <ul class="lesson-sheet__facts">
@@ -161,7 +164,7 @@ onBeforeUnmount(() => {
             <li v-for="example in lesson.examples" :key="example.id" class="examples__item">
               <div class="flex-grow-1">
                 <p class="examples__sentence">{{ example.sentence }}</p>
-                <p v-if="example.translation_km" class="examples__translation">{{ example.translation_km }}</p>
+                <p v-if="isKhmer && example.translation_km" class="examples__translation">{{ example.translation_km }}</p>
               </div>
               <VBtn
                 v-if="speech.canPlay(example)"

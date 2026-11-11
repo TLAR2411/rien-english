@@ -8,6 +8,10 @@ const props = defineProps({
 });
 
 const skill = computed(() => findOption(SKILLS, props.lesson.skill));
+
+// English mode shows no Khmer text
+const { locale } = useI18n({ useScope: "global" });
+const isKhmer = computed(() => locale.value === "km");
 </script>
 
 <template>
@@ -18,7 +22,7 @@ const skill = computed(() => findOption(SKILLS, props.lesson.skill));
     </div>
 
     <h3 class="lesson-card__title">{{ lesson.title_en }}</h3>
-    <p v-if="lesson.title_km" class="lesson-card__title-km site-km">{{ lesson.title_km }}</p>
+    <p v-if="isKhmer && lesson.title_km" class="lesson-card__title-km site-km">{{ lesson.title_km }}</p>
     <p v-if="lesson.summary" class="lesson-card__summary">{{ lesson.summary }}</p>
 
     <span class="lesson-card__more">
@@ -33,7 +37,7 @@ const skill = computed(() => findOption(SKILLS, props.lesson.skill));
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 24px;
+  padding: 20px 22px;
   border: 1px solid var(--rien-line);
   border-radius: var(--rien-radius);
   background: #fff;
@@ -53,24 +57,27 @@ const skill = computed(() => findOption(SKILLS, props.lesson.skill));
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-block-end: 16px;
+  margin-block-end: 12px;
 }
 
 .lesson-card__title {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.3;
 }
 
 .lesson-card__title-km {
-  margin-block-start: 4px;
+  margin-block-start: 2px;
   color: var(--rien-grey);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .lesson-card__summary {
   display: -webkit-box;
   overflow: hidden;
-  margin-block-start: 10px;
+  margin-block-start: 8px;
+  line-height: 1.55;
   color: var(--rien-grey);
   font-size: 15px;
   -webkit-box-orient: vertical;
@@ -82,7 +89,7 @@ const skill = computed(() => findOption(SKILLS, props.lesson.skill));
   align-items: center;
   gap: 4px;
   margin-block-start: auto;
-  padding-block-start: 20px;
+  padding-block-start: 14px;
   color: var(--rien-blue);
   font-weight: 500;
 }

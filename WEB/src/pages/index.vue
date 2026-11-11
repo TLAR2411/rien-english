@@ -1,13 +1,12 @@
 <script setup>
-import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
 import { getSiteHome } from "@/services/site";
 import { lessonRoute, lessonsRoute, signUpRoute } from "@/utils/siteRoutes";
 
 /**
- * Public landing page (no login). Five calm sections, real content only
- * (PLAN.md Appendix C): welcome → why Rien English (with a real lesson
- * sentence) → level path → latest lessons → try a real quiz question.
+ * Public landing page (no login). Four calm sections, real content only
+ * (PLAN.md Appendix C): welcome → level path → latest lessons → try a
+ * real quiz question.
  */
 definePage({
   meta: {
@@ -18,7 +17,6 @@ definePage({
 });
 
 const { locale } = useI18n({ useScope: "global" });
-const speech = useSpeech();
 
 const home = ref(null);
 onMounted(async () => {
@@ -37,22 +35,14 @@ const skills = computed(() =>
   })),
 );
 
-const featured = computed(() => home.value?.featured ?? null);
 const skillTitle = (value) => findOption(SKILLS, value)?.title ?? value;
+// English mode shows no Khmer text; Khmer mode shows both
+const isKhmer = computed(() => locale.value === "km");
 const levelName = (level) => (locale.value === "km" && level.name_km ? level.name_km : level.name);
 
 // Sample question: the visitor may pick an answer; checking it needs an account
 // (quizzes are graded on the server only).
 const picked = ref(null);
-
-// What makes the site different — only things it really does
-const WHY_POINTS = [
-  { icon: "tabler-language", title: "Explained in Khmer", text: "Every rule is explained in Khmer too, so you understand it — not just memorise it." },
-  { icon: "tabler-lock-open", title: "Free to read", text: "Read every lesson without an account. Sign up only when you want to take quizzes." },
-  { icon: "tabler-stairs-up", title: "Step by step, A1 to C1", text: "Lessons follow the world's English levels. Start where you are and move up when you are ready." },
-  { icon: "tabler-volume", title: "Hear every sentence", text: "Listen to every example and learn on your phone, anywhere." },
-];
-const WHO_FOR = ["Complete beginners", "High school students", "University students", "Workers who need English"];
 
 // Decoration around the welcome (wide screens only): simple real sentences
 // in speech bubbles, the same shape as the logo's bubble.
@@ -81,13 +71,13 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
           :style="{ '--delay': `${0.5 + index * 0.15}s` }"
         >
           <span class="landing-bubble__en">{{ bubble.en }}</span>
-          <span class="landing-bubble__km site-km">{{ bubble.km }}</span>
+          <span v-if="isKhmer" class="landing-bubble__km site-km">{{ bubble.km }}</span>
         </div>
       </div>
 
       <div class="site-container landing-hero__inner">
         <h1 class="landing-hero__title">Learn English,<br>step by step.</h1>
-        <p class="landing-hero__km site-km">រៀនអង់គ្លេស មួយជំហានម្តងៗ</p>
+        <p v-if="isKhmer" class="landing-hero__km site-km">រៀនអង់គ្លេស មួយជំហានម្តងៗ</p>
         <p class="site-lead landing-hero__lead">
           {{ $t("Free lessons with Khmer explanations. Read any lesson — no account needed.") }}
         </p>
@@ -120,60 +110,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
       </button>
     </section>
 
-    <!-- 2. Why Rien English: who it is for, what makes it different -->
-    <section class="landing-section">
-      <div class="site-container why" :class="{ 'why--single': !featured?.example }">
-        <div>
-          <p class="landing-label">{{ $t("Why Rien English") }}</p>
-          <h2 class="landing-head__title">{{ $t("Made for Cambodian learners.") }}</h2>
-          <p class="landing-head__lead">{{ $t("English explained in your own language — clear, free, and one step at a time.") }}</p>
-
-          <ul class="why__points">
-            <li v-for="point in WHY_POINTS" :key="point.title" class="why__point">
-              <span class="why__icon"><VIcon :icon="point.icon" size="22" /></span>
-              <span>
-                <strong class="why__title">{{ $t(point.title) }}</strong>
-                <span class="why__text">{{ $t(point.text) }}</span>
-              </span>
-            </li>
-          </ul>
-
-          <div class="why__for">
-            <span class="why__for-label">{{ $t("Who it is for") }}</span>
-            <ul>
-              <li v-for="who in WHO_FOR" :key="who">{{ $t(who) }}</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- A real piece of a lesson: English, Khmer, sound -->
-        <figure v-if="featured?.example" class="why__sample">
-          <figcaption class="why__sample-head">
-            <span v-if="featured.level" class="site-tag site-tag--level">{{ featured.level.code }}</span>
-            <RouterLink :to="lessonRoute(featured.slug)">{{ featured.title_en }}</RouterLink>
-          </figcaption>
-          <p class="why__sentence">{{ featured.example.sentence }}</p>
-          <p v-if="featured.example.translation_km" class="why__translation site-km">{{ featured.example.translation_km }}</p>
-          <div class="why__sample-foot">
-            <button
-              v-if="speech.canPlay(featured.example)"
-              type="button"
-              class="why__listen"
-              @click="speech.toggle(featured.example)"
-            >
-              <VIcon :icon="speech.isPlaying(featured.example) ? 'tabler-player-stop-filled' : 'tabler-volume'" size="20" />
-              {{ $t("Listen") }}
-            </button>
-            <RouterLink :to="lessonRoute(featured.slug)" class="site-link">
-              {{ $t("Read lesson") }}
-              <VIcon icon="tabler-arrow-right" size="18" />
-            </RouterLink>
-          </div>
-        </figure>
-      </div>
-    </section>
-
-    <!-- 3. Level path: A1 → C1 -->
+    <!-- 2. Level path: A1 → C1 -->
     <section class="landing-section landing-section--alt">
       <div class="site-container">
         <div class="landing-head">
@@ -197,7 +134,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
       </div>
     </section>
 
-    <!-- 4. Latest lessons -->
+    <!-- 3. Latest lessons -->
     <section class="landing-section">
       <div class="site-container">
         <div class="landing-head landing-head--row">
@@ -214,7 +151,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
               <span class="latest__level">{{ lesson.level?.code }}</span>
               <span class="latest__text">
                 <span class="latest__title">{{ lesson.title_en }}</span>
-                <span v-if="lesson.title_km" class="latest__km site-km">{{ lesson.title_km }}</span>
+                <span v-if="isKhmer && lesson.title_km" class="latest__km site-km">{{ lesson.title_km }}</span>
               </span>
               <span class="latest__skill">{{ $t(skillTitle(lesson.skill)) }}</span>
               <VIcon icon="tabler-chevron-right" size="20" class="latest__arrow" />
@@ -225,7 +162,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
       </div>
     </section>
 
-    <!-- 5. Test yourself: a real quiz question + sign up -->
+    <!-- 4. Test yourself: a real quiz question + sign up -->
     <section class="landing-section landing-section--alt">
       <div class="site-container test" :class="{ 'test--single': !home?.question }">
         <div class="test__text">
@@ -278,15 +215,6 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
   &--alt {
     background: var(--rien-bg-alt);
   }
-}
-
-.landing-label {
-  margin-block-end: 16px;
-  color: var(--rien-grey);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .landing-head {
@@ -594,168 +522,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
   }
 }
 
-// ── 2. Why Rien English ──
-.why {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  align-items: center;
-  gap: clamp(40px, 7vw, 96px);
-
-  &--single {
-    grid-template-columns: minmax(0, 1fr);
-    max-width: 760px;
-  }
-
-  @media (max-width: 899px) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.why__points {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px 32px;
-  margin: clamp(28px, 4vw, 40px) 0 0;
-  padding: 0;
-  list-style: none;
-
-  @media (max-width: 599px) {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-}
-
-.why__point {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.why__icon {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--rien-blue-soft);
-  color: var(--rien-blue);
-}
-
-.why__title {
-  display: block;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.why__text {
-  display: block;
-  margin-block-start: 4px;
-  color: var(--rien-grey);
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.why__for {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
-  margin-block-start: clamp(28px, 4vw, 40px);
-  padding-block-start: 24px;
-  border-block-start: 1px solid var(--rien-line);
-
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  li {
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--rien-bg-alt);
-    font-size: 14px;
-  }
-}
-
-.why__for-label {
-  color: var(--rien-grey);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-// The real lesson piece, like a page from the lesson
-.why__sample {
-  margin: 0;
-  padding: clamp(28px, 4vw, 40px);
-  border-radius: 20px;
-  background: var(--rien-blue-soft);
-}
-
-.why__sample-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--rien-grey);
-  font-size: 14px;
-
-  a {
-    color: var(--rien-blue);
-    font-weight: 500;
-    text-decoration: none;
-  }
-}
-
-.why__sentence {
-  margin-block-start: 24px;
-  font-size: clamp(26px, 3.4vw, 34px);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.why__translation {
-  margin-block-start: 10px;
-  color: var(--rien-grey);
-  font-size: 18px;
-}
-
-.why__sample-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-block-start: 28px;
-}
-
-.why__listen {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--rien-blue);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover {
-    background: #f8faff;
-  }
-}
-
-// ── 3. Level path ──
+// ── 2. Level path ──
 .path {
   position: relative;
   display: grid;
@@ -844,7 +611,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
   font-size: 14px;
 }
 
-// ── 4. Latest lessons: a clean list ──
+// ── 3. Latest lessons: a clean list ──
 .latest {
   margin: 0;
   padding: 0;
@@ -907,7 +674,7 @@ const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ beha
   color: var(--rien-grey);
 }
 
-// ── 5. Test yourself ──
+// ── 4. Test yourself ──
 .test {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
