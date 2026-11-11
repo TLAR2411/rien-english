@@ -4,7 +4,7 @@ import { useCrud } from "@/composables/useCrud";
 import { getCourses, getLevels } from "@/services/dataService";
 import { PUBLISH_STATUSES, SKILLS, findOption } from "@/constants/learning";
 import StatusChip from "@/components/learning/StatusChip.vue";
-import hasPermission from "@/utils/hasPermission";
+import { lessonPreviewRoute } from "@/utils/lessonRoutes";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -47,11 +47,7 @@ const headers = [
 ];
 
 const onEdit = (lesson) => router.push({ name: "admin-lessons-id", params: { id: lesson.id } });
-// Editors get the Preview tab of the lesson page; others the preview page
-const onView = (lesson) =>
-  hasPermission("edit-lessons")
-    ? router.push({ name: "admin-lessons-id", params: { id: lesson.id }, query: { tab: "preview" } })
-    : router.push({ name: "admin-lessons-preview-id", params: { id: lesson.id } });
+const onView = (lesson) => router.push(lessonPreviewRoute(lesson.id));
 
 const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
 </script>
@@ -62,6 +58,8 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     v-model:loading="isLoading"
     v-model:filters="filter"
     title="Lessons"
+    border=""
+    is-full-height-tab
     title-icon="tabler-notebook"
     api-url="admin/lessons"
     :headers="headers"

@@ -27,16 +27,11 @@ export const useAdminNavigation = () => {
       permission: "view-courses",
     },
     {
+      // Lessons and Quizzes: one page with two tabs
       title: "Lessons",
       to: { name: "admin-lessons" },
       icon: { icon: "tabler-notebook" },
       permission: "view-lessons",
-    },
-    {
-      title: "Quizzes",
-      to: { name: "admin-quizzes" },
-      icon: { icon: "tabler-checklist" },
-      permission: "view-quizzes",
     },
 
     // ---- People (admin) ----
