@@ -44,12 +44,38 @@ const levelName = (level) => (locale.value === "km" && level.name_km ? level.nam
 // Sample question: the visitor may pick an answer; checking it needs an account
 // (quizzes are graded on the server only).
 const picked = ref(null);
+
+// Decoration around the welcome (wide screens only): simple real sentences
+// in speech bubbles, the same shape as the logo's bubble.
+const BUBBLES = [
+  { en: "Hello! How are you?", km: "សួស្តី! សុខសប្បាយទេ?", place: "top-left" },
+  { en: "I am a student.", km: "ខ្ញុំជាសិស្ស។", place: "top-right", main: true },
+  { en: "Where do you live?", km: "តើអ្នករស់នៅឯណា?", place: "bottom-left" },
+  { en: "Nice to meet you.", km: "រីករាយដែលបានជួបអ្នក។", place: "bottom-right" },
+];
+
+// "Scroll down" arrow at the bottom of the welcome
+const heroEl = ref(null);
+const scrollDown = () => heroEl.value?.nextElementSibling?.scrollIntoView({ behavior: "smooth" });
 </script>
 
 <template>
   <div class="landing">
     <!-- 1. Welcome -->
-    <section class="landing-hero">
+    <section ref="heroEl" class="landing-hero">
+      <div class="landing-bubbles" aria-hidden="true">
+        <div
+          v-for="(bubble, index) in BUBBLES"
+          :key="bubble.en"
+          class="landing-bubble"
+          :class="[`landing-bubble--${bubble.place}`, { 'landing-bubble--main': bubble.main }]"
+          :style="{ '--delay': `${0.5 + index * 0.15}s` }"
+        >
+          <span class="landing-bubble__en">{{ bubble.en }}</span>
+          <span class="landing-bubble__km site-km">{{ bubble.km }}</span>
+        </div>
+      </div>
+
       <div class="site-container landing-hero__inner">
         <h1 class="landing-hero__title">Learn English,<br>step by step.</h1>
         <p class="landing-hero__km site-km">រៀនអង់គ្លេស មួយជំហានម្តងៗ</p>
@@ -79,6 +105,10 @@ const picked = ref(null);
           </template>
         </nav>
       </div>
+
+      <button type="button" class="landing-hero__scroll" :aria-label="$t('Scroll down')" @click="scrollDown">
+        <VIcon icon="tabler-chevron-down" size="24" />
+      </button>
     </section>
 
     <!-- 2. Lesson of the day -->
@@ -219,10 +249,11 @@ const picked = ref(null);
 </template>
 
 <style lang="scss" scoped>
-// Calm and roomy: one idea per section, one blue, grey text, thin lines.
+// Calm but compact: one idea per section, one blue, grey text, thin lines.
 
 .landing-section {
-  padding-block: clamp(56px, 8vw, 104px);
+  padding-block: clamp(40px, 5vw, 64px);
+
 
   &--alt {
     background: var(--rien-bg-alt);
@@ -240,7 +271,7 @@ const picked = ref(null);
 
 .landing-head {
   max-width: 600px;
-  margin-block-end: clamp(32px, 4vw, 48px);
+  margin-block-end: clamp(24px, 3vw, 32px);
 
   &--row {
     display: flex;
@@ -253,16 +284,16 @@ const picked = ref(null);
 }
 
 .landing-head__title {
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(26px, 3.4vw, 34px);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
 
 .landing-head__lead {
-  margin-block-start: 12px;
+  margin-block-start: 8px;
   color: var(--rien-grey);
-  font-size: 18px;
+  font-size: 17px;
 }
 
 // Khmer headings: a little lighter, they look heavy in bold
@@ -275,19 +306,200 @@ const picked = ref(null);
 }
 
 // ── 1. Welcome ──
+// The welcome fills the first screen: the next section shows after scrolling
 .landing-hero {
-  padding-block: clamp(64px, 12vw, 136px) clamp(56px, 8vw, 96px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - var(--rien-header-height));
+  padding-block: clamp(48px, 8vw, 88px) clamp(72px, 9vw, 104px);
+  overflow: hidden;
   text-align: center;
 }
 
+// hero and the next white section: don't double the gap between them
+.landing-hero + .landing-section:not(.landing-section--alt) {
+  padding-block-start: 0;
+}
+
 .landing-hero__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  // Soft entrance, one part after the other
+  > * {
+    animation: landing-rise 0.6s ease-out both;
+  }
+
+  @for $i from 2 through 5 {
+    > :nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 0.08}s;
+    }
+  }
+}
+
+.landing-hero__scroll {
+  position: absolute;
+  inset-block-end: 20px;
+  inset-inline-start: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: -22px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--rien-grey);
+  cursor: pointer;
+  animation: landing-nudge 2.4s ease-in-out 1.2s infinite;
+
+  &:hover {
+    color: var(--rien-blue);
+  }
+}
+
+// ── Speech bubbles around the welcome ──
+.landing-bubbles {
+  position: absolute;
+  inset: 0;
+  max-width: 1360px;
+  margin-inline: auto;
+  pointer-events: none;
+
+  // Only where there is room beside the headline
+  @media (max-width: 1179px) {
+    display: none;
+  }
+}
+
+.landing-bubble {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: var(--rien-bg-alt);
+  text-align: start;
+  animation:
+    landing-pop 0.6s ease-out var(--delay) both,
+    landing-float 7s ease-in-out calc(var(--delay) + 0.6s) infinite;
+
+  // the tail, like the logo's bubble
+  &::after {
+    position: absolute;
+    inset-block-end: -7px;
+    width: 16px;
+    height: 16px;
+    border-radius: 0 0 4px;
+    background: inherit;
+    content: "";
+    transform: rotate(45deg);
+  }
+
+  &--top-left {
+    inset-block-start: 16%;
+    inset-inline-start: 4%;
+  }
+
+  &--top-right {
+    inset-block-start: 22%;
+    inset-inline-end: 4%;
+  }
+
+  &--bottom-left {
+    inset-block-end: 24%;
+    inset-inline-start: 7%;
+    animation-duration: 0.6s, 8s;
+  }
+
+  &--bottom-right {
+    inset-block-end: 18%;
+    inset-inline-end: 6%;
+    animation-duration: 0.6s, 8s;
+  }
+
+  // tail on the side that faces the headline
+  &--top-left::after,
+  &--bottom-left::after {
+    inset-inline-end: 24px;
+  }
+
+  &--top-right::after,
+  &--bottom-right::after {
+    inset-inline-start: 24px;
+  }
+
+  &--main {
+    background: var(--rien-blue);
+    color: #fff;
+
+    .landing-bubble__km {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+.landing-bubble__en {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.landing-bubble__km {
+  color: var(--rien-grey);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes landing-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+
+@keyframes landing-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes landing-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+// People who turn off motion on their device see everything still
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero__inner > *,
+  .landing-bubble,
+  .landing-hero__scroll {
+    animation: none;
+  }
 }
 
 .landing-hero__title {
-  font-size: clamp(40px, 8vw, 72px);
+  font-size: clamp(38px, 6.5vw, 64px);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.035em;
@@ -300,8 +512,9 @@ const picked = ref(null);
 }
 
 .landing-hero__lead {
-  max-width: 32rem;
-  margin-block-start: 16px;
+  max-width: 36rem;
+  margin-block-start: 12px;
+  text-wrap: balance;
 }
 
 .landing-hero__actions {
@@ -310,7 +523,7 @@ const picked = ref(null);
   align-items: center;
   justify-content: center;
   gap: 12px 28px;
-  margin-block-start: 36px;
+  margin-block-start: 28px;
 }
 
 .landing-skills {
@@ -318,7 +531,7 @@ const picked = ref(null);
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin-block-start: clamp(48px, 7vw, 72px);
+  margin-block-start: clamp(32px, 4vw, 44px);
 }
 
 .landing-skills__item {
@@ -365,10 +578,10 @@ const picked = ref(null);
 // ── 2. Lesson of the day ──
 .featured {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--rien-line);
-  border-radius: 20px;
+  border-radius: 16px;
 
   @media (max-width: 767px) {
     grid-template-columns: minmax(0, 1fr);
@@ -378,17 +591,17 @@ const picked = ref(null);
 .featured__text {
   display: flex;
   flex-direction: column;
-  padding: clamp(28px, 5vw, 48px);
+  padding: clamp(24px, 3.5vw, 36px);
 }
 
 .featured__tags {
   display: flex;
   gap: 8px;
-  margin-block-end: 20px;
+  margin-block-end: 14px;
 }
 
 .featured__title {
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(24px, 3vw, 30px);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -403,19 +616,20 @@ const picked = ref(null);
 }
 
 .featured__km {
-  margin-block-start: 6px;
+  margin-block-start: 2px;
   color: var(--rien-grey);
-  font-size: 17px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .featured__summary {
-  margin-block-start: 16px;
+  margin-block-start: 12px;
   color: var(--rien-grey);
 }
 
 .featured__more {
   margin-block-start: auto;
-  padding-block-start: 24px;
+  padding-block-start: 12px;
 }
 
 .featured__example {
@@ -423,7 +637,7 @@ const picked = ref(null);
   flex-direction: column;
   justify-content: center;
   margin: 0;
-  padding: clamp(28px, 5vw, 48px);
+  padding: clamp(24px, 3.5vw, 36px);
   background: var(--rien-blue-soft);
 }
 
@@ -434,17 +648,18 @@ const picked = ref(null);
 }
 
 .featured__sentence {
-  margin-block-start: 12px;
-  font-size: clamp(24px, 3.4vw, 32px);
+  margin-block-start: 8px;
+  font-size: clamp(22px, 2.8vw, 28px);
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
 
 .featured__translation {
-  margin-block-start: 8px;
+  margin-block-start: 4px;
   color: var(--rien-grey);
-  font-size: 17px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .featured__listen {
@@ -453,7 +668,7 @@ const picked = ref(null);
   align-self: flex-start;
   gap: 8px;
   min-height: 44px;
-  margin-block-start: 24px;
+  margin-block-start: 16px;
   padding: 0 18px;
   border: 0;
   border-radius: 999px;
@@ -570,8 +785,8 @@ const picked = ref(null);
   display: flex;
   align-items: center;
   gap: 20px;
-  min-height: 80px;
-  padding-block: 16px;
+  min-height: 68px;
+  padding-block: 12px;
   border-block-end: 1px solid var(--rien-line);
   text-decoration: none;
 
@@ -594,14 +809,16 @@ const picked = ref(null);
 }
 
 .latest__title {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.35;
   transition: color 0.15s;
 }
 
 .latest__km {
   color: var(--rien-grey);
   font-size: 15px;
+  line-height: 1.5;
 }
 
 .latest__skill {
@@ -624,7 +841,7 @@ const picked = ref(null);
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
   align-items: center;
-  gap: clamp(40px, 7vw, 96px);
+  gap: clamp(32px, 5vw, 64px);
 
   &--single {
     grid-template-columns: minmax(0, 1fr);
@@ -642,12 +859,12 @@ const picked = ref(null);
 }
 
 .test__btn {
-  margin-block-start: 28px;
+  margin-block-start: 20px;
 }
 
 .test__card {
-  padding: clamp(24px, 4vw, 36px);
-  border-radius: 20px;
+  padding: clamp(20px, 3vw, 28px);
+  border-radius: 16px;
   background: #fff;
 }
 
@@ -663,27 +880,27 @@ const picked = ref(null);
 }
 
 .test__prompt {
-  margin-block-start: 12px;
-  font-size: clamp(20px, 2.6vw, 24px);
+  margin-block-start: 8px;
+  font-size: clamp(19px, 2.2vw, 22px);
   font-weight: 600;
   line-height: 1.35;
 }
 
 .test__options {
   display: grid;
-  gap: 10px;
-  margin-block-start: 24px;
+  gap: 8px;
+  margin-block-start: 16px;
 }
 
 .test__option {
-  min-height: 52px;
-  padding: 12px 18px;
+  min-height: 48px;
+  padding: 10px 16px;
   border: 1.5px solid var(--rien-line);
   border-radius: 12px;
   background: #fff;
   color: var(--rien-ink);
   font: inherit;
-  font-size: 17px;
+  font-size: 16px;
   text-align: start;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
