@@ -75,6 +75,15 @@ export const SYSTEM_PART_SEGMENT_MAP = Object.fromEntries(
   ALL_PARTS.map((item) => [item.part, item.matchValue]),
 );
 
+// router/guards.js: the permission a user needs to open any page of a part
+// (e.g. "admin-allow-part" — roles get it from API/config/roles.php).
+export const PERMISSION_BY_PART = Object.fromEntries(
+  ALL_PARTS.filter((item) => item.permission).map((item) => [
+    item.matchValue,
+    item.permission,
+  ]),
+);
+
 // Where the profile icon (UserFullProfile.vue) sends each system part.
 // Keyed by SYSTEM_PART so it can't drift the way an old hard-coded part name
 // check did when the router guard normalized to a different string.

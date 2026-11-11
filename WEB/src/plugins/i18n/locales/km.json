@@ -1981,5 +1981,10 @@
   "Pick the month the tenant is paying for.": "ជ្រើសខែដែលអ្នកជួលត្រូវបង់។",
   "This run bills rent for {rent}. Nobody had unbilled rent for that month. A tenant who moved in during {month} is billed when you pick {next}.": "លើកនេះគិតថ្លៃបន្ទប់សម្រាប់ {rent}។ គ្មានអ្នកជួលណាមានថ្លៃមិនទាន់គិតក្នុងខែនោះទេ។ អ្នកជួលដែលចូលក្នុង {month} នឹងត្រូវគិតថ្លៃនៅពេលអ្នកជ្រើស {next}។",
   "This run bills rent for {rent}. Nobody had unbilled rent for that month.": "លើកនេះគិតថ្លៃបន្ទប់សម្រាប់ {rent}។ គ្មានអ្នកជួលណាមានថ្លៃមិនទាន់គិតក្នុងខែនោះទេ។",
-  "A tenant who moved out gets every day up to moving out on this bill.": "អ្នកជួលដែលចាកចេញ ត្រូវបង់គ្រប់ថ្ងៃរហូតដល់ថ្ងៃចាកចេញក្នុងវិក្កយបត្រនេះ។"
+  "A tenant who moved out gets every day up to moving out on this bill.": "អ្នកជួលដែលចាកចេញ ត្រូវបង់គ្រប់ថ្ងៃរហូតដល់ថ្ងៃចាកចេញក្នុងវិក្កយបត្រនេះ។",
+  "Dashboard": "ផ្ទាំងគ្រប់គ្រង",
+  "Welcome back": "សូមស្វាគមន៍",
+  "Students": "សិស្ស",
+  "Teachers": "គ្រូបង្រៀន",
+  "Learning": "ការសិក្សា"
 }

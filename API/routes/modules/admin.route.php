@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\ActivityLogController;
-use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\PermissionController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\BranchController;
@@ -11,9 +10,6 @@ use App\Http\Controllers\Api\UserController;
 // General settings (settings table); secrets are write-only
 Route::get('settings-all', [SettingController::class, 'all'])->middleware(['auth:api', 'permission:view-settings']);
 Route::put('settings', [SettingController::class, 'update'])->middleware(['auth:api', 'permission:edit-settings']);
-
-// Admin Dashboard
-Route::get('admin-dashboard', [AdminDashboardController::class, 'index'])->middleware(['auth:api', 'permission:view-users']);
 
 // Activity Logs
 Route::get('activity-log-list', [ActivityLogController::class, 'list'])->middleware(['auth:api', 'permission:view-activity-log']);

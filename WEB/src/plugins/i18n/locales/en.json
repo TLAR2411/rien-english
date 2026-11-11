@@ -1967,5 +1967,10 @@
   "Pick the month the tenant is paying for.": "Pick the month the tenant is paying for.",
   "This run bills rent for {rent}. Nobody had unbilled rent for that month. A tenant who moved in during {month} is billed when you pick {next}.": "This run bills rent for {rent}. Nobody had unbilled rent for that month. A tenant who moved in during {month} is billed when you pick {next}.",
   "This run bills rent for {rent}. Nobody had unbilled rent for that month.": "This run bills rent for {rent}. Nobody had unbilled rent for that month.",
-  "A tenant who moved out gets every day up to moving out on this bill.": "A tenant who moved out gets every day up to moving out on this bill."
+  "A tenant who moved out gets every day up to moving out on this bill.": "A tenant who moved out gets every day up to moving out on this bill.",
+  "Dashboard": "Dashboard",
+  "Welcome back": "Welcome back",
+  "Students": "Students",
+  "Teachers": "Teachers",
+  "Learning": "Learning"
 }

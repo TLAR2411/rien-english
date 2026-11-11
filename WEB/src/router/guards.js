@@ -5,7 +5,7 @@ import { usePartStore } from "@/stores/partStore";
 import { getAccessToken, removeAccessToken } from "@/utils/accessToken";
 import { getRefreshToken } from "@/utils/refreshToken";
 import { homePathFor } from "@/utils/homePath";
-import { SYSTEM_PART_SEGMENT_MAP } from "@/composables/useSystemParts";
+import { PERMISSION_BY_PART, SYSTEM_PART_SEGMENT_MAP } from "@/composables/useSystemParts";
 // import { useCookie } from "#imports";
 const { t } = getI18n().global;
 export const setupGuards = (router) => {
@@ -68,7 +68,14 @@ export const setupGuards = (router) => {
       return homePathFor(auth.user?.default_part ?? part.system_part);
     }
 
-    // 7. Permissions
+    // 7. Permissions: first the part itself (e.g. only admin/teacher open
+    // /admin), then the page. Pages outside a part (not-authorized, ...) skip
+    // the part check.
+    const partPermission = PERMISSION_BY_PART[SYSTEM_PART_SEGMENT_MAP[firstSegment]];
+    if (partPermission && !hasPermission(partPermission)) {
+      return { name: "not-authorized" };
+    }
+
     if (to.meta.permissions && !hasPermission(to.meta.permissions)) {
       return { name: "not-authorized" };
     }

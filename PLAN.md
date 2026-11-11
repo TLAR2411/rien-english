@@ -40,7 +40,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | Phase | Name | Tasks | Done |
 |---|---|---|---|
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
-| 1 | Roles & admin area | T04–T06 | 2/3 |
+| 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 0/4 |
 | 3 | Admin: manage content | T11–T17 | 0/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T06
+**Current task:** T07
 
 ---
 
@@ -94,7 +94,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - Some actions (manage users) are `admin` only.
   - ✅ Done when: tests — student gets 403 on `/admin`, admin gets 200.
 
-- [ ] **T06 — Admin layout (Vue)**
+- [x] **T06 — Admin layout (Vue)**
   - Sidebar: Dashboard, Levels, Courses, Lessons, Quizzes, Users, Writing Review.
   - Responsive (works on phone). Link to admin only shown to admin/teacher.
   - ✅ Done when: admin sees empty admin dashboard page.
@@ -426,3 +426,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T03 — removed HR part, departments, positions, team leader/diagram/transfer, user access requests, HR manager role, loan leftovers (40→15 row buttons, 216 unused loan translations), "Devfin" name; navbar branch picker hidden with one branch — tests: pass (28), migrate:fresh --seed on test DB: pass, build: pass
 - 2026-11-11 — T04 — Laratrust roles `admin`, `teacher`, `student` added (old roles kept); `CreateStudentAccount` action (student role, username from email, head branch, `default_part=student`); new migration adds `student` to `users.default_part`; admin email/password from `.env` (`ADMIN_EMAIL`, `ADMIN_PASSWORD`) via `config/app.php`; admin seeder no longer assumes ID 1 — tests: pass (32), migrate:fresh --seed on test DB: pass, build: pass
 - 2026-11-11 — T05 — new `config/roles.php` (role groups admin_area = admin|teacher, admin_only = admin; permissions per role) + `AccessGroup` helper; API routes split: admin area (learning `/api/web/admin/*`, address, export) and admin-only (users, roles, branches, settings, logs); RoleSeeder gives roles their permissions from config; `GET /api/web/admin/dashboard`; test users now get a real role — tests: pass (39)
+- 2026-11-11 — T06 — new admin sidebar (Dashboard; People: Users; System: Roles, Branches, Settings, Activity Log, Address — each shown only with its permission); learning menu items are added by the tasks that build their pages; router blocks `/admin/*` without `admin-allow-part` (students); old staff dashboard replaced by a simple learning dashboard (students/teachers counts), stat tile moved to `components/AppStatTile.vue` — tests: pass (40), build: pass
