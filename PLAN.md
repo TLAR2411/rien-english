@@ -42,7 +42,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
-| 3 | Admin: manage content | T11–T17 | 6/7 |
+| 3 | Admin: manage content | T11–T17 | 7/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T17
+**Current task:** T18
 
 ---
 
@@ -158,7 +158,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - Admin can preview a lesson and quiz exactly as a student sees it (even when draft).
   - ✅ Done when: preview button works.
 
-- [ ] **T17 — Sample content seeder**
+- [x] **T17 — Sample content seeder**
   - Seeder with 3 real A1 grammar lessons (to be, Present Simple, a/an/the) + a 10-question quiz each, using Appendix A.
   - Mark in a comment: **"Content must be reviewed by an English teacher before launch."**
   - ✅ Done when: seeded lessons appear in admin.
@@ -437,3 +437,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T14 — Examples + uploads: API `POST /api/web/admin/uploads` (audio mp3 ≤ 10 MB, image jpg/png/webp ≤ 2 MB — limits in `config/learning.php` → uploads, checked by `UploadRequest`), examples API `lessons/{lesson}/examples` + `examples/{example}` (edit, move, delete); `MediaUrl` cast saves short file paths and returns full URLs (new domain keeps working, outside links kept); Vue: Examples section on the lesson page (add/edit/reorder/delete, audio player, "8–10 recommended" counter), `AudioField` for lesson audio, image button in the editor — tests: pass (85), build: pass
 - 2026-11-11 — T15 — Quiz builder: API `lessons/{lesson}/quiz` (show / create-or-update settings / delete — blocked once students took it), `quizzes/{quiz}/questions` + `questions/{question}` (edit, move, delete), `GET quizzes` list; `QuestionRequest` checks each type (option counts in `QuestionType::optionLimits()`, choice types need exactly one correct answer, typed answers are all accepted answers); `SaveQuestion` action saves a question + its options together; Vue: lesson page now has tabs Lesson · Examples · Quiz (`?tab=`), quiz settings, question list, `QuestionDialog` with a form per type, Quizzes list page in the sidebar; permissions `*-quizzes`; migration widens role ids from TINYINT (max 255) to SMALLINT — tests hit the 255 limit — tests: pass (100), build: pass
 - 2026-11-11 — T16 — Preview: API `GET /api/web/admin/lessons/{id}/preview` (drafts too) using the student formats `StudentLessonResource` / `StudentQuizResource` / `StudentQuestionResource` — no `is_correct`, no explanations, word-order sends mixed-up words — to be reused by the public site and student quizzes; shared Vue `components/learning/student/LessonView.vue` + `QuizView.vue` (one input per question type, big tap targets); admin page `/admin/lessons/preview/:id`, "Preview" button on the lesson page and "View" in the lesson list — tests: pass (104), build: pass
+- 2026-11-11 — T17 — `SampleLessonSeeder` reads one data file per lesson from `database/seeders/Learning/sample-lessons/` (to add a lesson: copy a file): to be, Present Simple, a/an/the — Appendix A parts (explanation EN + KM, Form table, When to use, Common mistakes), 10 examples with Khmer, 10-question quiz each (all 5 types, explanations EN + KM); seeded as **Draft** with the note "Content must be reviewed by an English teacher before launch."; safe to run again (skips a quiz students already took) — tests: pass (108), migrate:fresh --seed: pass, build: pass
