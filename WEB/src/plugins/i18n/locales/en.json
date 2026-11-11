@@ -2039,5 +2039,18 @@
   "Delete table": "Delete table",
   "Undo": "Undo",
   "Redo": "Redo",
-  "Insert image": "Insert image"
+  "Insert image": "Insert image",
+  "Audio": "Audio",
+  "No audio yet": "No audio yet",
+  "Replace": "Replace",
+  "Upload mp3": "Upload mp3",
+  "Remove audio": "Remove audio",
+  "Lesson audio (optional)": "Lesson audio (optional)",
+  "New Example": "New Example",
+  "Edit Example": "Edit Example",
+  "Sentence": "Sentence",
+  "Khmer translation": "Khmer translation",
+  "Add example": "Add example",
+  "{count} of {min}–{max} recommended": "{count} of {min}–{max} recommended",
+  "No examples yet. Add the first one.": "No examples yet. Add the first one."
 }

@@ -2053,5 +2053,18 @@
   "Delete table": "លុបតារាង",
   "Undo": "មិនធ្វើវិញ",
   "Redo": "ធ្វើវិញ",
-  "Insert image": "បញ្ចូលរូបភាព"
+  "Insert image": "បញ្ចូលរូបភាព",
+  "Audio": "សំឡេង",
+  "No audio yet": "មិនទាន់មានសំឡេង",
+  "Replace": "ប្តូរ",
+  "Upload mp3": "ផ្ទុក mp3",
+  "Remove audio": "ដកសំឡេងចេញ",
+  "Lesson audio (optional)": "សំឡេងមេរៀន (ស្រេចចិត្ត)",
+  "New Example": "ឧទាហរណ៍ថ្មី",
+  "Edit Example": "កែឧទាហរណ៍",
+  "Sentence": "ប្រយោគ",
+  "Khmer translation": "ការបកប្រែខ្មែរ",
+  "Add example": "បន្ថែមឧទាហរណ៍",
+  "{count} of {min}–{max} recommended": "{count} ក្នុងចំណោម {min}–{max} ដែលណែនាំ",
+  "No examples yet. Add the first one.": "មិនទាន់មានឧទាហរណ៍។ សូមបន្ថែមមួយ។"
 }

@@ -6,6 +6,8 @@ import { getCourses } from "@/services/dataService";
 import { requiredValidator } from "@/@core/utils/validators";
 import { PUBLISH_STATUSES, SKILLS } from "@/constants/learning";
 import { GRAMMAR_SECTIONS, GRAMMAR_TEMPLATE_EN, GRAMMAR_TEMPLATE_KM, headingsIn } from "@/constants/lessonTemplates";
+import { uploadImage } from "@/services/uploads";
+import AudioField from "@/components/learning/AudioField.vue";
 import RichTextEditor from "@/components/learning/RichTextEditor.vue";
 import StatusChip from "@/components/learning/StatusChip.vue";
 
@@ -30,6 +32,7 @@ const emptyForm = () => ({
   summary: "",
   content: "",
   content_km: "",
+  audio_url: "",
   status: "draft",
 });
 
@@ -82,7 +85,7 @@ const onSave = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
 
-  const saved = await save(form.value);
+  const saved = await save({ ...form.value, audio_url: form.value.audio_url || null });
   if (!saved) return;
 
   if (!isEdit.value) {
@@ -176,6 +179,9 @@ const onSave = async () => {
                   </AppTextarea>
                 </VCol>
                 <VCol cols="12">
+                  <AudioField v-model="form.audio_url" :label="t('Lesson audio (optional)')" />
+                </VCol>
+                <VCol cols="12">
                   <AppTextField
                     v-model="form.slug"
                     placeholder="present-simple"
@@ -211,10 +217,10 @@ const onSave = async () => {
               </VTabs>
               <VWindow v-model="textTab">
                 <VWindowItem value="en">
-                  <RichTextEditor v-model="form.content" :placeholder="t('Write the lesson in simple English…')" />
+                  <RichTextEditor v-model="form.content" :upload-image="uploadImage" :placeholder="t('Write the lesson in simple English…')" />
                 </VWindowItem>
                 <VWindowItem value="km">
-                  <RichTextEditor v-model="form.content_km" :placeholder="t('Khmer explanation…')" />
+                  <RichTextEditor v-model="form.content_km" :upload-image="uploadImage" :placeholder="t('Khmer explanation…')" />
                 </VWindowItem>
               </VWindow>
             </VCardText>

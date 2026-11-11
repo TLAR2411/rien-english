@@ -23,6 +23,7 @@ class LessonRequest extends FormRequest
             'summary' => ['nullable', 'string', 'max:1000'],
             'content' => ['nullable', 'string', $maxHtml],
             'content_km' => ['nullable', 'string', $maxHtml],
+            'audio_url' => ['nullable', 'url:http,https', 'max:2048'],
             'status' => ['required', Rule::enum(PublishStatus::class)],
         ];
     }

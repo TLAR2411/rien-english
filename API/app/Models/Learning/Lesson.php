@@ -2,6 +2,7 @@
 
 namespace App\Models\Learning;
 
+use App\Casts\MediaUrl;
 use App\Enums\LessonSkill;
 use App\Models\Concerns\HasPublishStatus;
 use App\Models\Concerns\HasSlug;
@@ -25,6 +26,7 @@ class Lesson extends Model
 
     protected $casts = [
         'skill' => LessonSkill::class,
+        'audio_url' => MediaUrl::class,
         // Lesson HTML is cleaned when saved (rules: config/purify.php → lesson)
         'content' => PurifyHtmlOnSet::class.':lesson',
         'content_km' => PurifyHtmlOnSet::class.':lesson',

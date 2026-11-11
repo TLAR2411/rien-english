@@ -27,6 +27,17 @@ return [
     // Longest lesson text accepted (characters of HTML, per language)
     'lesson_max_length' => 200000,
 
+    // Files teachers upload (audio for lessons/examples, images in lesson text).
+    // Saved on this disk under `folder` (run `php artisan storage:link` once).
+    'uploads' => [
+        'disk' => 'public',
+        'folder' => 'learning',
+        'types' => [
+            'audio' => ['mimes' => ['mp3'], 'max_kb' => 10 * 1024],
+            'image' => ['mimes' => ['jpg', 'jpeg', 'png', 'webp'], 'max_kb' => 2 * 1024],
+        ],
+    ],
+
     // Rows per page in admin lists
     'per_page' => 25,
 

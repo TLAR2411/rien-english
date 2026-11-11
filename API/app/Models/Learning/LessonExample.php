@@ -2,6 +2,7 @@
 
 namespace App\Models\Learning;
 
+use App\Casts\MediaUrl;
 use App\Models\Concerns\HasSortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,10 @@ class LessonExample extends Model
     use HasFactory, HasSortOrder;
 
     protected $fillable = ['lesson_id', 'sentence', 'translation_km', 'audio_url', 'sort_order'];
+
+    protected $casts = [
+        'audio_url' => MediaUrl::class,
+    ];
 
     public function sortGroupColumn(): ?string
     {

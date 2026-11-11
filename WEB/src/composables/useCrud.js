@@ -7,8 +7,11 @@ import { api } from "@/utils/api";
  * by the api interceptor (utils/api.js), so pages don't repeat that code.
  *
  *   const { isSaving, save, remove, move } = useCrud("admin/levels", { onDone: reloadTable });
+ *
+ * `createUrl`: where new rows are posted when it is not `resource`
+ * (e.g. examples are created under their lesson: "admin/lessons/5/examples").
  */
-export function useCrud(resource, { onDone } = {}) {
+export function useCrud(resource, { onDone, createUrl } = {}) {
   const isSaving = ref(false);
 
   const run = async (request) => {
@@ -27,7 +30,9 @@ export function useCrud(resource, { onDone } = {}) {
   /** Create (no id) or update (has id). */
   const save = (form) =>
     run(() =>
-      form.id ? api.put(`${resource}/${form.id}`, form) : api.post(resource, form),
+      form.id
+        ? api.put(`${resource}/${form.id}`, form)
+        : api.post(createUrl ?? resource, form),
     );
 
   const remove = (item) => run(() => api.delete(`${resource}/${item.id}`));
