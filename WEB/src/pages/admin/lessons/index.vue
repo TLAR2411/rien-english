@@ -34,7 +34,7 @@ const tab = computed({
 <template>
   <!-- One frame: full-width tabs on top, the list below fills the rest of the screen -->
   <VCard flat border class="lessons-page">
-    <VTabs v-model="tab" grow stacked class="v-tabs--fixed flex-shrink-0">
+    <VTabs v-model="tab" grow stacked class="v-tabs--fixed flex-0-0">
       <VTab v-for="item in tabs" :key="item.value" :value="item.value">
         <VIcon :icon="item.icon" class="mb-2" />
         <span>{{ t(item.title) }}</span>
