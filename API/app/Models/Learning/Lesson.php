@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /** One lesson of a course, e.g. "Present Simple" (skill: grammar). */
 class Lesson extends Model
@@ -43,5 +44,10 @@ class Lesson extends Model
     public function examples(): HasMany
     {
         return $this->hasMany(LessonExample::class)->ordered();
+    }
+
+    public function quiz(): HasOne
+    {
+        return $this->hasOne(Quiz::class);
     }
 }
