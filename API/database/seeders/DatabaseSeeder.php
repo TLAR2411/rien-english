@@ -10,6 +10,7 @@ use Database\Seeders\Auth\SettingSeeder;
 use Database\Seeders\Auth\UserSeeder;
 use Database\Seeders\Core\BranchSeeder;
 use Database\Seeders\Core\CompanySeeder;
+use Database\Seeders\Learning\LevelSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -29,6 +30,9 @@ class DatabaseSeeder extends Seeder
 
             AddressSeeder::class,
             UserSeeder::class,
+
+            // Learning content
+            LevelSeeder::class,
         ]);
     }
 }
