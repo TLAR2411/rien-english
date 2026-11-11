@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Learning\Site\LessonCardResource;
 use App\Http\Resources\Learning\Student\StudentQuestionResource;
 use App\Models\Learning\Lesson;
-use App\Models\Learning\LessonExample;
 use App\Models\Learning\Level;
 use App\Models\Learning\Question;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,11 +22,12 @@ class HomeController extends Controller
 {
     use ApiResponses;
 
-    private const LATEST_LESSONS = 6;
+    private const LATEST_LESSONS = 5;
 
     public function __invoke(): JsonResponse
     {
         return $this->ok([
+            'featured' => $this->lessonOfTheDay(),
             'levels' => $this->levels(),
             'skills' => $this->skills(),
             'latest' => LessonCardResource::collection(
@@ -40,7 +40,6 @@ class HomeController extends Controller
                     ->limit(self::LATEST_LESSONS)
                     ->get()
             ),
-            'example' => $this->sampleExample(),
             'question' => $this->sampleQuestion(),
         ]);
     }
@@ -65,19 +64,27 @@ class HomeController extends Controller
         ], LessonSkill::cases());
     }
 
-    /** One real example sentence, to show visitors what a lesson looks like. */
-    private function sampleExample(): ?array
+    /**
+     * "Lesson of the day": a different published lesson each day (same for everyone),
+     * with its first example sentence — real content for visitors.
+     */
+    private function lessonOfTheDay(): ?array
     {
-        $example = LessonExample::query()
-            ->whereHas('lesson', fn (Builder $lesson) => $lesson->visible())
-            ->with('lesson:id,slug,title_en')
-            ->inRandomOrder()
-            ->first();
+        $ids = Lesson::visible()->orderBy('id')->pluck('id');
+        if ($ids->isEmpty()) {
+            return null;
+        }
 
-        return $example ? [
-            ...$example->only(['id', 'sentence', 'translation_km', 'audio_url']),
-            'lesson' => $example->lesson->only(['slug', 'title_en']),
-        ] : null;
+        $lesson = Lesson::query()
+            ->select(LessonCardResource::COLUMNS)
+            ->with(['course.level', 'examples' => fn ($examples) => $examples->limit(1)])
+            ->withExists('quiz')
+            ->find($ids[now()->dayOfYear % $ids->count()]);
+
+        return [
+            ...(new LessonCardResource($lesson))->resolve(),
+            'example' => $lesson->examples->first()?->only(['id', 'sentence', 'translation_km', 'audio_url']),
+        ];
     }
 
     /** One real multiple-choice question — without the answer (it is graded in Laravel, after login). */

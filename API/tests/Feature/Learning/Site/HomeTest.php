@@ -34,7 +34,7 @@ class HomeTest extends TestCase
         $this->assertSame(1, collect($response->json('data.levels'))->sum('lessons_count'));
     }
 
-    public function test_the_sample_question_has_no_answer(): void
+    public function test_lesson_of_the_day_and_a_sample_question_without_the_answer(): void
     {
         $lesson = Lesson::factory()->has(LessonExample::factory(), 'examples')->create();
         Question::factory()->for(Quiz::factory()->for($lesson))->withOptions(2)->create(['explanation' => 'SECRET EXPLANATION']);
@@ -43,7 +43,8 @@ class HomeTest extends TestCase
             ->assertOk()
             ->assertJsonCount(3, 'data.question.options')
             ->assertJsonPath('data.question.lesson.slug', $lesson->slug)
-            ->assertJsonPath('data.example.lesson.slug', $lesson->slug);
+            ->assertJsonPath('data.featured.slug', $lesson->slug)
+            ->assertJsonPath('data.featured.example.sentence', $lesson->examples->first()->sentence);
 
         $this->assertStringNotContainsString('is_correct', $response->getContent());
         $this->assertStringNotContainsString('SECRET EXPLANATION', $response->getContent());
@@ -54,7 +55,7 @@ class HomeTest extends TestCase
         $this->getJson('/api/web/site/home')
             ->assertOk()
             ->assertJsonCount(0, 'data.latest')
-            ->assertJsonPath('data.example', null)
+            ->assertJsonPath('data.featured', null)
             ->assertJsonPath('data.question', null);
     }
 }
