@@ -55,9 +55,8 @@ export const useAuthStore = defineStore("auth", {
         isTokenRefreshing: false,
       });
 
-      useAppStore().getAllAppStore();
-
       await this.bootstrap(data.access_token);
+      useAppStore().getAllAppStore(); // after bootstrap: it needs the permissions
       usePartStore().setSystemPart(data.default_part);
       useSettingStore().setBranchId(data.default_branch);
 
