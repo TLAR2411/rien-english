@@ -57,8 +57,11 @@ const sheetEl = ref(null);
 const height = ref(null);
 const fitToScreen = () => {
   if (!viewEl.value) return;
-  const top = viewEl.value.getBoundingClientRect().top + window.scrollY;
-  height.value = `${Math.max(420, window.innerHeight - top - 20)}px`;
+  const rect = viewEl.value.getBoundingClientRect();
+  const top = rect.top + window.scrollY;
+  // Whatever the page still shows under the lesson (card padding, footer…)
+  const below = Math.max(0, document.documentElement.scrollHeight - (rect.bottom + window.scrollY));
+  height.value = `${Math.max(420, window.innerHeight - top - below)}px`;
 };
 
 // Side outline: jump to a part, and mark the part being read
@@ -276,7 +279,7 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .lesson-sheet {
   overflow: hidden;
   border: 1px solid $line;
-  border-radius: 12px;
+  border-radius: 4px;
   background: rgb(var(--v-theme-surface));
 }
 
@@ -381,7 +384,7 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 0;
   list-style: none;
   border: 1px solid $line;
-  border-radius: 12px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
