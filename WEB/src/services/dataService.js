@@ -17,4 +17,5 @@ export const getRoles = cached("roles");
 export const getBranches = cached("branches");
 export const getPermissions = cached("permissions");
 export const getUsers = cached("getUsers");
-
+export const getLevels = cached("levels");
+export const getCourses = cached("courses");

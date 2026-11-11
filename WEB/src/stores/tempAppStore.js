@@ -25,6 +25,10 @@ export const CACHED_LISTS = {
   permissions: { url: "permissions-all", resources: ["permissions"] },
 
   getUsers: { url: "users-all", resources: ["users"], perBranch: true },
+
+  // learning
+  levels: { url: "admin/levels-all", resources: ["admin/levels"] },
+  courses: { url: "admin/courses-all", resources: ["admin/courses"] },
 };
 
 // Key a list is stored under: its name, plus the branch for perBranch lists

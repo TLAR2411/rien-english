@@ -68,6 +68,12 @@ abstract class TestCase extends BaseTestCase
         return $user->refresh();
     }
 
+    /** Real roles + permissions, as set in config/roles.php. */
+    protected function seedRoles(): void
+    {
+        $this->seed([\Database\Seeders\PermissionSeeder::class, \Database\Seeders\Auth\RoleSeeder::class]);
+    }
+
     /** A user with the given role in a new company + branch. */
     protected function userWithRole(string $role): User
     {

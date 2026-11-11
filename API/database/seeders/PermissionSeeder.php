@@ -19,6 +19,9 @@ class PermissionSeeder extends Seeder
         'restore',
     ];
 
+    // Plain add / view / edit / delete (no restore) — used by the learning screens
+    private const CRUD = ['view', 'add', 'edit', 'delete'];
+
     private function insert($group, $attribute = null, $isAttribute = true)
     {
         // If $attribute is not null, merge it with the default $this->attribute
@@ -65,5 +68,9 @@ class PermissionSeeder extends Seeder
 
         // Admin General Settings page (company info, default passwords, Telegram)
         $this->insert('settings', ['view', 'edit'], false);
+
+        // Learning content (admin + teacher, see config/roles.php)
+        $this->insert('levels', self::CRUD, false);
+        $this->insert('courses', self::CRUD, false);
     }
 }

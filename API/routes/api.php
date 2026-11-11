@@ -32,7 +32,7 @@ Route::group(['prefix' => '/web'], function () {
         Route::group([], base_path('routes/modules/address.route.php'));
 
         // Learning content: /api/web/admin/...
-        Route::prefix('admin')->group(base_path('routes/modules/learning-admin.route.php'));
+        Route::prefix('admin')->name('admin.')->group(base_path('routes/modules/learning-admin.route.php'));
 
         // System management: admin only (groups.admin_only)
         Route::middleware(AccessGroup::middleware(AccessGroup::ADMIN_ONLY))->group(function () {

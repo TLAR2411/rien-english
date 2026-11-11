@@ -12,6 +12,21 @@ export const useAdminNavigation = () => {
       icon: { icon: "tabler-layout-dashboard" },
     },
 
+    // ---- Learning content (admin + teacher) ----
+    { heading: "Learning", permission: ["view-levels", "view-courses", "view-lessons"] },
+    {
+      title: "Levels",
+      to: { name: "admin-levels" },
+      icon: { icon: "tabler-stairs" },
+      permission: "view-levels",
+    },
+    {
+      title: "Courses",
+      to: { name: "admin-courses" },
+      icon: { icon: "tabler-books" },
+      permission: "view-courses",
+    },
+
     // ---- People (admin) ----
     { heading: "People", permission: "view-users" },
     {

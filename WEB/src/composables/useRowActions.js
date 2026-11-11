@@ -40,6 +40,9 @@ export const ROW_ACTIONS = [
     { key: "detail", title: "Detail", icon: "tabler-file-description", color: "success" },
     { key: "permission", title: "Permission", icon: "tabler-shield", color: "warning" },
     { key: "edit", title: "Edit", icon: "tabler-pencil", color: "warning", condition: true },
+    // Reorder a row (uses the edit permission)
+    { key: "moveUp", title: "Move up", icon: "tabler-arrow-up", color: "secondary", permissionFrom: "canEdit" },
+    { key: "moveDown", title: "Move down", icon: "tabler-arrow-down", color: "secondary", permissionFrom: "canEdit" },
     {
         key: "rollback", title: "Rollback", icon: "tabler-arrow-back-up", color: "error",
         condition: true, confirm: "ask", confirmMessage: "Rollback Item?",
