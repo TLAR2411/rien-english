@@ -26,6 +26,12 @@ export const useAdminNavigation = () => {
       icon: { icon: "tabler-books" },
       permission: "view-courses",
     },
+    {
+      title: "Lessons",
+      to: { name: "admin-lessons" },
+      icon: { icon: "tabler-notebook" },
+      permission: "view-lessons",
+    },
 
     // ---- People (admin) ----
     { heading: "People", permission: "view-users" },

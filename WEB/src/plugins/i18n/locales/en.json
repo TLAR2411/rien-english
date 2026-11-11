@@ -1991,5 +1991,13 @@
   "Saved.": "Saved.",
   "Deleted.": "Deleted.",
   "This level still has courses. Move or delete them first.": "This level still has courses. Move or delete them first.",
-  "This course still has lessons. Move or delete them first.": "This course still has lessons. Move or delete them first."
+  "This course still has lessons. Move or delete them first.": "This course still has lessons. Move or delete them first.",
+  "Skill": "Skill",
+  "Grammar": "Grammar",
+  "Reading": "Reading",
+  "Listening": "Listening",
+  "Writing": "Writing",
+  "Vocabulary": "Vocabulary",
+  "Examples": "Examples",
+  "Students have taken this quiz. Set the lesson to Draft instead of deleting it.": "Students have taken this quiz. Set the lesson to Draft instead of deleting it."
 }

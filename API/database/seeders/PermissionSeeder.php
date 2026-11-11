@@ -72,5 +72,6 @@ class PermissionSeeder extends Seeder
         // Learning content (admin + teacher, see config/roles.php)
         $this->insert('levels', self::CRUD, false);
         $this->insert('courses', self::CRUD, false);
+        $this->insert('lessons', self::CRUD, false);
     }
 }

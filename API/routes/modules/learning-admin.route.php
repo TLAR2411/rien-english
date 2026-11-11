@@ -9,6 +9,7 @@
 
 use App\Http\Controllers\Api\Learning\Admin\CourseController;
 use App\Http\Controllers\Api\Learning\Admin\DashboardController;
+use App\Http\Controllers\Api\Learning\Admin\LessonController;
 use App\Http\Controllers\Api\Learning\Admin\LevelController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +24,8 @@ $crud = function (string $name, string $controller, string $parameter) {
 
 $crud('levels', LevelController::class, 'level');
 $crud('courses', CourseController::class, 'course');
+
+// Lessons: list here; create / edit in the lesson editor (T13)
+Route::get('lessons', [LessonController::class, 'index']);
+Route::patch('lessons/{lesson}/move', [LessonController::class, 'move']);
+Route::delete('lessons/{lesson}', [LessonController::class, 'destroy']);

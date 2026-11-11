@@ -2005,5 +2005,13 @@
   "Saved.": "បានរក្សាទុក។",
   "Deleted.": "បានលុប។",
   "This level still has courses. Move or delete them first.": "កម្រិតនេះនៅមានវគ្គសិក្សា។ សូមផ្លាស់ ឬលុបវាជាមុនសិន។",
-  "This course still has lessons. Move or delete them first.": "វគ្គសិក្សានេះនៅមានមេរៀន។ សូមផ្លាស់ ឬលុបវាជាមុនសិន។"
+  "This course still has lessons. Move or delete them first.": "វគ្គសិក្សានេះនៅមានមេរៀន។ សូមផ្លាស់ ឬលុបវាជាមុនសិន។",
+  "Skill": "ជំនាញ",
+  "Grammar": "វេយ្យាករណ៍",
+  "Reading": "ការអាន",
+  "Listening": "ការស្តាប់",
+  "Writing": "ការសរសេរ",
+  "Vocabulary": "វាក្យសព្ទ",
+  "Examples": "ឧទាហរណ៍",
+  "Students have taken this quiz. Set the lesson to Draft instead of deleting it.": "សិស្សបានធ្វើតេស្តនេះរួចហើយ។ សូមដាក់មេរៀនជាសេចក្តីព្រាង ជំនួសការលុប។"
 }

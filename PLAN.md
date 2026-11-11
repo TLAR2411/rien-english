@@ -42,7 +42,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
-| 3 | Admin: manage content | T11–T17 | 1/7 |
+| 3 | Admin: manage content | T11–T17 | 2/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T12
+**Current task:** T13
 
 ---
 
@@ -133,7 +133,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - List, create, edit, delete, reorder. Form validation via Form Requests.
   - ✅ Done when: feature tests for create/update/delete pass.
 
-- [ ] **T12 — Lesson list**
+- [x] **T12 — Lesson list**
   - Filters: level, course, skill, status. Search by title. Pagination.
   - ✅ Done when: admin can filter lessons.
 
@@ -432,3 +432,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T09 — tables `quizzes` (one per lesson, pass score default from `config/learning.php`), `questions`, `question_options`; `QuestionType` enum (choice vs typed answers); `QuestionOption.is_correct` hidden from JSON by default so answers cannot leak; factories — tests: pass (50), migrate:fresh --seed: pass
 - 2026-11-11 — T10 — tables `quiz_attempts`, `attempt_answers`, `lesson_progress` (unique user+lesson), `writing_submissions`, `enrollments` (for later paid courses); models + `WritingStatus` enum; `User` has quizAttempts / lessonProgress / writingSubmissions / enrollments — tests: pass (52), migrate:fresh --seed: pass
 - 2026-11-11 — T11 — Levels + Courses admin: API `/api/web/admin/levels|courses` (list with search/filters, `-all` for select boxes, create, update, move up/down, delete — blocked while it still has courses/lessons); Form Requests; permissions `view/add/edit/delete-levels|courses` given to admin + teacher; shared pieces for next screens: `AdminController`, `ChecksCrudPermissions`, `HasSortOrder::move()`, Vue `useCrud`, `StatusChip`, "Move up/down" row buttons in `useRowActions`; paid fields (is_free/price) not editable until Phase 9 — tests: pass (65), build: pass
+- 2026-11-11 — T12 — Lessons list: API `GET /api/web/admin/lessons` (filters level, course, skill, status, search; pages; no lesson text in the list), move up/down inside the course, delete (blocked when students already took its quiz); permissions `*-lessons`; Vue list with filters (course list follows the chosen level); `SKILLS` in `constants/learning.js` — tests: pass (71), build: pass
