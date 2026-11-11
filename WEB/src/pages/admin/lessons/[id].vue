@@ -24,6 +24,15 @@ const tabs = [
 
 <template>
   <LessonEditor :lesson-id="route.params.id" :tabs="tabs">
+    <template #actions>
+      <VBtn
+        variant="text"
+        prepend-icon="tabler-eye"
+        :to="{ name: 'admin-lessons-preview-id', params: { id: route.params.id } }"
+      >
+        {{ $t("Preview") }}
+      </VBtn>
+    </template>
     <template #tab-examples="{ lesson }">
       <LessonExamples :lesson-id="lesson.id" />
     </template>

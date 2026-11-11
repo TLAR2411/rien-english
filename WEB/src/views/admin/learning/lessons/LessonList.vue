@@ -46,6 +46,7 @@ const headers = [
 ];
 
 const onEdit = (lesson) => router.push({ name: "admin-lessons-id", params: { id: lesson.id } });
+const onView = (lesson) => router.push({ name: "admin-lessons-preview-id", params: { id: lesson.id } });
 
 const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
 </script>
@@ -64,6 +65,8 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     is-filter
     create-page="admin-lessons-create"
     can-create="add-lessons"
+    is-view
+    can-view="view-lessons"
     is-edit
     is-move-up
     is-move-down
@@ -71,6 +74,7 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     is-delete
     can-delete="delete-lessons"
     :is-back="false"
+    @on-view="onView"
     @on-edit="onEdit"
     @on-move-up="(item) => move(item, 'up')"
     @on-move-down="(item) => move(item, 'down')"

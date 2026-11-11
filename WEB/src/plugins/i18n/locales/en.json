@@ -2096,5 +2096,20 @@
   "Explanation (English)": "Explanation (English)",
   "Explanation (Khmer)": "Explanation (Khmer)",
   "Points": "Points",
-  "Students have taken this quiz, so it cannot be deleted.": "Students have taken this quiz, so it cannot be deleted."
+  "Students have taken this quiz, so it cannot be deleted.": "Students have taken this quiz, so it cannot be deleted.",
+  "Preview — this is what students see.": "Preview — this is what students see.",
+  "Back to editing": "Back to editing",
+  "Listen": "Listen",
+  "{count} questions": "{count} questions",
+  "Pass with {score}%": "Pass with {score}%",
+  "{minutes} minutes": "{minutes} minutes",
+  "Question {number}": "Question {number}",
+  "Your answer": "Your answer",
+  "Find the mistake in this sentence:": "Find the mistake in this sentence:",
+  "{answered} of {total} answered": "{answered} of {total} answered",
+  "Preview: answers are not checked or saved.": "Preview: answers are not checked or saved.",
+  "Check my answers": "Check my answers",
+  "Start again": "Start again",
+  "Your sentence": "Your sentence",
+  "Tap the words in the right order": "Tap the words in the right order"
 }

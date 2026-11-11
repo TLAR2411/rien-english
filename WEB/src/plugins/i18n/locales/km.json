@@ -2110,5 +2110,20 @@
   "Explanation (English)": "ការពន្យល់ (អង់គ្លេស)",
   "Explanation (Khmer)": "ការពន្យល់ (ខ្មែរ)",
   "Points": "ពិន្ទុ",
-  "Students have taken this quiz, so it cannot be deleted.": "សិស្សបានធ្វើតេស្តនេះរួចហើយ ដូច្នេះមិនអាចលុបបានទេ។"
+  "Students have taken this quiz, so it cannot be deleted.": "សិស្សបានធ្វើតេស្តនេះរួចហើយ ដូច្នេះមិនអាចលុបបានទេ។",
+  "Preview — this is what students see.": "មើលជាមុន — នេះជាអ្វីដែលសិស្សឃើញ។",
+  "Back to editing": "ត្រឡប់ទៅកែ",
+  "Listen": "ស្តាប់",
+  "{count} questions": "{count} សំណួរ",
+  "Pass with {score}%": "ជាប់ដោយ {score}%",
+  "{minutes} minutes": "{minutes} នាទី",
+  "Question {number}": "សំណួរទី {number}",
+  "Your answer": "ចម្លើយរបស់អ្នក",
+  "Find the mistake in this sentence:": "រកកំហុសក្នុងប្រយោគនេះ៖",
+  "{answered} of {total} answered": "បានឆ្លើយ {answered} ក្នុងចំណោម {total}",
+  "Preview: answers are not checked or saved.": "មើលជាមុន៖ ចម្លើយមិនត្រូវបានពិនិត្យ ឬរក្សាទុកទេ។",
+  "Check my answers": "ពិនិត្យចម្លើយរបស់ខ្ញុំ",
+  "Start again": "ចាប់ផ្តើមម្តងទៀត",
+  "Your sentence": "ប្រយោគរបស់អ្នក",
+  "Tap the words in the right order": "ចុចពាក្យតាមលំដាប់ត្រឹមត្រូវ"
 }

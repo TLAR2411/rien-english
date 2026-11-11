@@ -42,7 +42,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 0 | Setup, check & clean existing project | T01–T03 | 3/3 |
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
-| 3 | Admin: manage content | T11–T17 | 5/7 |
+| 3 | Admin: manage content | T11–T17 | 6/7 |
 | 4 | Public website & student sign-up | T18–T22 | 0/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
@@ -50,7 +50,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T16
+**Current task:** T17
 
 ---
 
@@ -154,7 +154,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
   - Each question has explanation (EN + KM).
   - ✅ Done when: admin can build a 10-question quiz with mixed types.
 
-- [ ] **T16 — Preview**
+- [x] **T16 — Preview**
   - Admin can preview a lesson and quiz exactly as a student sees it (even when draft).
   - ✅ Done when: preview button works.
 
@@ -436,3 +436,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T13 — Lesson editor: API show/create/update (`LessonRequest`); lesson HTML cleaned on save by `stevebauman/purify` (allowed tags in `config/purify.php` → `lesson`); Vue pages `/admin/lessons/create` and `/admin/lessons/:id` with details form, English/Khmer TipTap editors (`RichTextEditor.vue`, tables via `@tiptap/extension-table`), "Insert grammar template" + side guide that ticks off Appendix A sections (`constants/lessonTemplates.js`); shared lesson text style `assets/styles/lesson-content.scss` — tests: pass (75), build: pass
 - 2026-11-11 — T14 — Examples + uploads: API `POST /api/web/admin/uploads` (audio mp3 ≤ 10 MB, image jpg/png/webp ≤ 2 MB — limits in `config/learning.php` → uploads, checked by `UploadRequest`), examples API `lessons/{lesson}/examples` + `examples/{example}` (edit, move, delete); `MediaUrl` cast saves short file paths and returns full URLs (new domain keeps working, outside links kept); Vue: Examples section on the lesson page (add/edit/reorder/delete, audio player, "8–10 recommended" counter), `AudioField` for lesson audio, image button in the editor — tests: pass (85), build: pass
 - 2026-11-11 — T15 — Quiz builder: API `lessons/{lesson}/quiz` (show / create-or-update settings / delete — blocked once students took it), `quizzes/{quiz}/questions` + `questions/{question}` (edit, move, delete), `GET quizzes` list; `QuestionRequest` checks each type (option counts in `QuestionType::optionLimits()`, choice types need exactly one correct answer, typed answers are all accepted answers); `SaveQuestion` action saves a question + its options together; Vue: lesson page now has tabs Lesson · Examples · Quiz (`?tab=`), quiz settings, question list, `QuestionDialog` with a form per type, Quizzes list page in the sidebar; permissions `*-quizzes`; migration widens role ids from TINYINT (max 255) to SMALLINT — tests hit the 255 limit — tests: pass (100), build: pass
+- 2026-11-11 — T16 — Preview: API `GET /api/web/admin/lessons/{id}/preview` (drafts too) using the student formats `StudentLessonResource` / `StudentQuizResource` / `StudentQuestionResource` — no `is_correct`, no explanations, word-order sends mixed-up words — to be reused by the public site and student quizzes; shared Vue `components/learning/student/LessonView.vue` + `QuizView.vue` (one input per question type, big tap targets); admin page `/admin/lessons/preview/:id`, "Preview" button on the lesson page and "View" in the lesson list — tests: pass (104), build: pass

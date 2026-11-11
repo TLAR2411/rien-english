@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Learning\Admin\DashboardController;
 use App\Http\Controllers\Api\Learning\Admin\LessonController;
 use App\Http\Controllers\Api\Learning\Admin\LessonExampleController;
 use App\Http\Controllers\Api\Learning\Admin\LevelController;
+use App\Http\Controllers\Api\Learning\Admin\PreviewController;
 use App\Http\Controllers\Api\Learning\Admin\QuestionController;
 use App\Http\Controllers\Api\Learning\Admin\QuizController;
 use App\Http\Controllers\Api\Learning\Admin\UploadController;
@@ -30,6 +31,7 @@ $crud('levels', LevelController::class, 'level');
 $crud('courses', CourseController::class, 'course');
 
 Route::patch('lessons/{lesson}/move', [LessonController::class, 'move']);
+Route::get('lessons/{lesson}/preview', PreviewController::class)->middleware('permission:view-lessons');
 Route::apiResource('lessons', LessonController::class);
 
 // Example sentences: /lessons/{lesson}/examples (list, add), /examples/{example} (edit, move, delete)
