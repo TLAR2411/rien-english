@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\Learning\Admin\DashboardController;
 use App\Http\Controllers\Api\Learning\Admin\LessonController;
 use App\Http\Controllers\Api\Learning\Admin\LessonExampleController;
 use App\Http\Controllers\Api\Learning\Admin\LevelController;
+use App\Http\Controllers\Api\Learning\Admin\QuestionController;
+use App\Http\Controllers\Api\Learning\Admin\QuizController;
 use App\Http\Controllers\Api\Learning\Admin\UploadController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,18 @@ Route::apiResource('lessons', LessonController::class);
 // Example sentences: /lessons/{lesson}/examples (list, add), /examples/{example} (edit, move, delete)
 Route::patch('examples/{example}/move', [LessonExampleController::class, 'move']);
 Route::apiResource('lessons.examples', LessonExampleController::class)->shallow()->except('show');
+
+// Quiz of a lesson (one per lesson) + list of all quizzes
+Route::get('quizzes', [QuizController::class, 'index']);
+Route::get('lessons/{lesson}/quiz', [QuizController::class, 'show']);
+Route::put('lessons/{lesson}/quiz', [QuizController::class, 'save']);
+Route::delete('lessons/{lesson}/quiz', [QuizController::class, 'destroy']);
+
+// Questions with their options: /quizzes/{quiz}/questions (add), /questions/{question} (edit, move, delete)
+Route::post('quizzes/{quiz}/questions', [QuestionController::class, 'store']);
+Route::put('questions/{question}', [QuestionController::class, 'update']);
+Route::patch('questions/{question}/move', [QuestionController::class, 'move']);
+Route::delete('questions/{question}', [QuestionController::class, 'destroy']);
 
 // Audio / image files (limits: config/learning.php → uploads)
 Route::post('uploads', UploadController::class)->middleware('permission:add-lessons|edit-lessons');

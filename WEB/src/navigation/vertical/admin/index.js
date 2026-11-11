@@ -13,7 +13,7 @@ export const useAdminNavigation = () => {
     },
 
     // ---- Learning content (admin + teacher) ----
-    { heading: "Learning", permission: ["view-levels", "view-courses", "view-lessons"] },
+    { heading: "Learning", permission: ["view-levels", "view-courses", "view-lessons", "view-quizzes"] },
     {
       title: "Levels",
       to: { name: "admin-levels" },
@@ -31,6 +31,12 @@ export const useAdminNavigation = () => {
       to: { name: "admin-lessons" },
       icon: { icon: "tabler-notebook" },
       permission: "view-lessons",
+    },
+    {
+      title: "Quizzes",
+      to: { name: "admin-quizzes" },
+      icon: { icon: "tabler-checklist" },
+      permission: "view-quizzes",
     },
 
     // ---- People (admin) ----

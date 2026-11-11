@@ -60,7 +60,7 @@ const hasEnough = computed(() => examples.value.length >= RECOMMENDED_EXAMPLES.m
 </script>
 
 <template>
-  <VCard class="mt-6" :loading="isLoading">
+  <VCard :loading="isLoading">
     <VCardItem :title="t('Examples')">
       <VCardSubtitle :class="hasEnough ? 'text-success' : ''">{{ countHint }}</VCardSubtitle>
       <template #append>

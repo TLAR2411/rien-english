@@ -27,6 +27,21 @@ enum QuestionType: string
         };
     }
 
+    /**
+     * How many options a question of this type needs: [min, max].
+     * Choice types: the options to pick from. Typed types: the accepted answers.
+     */
+    public function optionLimits(): array
+    {
+        return match ($this) {
+            self::MultipleChoice => [2, 6],
+            self::TrueFalse => [2, 2],
+            self::FindError => [2, 10],
+            self::FillBlank => [1, 10],
+            self::WordOrder => [1, 5],
+        };
+    }
+
     /** The student picks one of the options (otherwise they type the answer). */
     public function isChoice(): bool
     {

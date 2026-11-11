@@ -13,15 +13,23 @@ import StatusChip from "@/components/learning/StatusChip.vue";
 
 /**
  * Create (no lessonId) or edit a lesson.
- * The parts saved separately (examples, quiz) are given through the `extra` slot
- * and only shown once the lesson exists.
+ * Parts saved on their own (examples, quiz) are extra tabs: pass
+ * `tabs` = [{ value, title, icon }] and a `tab-<value>` slot for each.
+ * They are only shown once the lesson exists. The open tab is kept in ?tab=.
  */
 const props = defineProps({
   lessonId: { type: [Number, String], default: null },
+  tabs: { type: Array, default: () => [] },
 });
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
+
+const tab = computed({
+  get: () => route.query.tab || "lesson",
+  set: (value) => router.replace({ query: { ...route.query, tab: value === "lesson" ? undefined : value } }),
+});
 
 const emptyForm = () => ({
   course_id: null,
@@ -112,6 +120,7 @@ const onSave = async () => {
       </div>
       <slot name="actions" :lesson="form" />
       <VBtn
+        v-if="tab === 'lesson'"
         color="primary"
         prepend-icon="tabler-device-floppy"
         :loading="isSaving"
@@ -122,7 +131,18 @@ const onSave = async () => {
       </VBtn>
     </div>
 
-    <VRow>
+    <VTabs v-if="isEdit && tabs.length" v-model="tab" class="mb-6">
+      <VTab value="lesson" prepend-icon="tabler-notebook">{{ t("Lesson") }}</VTab>
+      <VTab v-for="item in tabs" :key="item.value" :value="item.value" :prepend-icon="item.icon">
+        {{ t(item.title) }}
+      </VTab>
+    </VTabs>
+
+    <template v-for="item in tabs" :key="item.value">
+      <slot v-if="isEdit && tab === item.value" :name="`tab-${item.value}`" :lesson="form" />
+    </template>
+
+    <VRow v-show="tab === 'lesson' || !isEdit">
       <VCol cols="12" :lg="isGrammar ? 8 : 12">
         <VForm ref="formRef" @submit.prevent="onSave">
           <!-- Details -->
@@ -226,9 +246,6 @@ const onSave = async () => {
             </VCardText>
           </VCard>
         </VForm>
-
-        <!-- Examples, quiz … (only for a saved lesson) -->
-        <slot v-if="isEdit" name="extra" :lesson="form" />
       </VCol>
 
       <!-- Guide: the Grammar Lesson Template -->

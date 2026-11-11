@@ -73,5 +73,6 @@ class PermissionSeeder extends Seeder
         $this->insert('levels', self::CRUD, false);
         $this->insert('courses', self::CRUD, false);
         $this->insert('lessons', self::CRUD, false);
+        $this->insert('quizzes', self::CRUD, false);
     }
 }

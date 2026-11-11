@@ -10,6 +10,7 @@ import { api } from "@/utils/api";
  *
  * `createUrl`: where new rows are posted when it is not `resource`
  * (e.g. examples are created under their lesson: "admin/lessons/5/examples").
+ * It may be a function, for a URL only known later (e.g. the quiz id).
  */
 export function useCrud(resource, { onDone, createUrl } = {}) {
   const isSaving = ref(false);
@@ -27,12 +28,13 @@ export function useCrud(resource, { onDone, createUrl } = {}) {
     }
   };
 
+  const createTarget = () =>
+    (typeof createUrl === "function" ? createUrl() : createUrl) ?? resource;
+
   /** Create (no id) or update (has id). */
   const save = (form) =>
     run(() =>
-      form.id
-        ? api.put(`${resource}/${form.id}`, form)
-        : api.post(createUrl ?? resource, form),
+      form.id ? api.put(`${resource}/${form.id}`, form) : api.post(createTarget(), form),
     );
 
   const remove = (item) => run(() => api.delete(`${resource}/${item.id}`));
