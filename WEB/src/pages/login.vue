@@ -25,7 +25,7 @@ definePage({
 });
 
 const company = import.meta.env.VITE_BASE_COMPANY;
-const MainLogo = `/logo/${company}/logo-64.webp`;
+const MainLogo = `/logo/${company}/logo-64.png`;
 
 // Stays empty until loaded, so the built-in name doesn't flash first.
 const appName = ref("");

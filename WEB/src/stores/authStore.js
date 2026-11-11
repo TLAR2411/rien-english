@@ -3,6 +3,7 @@ import { api, refreshAccessToken } from "@/utils/api";
 import { router } from "@/router/index";
 import { useAppStore } from "@/stores/appStore";
 import { homePathFor } from "@/utils/homePath";
+import { safeRedirect } from "@/utils/siteRoutes";
 import { useTempAppStore } from "@/stores/tempAppStore";
 import { useSettingStore } from "./settingStore";
 import { usePartStore } from "./partStore";
@@ -63,7 +64,9 @@ export const useAuthStore = defineStore("auth", {
           usePartStore().setSystemPart(defaultPart);
           useSettingStore().setBranchId(defaultBranch);
 
-          router.push(homePathFor(defaultPart));
+          // Back to the page that sent the user to login (e.g. a lesson's quiz)
+          const redirect = safeRedirect(router.currentRoute.value.query.redirect);
+          router.push(redirect ?? homePathFor(defaultPart));
 
         } else {
           console.error("Login failed with status:", response.data.status);
@@ -198,7 +201,8 @@ export const useAuthStore = defineStore("auth", {
 
       removeAccessToken();
       removeRefreshToken();
-      router.replace({ name: 'login' });
+      // On the public website a visitor can stay where they are
+      if (!router.currentRoute.value.meta?.public) router.replace({ name: 'login' });
     },
   }
 });

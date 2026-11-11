@@ -18,6 +18,9 @@ Route::group(['prefix' => '/web'], function () {
 
     Route::get('app-name', fn () => response()->json(['status' => true, 'data' => Company::orderBy('id')->value('name_kh')]));
 
+    // Public website, no login: /api/web/site/...
+    Route::prefix('site')->name('site.')->middleware('throttle:120,1')->group(base_path('routes/modules/learning-site.route.php'));
+
     // Session routes skip branch.access: right after a user switch the app still
     // sends the previous user's branch.
     Route::group(['middleware' => ['auth:api']], function () {

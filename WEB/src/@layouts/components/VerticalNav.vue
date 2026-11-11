@@ -18,7 +18,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 const company = import.meta.env.VITE_BASE_COMPANY;
 const logoSize = import.meta.env.VITE_BASE_COMPANY_LOGO_SIZE || 32;
-const MainLogo = `/logo/${company}/logo-64.webp`;
+const MainLogo = `/logo/${company}/logo-64.png`;
 
 // The owner's saved name; the built-in one is only the fallback.
 const authStore = useAuthStore();

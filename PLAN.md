@@ -43,14 +43,14 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 1 | Roles & admin area | T04–T06 | 3/3 |
 | 2 | Database (levels, courses, lessons, quizzes) | T07–T10 | 4/4 |
 | 3 | Admin: manage content | T11–T17 | 7/7 |
-| 4 | Public website & student sign-up | T18–T22 | 0/5 |
+| 4 | Public website & student sign-up | T18–T22 | 1/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 0/5 |
 | 6 | Student progress & scores | T28–T30 | 0/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T18
+**Current task:** T19
 
 ---
 
@@ -168,7 +168,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 The public website looks like a normal, friendly website (not a system). No login needed.
 **All public pages follow Appendix C — Design rules.**
 
-- [ ] **T18 — Public layout & landing page**
+- [x] **T18 — Public layout & landing page**
   - Make the logo (SVG wordmark + square icon / favicon) and colors from Appendix C — Brand.
   - First: show the owner a simple design (screenshot of the landing page on phone + desktop) and get OK before building the other public pages.
   - Public layout: top bar (logo, Lessons, Log in, Sign up), footer. Different look from the system layout.
@@ -445,3 +445,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — UI — quiz "View" now opens its own read-only page `/admin/quizzes/view/:lessonId` (quiz settings + questions only, Back and Edit buttons); `LessonQuiz` got a `readonly` option — build: pass
 - 2026-11-11 — UI — quiz "View" page is editable again (owner wants to add questions there): settings + questions with Save / add / edit / reorder / delete and a Back button; still look-only for people without `edit-quizzes` — build: pass
 - 2026-11-11 — UI — Lessons page: the tab bar grew tall and left a big empty space above the Quizzes/Lessons list; tab bar now keeps its own height (`flex-0-0`) — build: pass
+- 2026-11-11 — T18 — Rien logo (`public/logo/learning-english/`: logo.svg wordmark, icon.svg, PNG icons, favicon; `components/site/RienLogo.vue`), brand color `#2563EB` + name "Rien English" in `WEB/.env(.example)`; public layout `layouts/public.vue` (top bar: logo, Lessons, language, Log in, Sign up free; phone menu; footer; brand styles `assets/styles/site.scss`); landing page `/` (welcome, real example sentence with 🔊, skills, levels, latest lessons, real quiz question without answers, sign-up call); API `GET /api/web/site/home` (no login, `Lesson::visible()` = published lesson in a published course); guests sent to login come back after login (`?redirect=`); links in `utils/siteRoutes.js` ("Sign up" opens login until T21); local DB: the 3 sample lessons set to Published to show content — tests: pass (113), build: pass

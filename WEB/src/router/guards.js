@@ -46,13 +46,19 @@ export const setupGuards = (router) => {
     // 4. Determine Login Status
     const isLoggedIn = Boolean(accessToken) || auth.isAuthenticated;
 
-    // 5. Public Route Logic
+    // 5. "/" is the public landing page for visitors. Logged-in users go to
+    // their own dashboard (the installed app, PWA start_url "/", opens here).
+    if (to.path === "/" && isLoggedIn) {
+      return homePathFor(auth.user?.default_part ?? part.system_part);
+    }
+
+    // 6. Public pages (website, lessons): no login needed
     if (to.meta.public) return true;
 
-    // 6. Redirect Logic
+    // 7. Redirect Logic: after login, come back to the page asked for
     if (!isLoggedIn) {
       if (to.name !== 'login') {
-        return { name: 'login' };
+        return { name: 'login', query: to.path === "/" ? {} : { redirect: to.fullPath } };
       }
       return true;
     }
@@ -61,14 +67,7 @@ export const setupGuards = (router) => {
       return { name: 'root' };
     }
 
-    // "/" itself is an empty page: send the user to their own dashboard.
-    // This is where the installed app (PWA, start_url "/") opens, and after
-    // a silent token refresh there is no login step to redirect from.
-    if (to.path === "/") {
-      return homePathFor(auth.user?.default_part ?? part.system_part);
-    }
-
-    // 7. Permissions: first the part itself (e.g. only admin/teacher open
+    // 8. Permissions: first the part itself (e.g. only admin/teacher open
     // /admin), then the page. Pages outside a part (not-authorized, ...) skip
     // the part check.
     const partPermission = PERMISSION_BY_PART[SYSTEM_PART_SEGMENT_MAP[firstSegment]];

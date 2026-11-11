@@ -7,6 +7,7 @@ use App\Enums\LessonSkill;
 use App\Models\Concerns\HasPublishStatus;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasSortOrder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +41,12 @@ class Lesson extends Model
     protected function slugSource(): ?string
     {
         return $this->title_en;
+    }
+
+    /** Lessons visitors and students may see: published, inside a published course. */
+    public function scopeVisible(Builder $query): Builder
+    {
+        return $query->published()->whereHas('course', fn (Builder $course) => $course->published());
     }
 
     public function course(): BelongsTo
