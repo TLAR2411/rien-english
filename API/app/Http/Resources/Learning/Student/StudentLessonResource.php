@@ -23,6 +23,8 @@ class StudentLessonResource extends JsonResource
             'summary' => $this->summary,
             'content' => $this->content,
             'content_km' => $this->content_km,
+            // Listening: the page keeps it hidden until "Show transcript" or the quiz is done
+            'transcript' => $this->transcript,
             'audio_url' => $this->audio_url,
             // Only the video ID: the page plays it with YouTube's player
             'youtube_id' => $this->youtubeId(),

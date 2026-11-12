@@ -46,11 +46,11 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
 | 6 | Student progress & scores | T28–T30 | 3/3 |
-| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 1/5 |
+| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 2/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T32
+**Current task:** T33
 
 ---
 
@@ -257,7 +257,7 @@ Lessons stay public. Quizzes and writing submissions need login (same as Phase 4
   - Uses `skill = reading`. Passage + vocabulary list + comprehension quiz (reuse quiz system).
   - ✅ Done when: one sample reading lesson works end to end.
 
-- [ ] **T32 — Listening lessons**
+- [x] **T32 — Listening lessons**
   - `skill = listening`. Audio player (play, pause, replay, speed 0.75x/1x). Transcript hidden until "Show transcript" or quiz finished.
   - ✅ Done when: one sample listening lesson works end to end.
 
@@ -473,3 +473,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-12 — T30 — Users list (search, role, block/unblock already there) got a "View" row button → new page `/admin/users/view/<id>` (name, role, Active/Inactive, email, joined, last login; tiles Lessons done · Quizzes taken · Quizzes passed · Average score; lessons by skill; scores per quiz incl. draft lessons; table of every quiz try); API `GET /api/web/users/{user}/learning` + `/users/{user}/quiz-attempts` (admin only, `view-users`, other company's users → 404); admin dashboard: Students, New sign-ups, Active students (logged in / finished a lesson / took a quiz), Quizzes taken, Average score, Teachers + "Most popular lessons" (most finished, then most quiz tries) via `Services/Learning/LearningStats` (`config/learning.php` → dashboard: 7 days, 5 lessons); `Lesson::quizAttempts()`; chart line no longer curves past a score (T29); checked on desktop + phone with temporary test users (removed afterwards) — tests: pass (189), build: pass
 - 2026-11-12 — UI (T30) — owner asked for a cleaner admin dashboard: one Overview card with 4 numbers side by side (Students + new this week, Active students + % of students, Quizzes taken + this week, Average score), "Activity" bar chart (quiz tries + sign-ups per day, last 14 days), "Quiz results" ring (share of tries passed, passed / not passed, average), "Most popular lessons" with a bar to compare; Teachers tile removed (see Users); parts in `views/admin/dashboards/` (DashboardOverview, ActivityChart, QuizResultsCard, PopularLessons); API adds `quizzes_passed` + `activity` (`config/learning.php` → dashboard.activity_days) — tests: pass (190), build: pass
 - 2026-11-12 — T31 — Reading lessons: new table `lesson_words` (word, simple English meaning, Khmer meaning, example, audio; T35 flashcards can reuse it) + model `LessonWord`; admin API `lessons/{lesson}/words` + `words/{word}` (list, add, edit, move, delete; `LessonWordRequest`); lesson page gets a "Words" tab for reading + vocabulary lessons (`views/admin/learning/lessons/words/`, "5–10 recommended"); editor has a Reading lesson guide + "Insert reading template" (Before you read · Read the text · Words to know · Quiz — `LESSON_GUIDES` in `constants/lessonTemplates.js`); lesson page (public, student, preview) shows "Words to know" under the text with 🔊 (meaning in Khmer or simple English, follows the language); quiz = the normal quiz system; sample reading lesson "My family" (A1, draft) now has 8 words; owner's course rename (one course per level, all skills) + "Family words" / "My family" samples included — tests: pass (201), build: pass
+- 2026-11-12 — T32 — Listening lessons: new `lessons.transcript` (HTML, cleaned on save); a listening lesson needs its audio to be **published** (drafts can wait; `LessonRequest`); lesson API sends `quiz_taken` for a logged-in student; editor: Listening lesson guide (ticks Audio + Transcript when filled), "Insert listening template", "Transcript" text tab, Words tab also for listening; lesson page: `ListeningPlayer.vue` (play/pause, back 5s, play again, time bar, speed 0.75x / 1x remembered in the browser), transcript closed until "Show transcript" — opens by itself once the student has tried the quiz; sample "Listening: At the market" (A1, draft, 6 words, 6 questions; audio `sample-media/at-the-market.m4a` made with a computer voice — replace with a real recording before launch; the seeder copies it to storage) — tests: pass (206), build: pass

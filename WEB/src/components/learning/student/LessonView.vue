@@ -3,6 +3,7 @@ import { useI18n } from "vue-i18n";
 import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
 import { youtubeEmbedUrl } from "@/utils/youtube";
+import ListeningPlayer from "@/components/learning/student/ListeningPlayer.vue";
 
 /**
  * A lesson as students see it. Used by the admin preview now, and by the
@@ -15,6 +16,10 @@ import { youtubeEmbedUrl } from "@/utils/youtube";
  * `fitScreen` (admin preview): on big screens the lesson card fills the screen
  * and scrolls inside. The public website sets it off and the page scrolls.
  *
+ * Listening lessons: the audio player comes after the text ("Before you listen"),
+ * the transcript stays closed until "Show transcript" — or `showTranscript`
+ * (the page sets it once the student has done the quiz).
+ *
  * The lesson HTML is shown with v-html: that is safe because the API cleans it
  * when it is saved (API/config/purify.php → lesson).
  */
@@ -22,12 +27,22 @@ const props = defineProps({
   lesson: { type: Object, required: true },
   language: { type: String, default: null },
   fitScreen: { type: Boolean, default: true },
+  showTranscript: { type: Boolean, default: false },
 });
 
 const slots = useSlots();
 const { locale, t } = useI18n();
 
 const skill = computed(() => findOption(SKILLS, props.lesson.skill));
+const isListening = computed(() => props.lesson.skill === "listening");
+const hasPlayer = computed(() => isListening.value && Boolean(props.lesson.audio_url));
+
+// Listening: try first without reading
+const transcriptOpen = ref(props.showTranscript);
+watch(
+  () => props.showTranscript,
+  (open) => open && (transcriptOpen.value = true),
+);
 // Khmer text (content_km, Khmer title, example translations) only in Khmer;
 // English shows English only
 const isKhmer = computed(() => (props.language ?? locale.value) === "km");
@@ -71,6 +86,8 @@ const minutes = computed(() =>
 const outline = computed(() => [
   ...(props.lesson.youtube_id ? [{ id: "lesson-video", title: t("Video") }] : []),
   ...body.value.sections,
+  ...(hasPlayer.value ? [{ id: "lesson-listen", title: t("Listen") }] : []),
+  ...(props.lesson.transcript ? [{ id: "lesson-transcript", title: t("Transcript") }] : []),
   ...(wordCount.value ? [{ id: "lesson-words", title: t("Words to know") }] : []),
   ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
   ...(slots.default ? [{ id: "lesson-quiz", title: t("Quiz") }] : []),
@@ -169,7 +186,13 @@ onBeforeUnmount(() => {
           <li v-if="questionCount">{{ $t("{count} questions", { count: questionCount }) }}</li>
         </ul>
 
-        <audio v-if="lesson.audio_url" :src="lesson.audio_url" controls preload="none" class="lesson-sheet__audio" />
+        <audio
+          v-if="lesson.audio_url && !hasPlayer"
+          :src="lesson.audio_url"
+          controls
+          preload="none"
+          class="lesson-sheet__audio"
+        />
       </header>
 
       <div class="lesson-sheet__body">
@@ -187,6 +210,36 @@ onBeforeUnmount(() => {
 
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="lesson-content" v-html="body.html" />
+
+        <!-- Listening: the audio player -->
+        <section v-if="hasPlayer" id="lesson-listen" class="lesson-sheet__section">
+          <h2 class="lesson-sheet__section-title">{{ $t("Listen") }}</h2>
+          <ListeningPlayer :src="lesson.audio_url" :title="lesson.title_en" />
+        </section>
+
+        <!-- Listening: the transcript, closed at first -->
+        <section v-if="lesson.transcript" id="lesson-transcript" class="lesson-sheet__section">
+          <div class="d-flex align-center justify-space-between gap-3 mb-4">
+            <h2 class="lesson-sheet__section-title mb-0">{{ $t("Transcript") }}</h2>
+            <VBtn
+              v-if="transcriptOpen"
+              variant="text"
+              size="small"
+              prepend-icon="tabler-eye-off"
+              @click="transcriptOpen = false"
+            >
+              {{ $t("Hide") }}
+            </VBtn>
+          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div v-if="transcriptOpen" class="lesson-content transcript" v-html="lesson.transcript" />
+          <div v-else class="transcript-closed">
+            <p>{{ $t("Listen first without reading. Then open the transcript to check.") }}</p>
+            <VBtn variant="tonal" color="primary" prepend-icon="tabler-file-text" @click="transcriptOpen = true">
+              {{ $t("Show transcript") }}
+            </VBtn>
+          </div>
+        </section>
 
         <!-- New words of the text (reading) -->
         <section v-if="wordCount" id="lesson-words" class="lesson-sheet__section">
@@ -497,6 +550,29 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
   margin: 0.125rem 0 0;
   line-height: 1.7;
   color: $muted;
+}
+
+// ── Transcript ──
+.transcript {
+  padding: 1.25rem 1.5rem;
+  border-inline-start: 3px solid rgba(var(--v-theme-primary), 0.35);
+  background: rgba(var(--v-theme-on-surface), 0.02);
+}
+
+.transcript-closed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed $line;
+  border-radius: 4px;
+
+  p {
+    margin: 0;
+    color: $muted;
+  }
 }
 
 // ── Words to know ──

@@ -47,6 +47,7 @@ const emptyForm = () => ({
   summary: "",
   content: "",
   content_km: "",
+  transcript: "",
   audio_url: "",
   video_url: "",
   status: "draft",
@@ -70,8 +71,12 @@ const allTabs = computed(() => [
 watch(skillTabs, (list) => {
   if (tab.value !== "lesson" && !list.some((item) => item.value === tab.value)) tab.value = "lesson";
 });
-// Template guide of the lesson's skill (grammar, reading); null = no guide
+// Template guide of the lesson's skill (grammar, reading, listening); null = no guide
 const guide = computed(() => LESSON_GUIDES[form.value.skill] ?? null);
+const isListening = computed(() => form.value.skill === "listening");
+watch(isListening, (listening) => {
+  if (!listening && textTab.value === "transcript") textTab.value = "en";
+});
 const videoId = computed(() => youtubeId(form.value.video_url));
 const videoRule = (value) => youtubeValidator(value) === true || t(youtubeValidator(value));
 
@@ -100,7 +105,9 @@ const sections = computed(() =>
     ...section,
     done: section.heading
       ? foundHeadings.value.includes(section.heading.toLowerCase())
-      : null,
+      : section.field
+        ? Boolean(String(form.value[section.field] ?? "").replace(/<[^>]+>/g, "").trim())
+        : null,
   })),
 );
 
@@ -260,7 +267,7 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
               <VCol cols="12" md="6">
                 <AudioField
                   v-model="form.audio_url"
-                  label="Lesson audio (optional)"
+                  :label="isListening ? 'Listening audio (needed to publish)' : 'Lesson audio (optional)'"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -298,6 +305,7 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                   >
                     <VTab value="en">{{ t("English") }}</VTab>
                     <VTab value="km">{{ t("Khmer") }}</VTab>
+                    <VTab v-if="isListening" value="transcript">{{ t("Transcript") }}</VTab>
                   </VTabs>
                   <VBtn
                     v-if="guide && !form.content"
@@ -320,6 +328,12 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                   v-model="form.content_km"
                   :upload-image="uploadImage"
                   :placeholder="t('Khmer explanation…')"
+                />
+                <RichTextEditor
+                  v-if="isListening"
+                  v-show="textTab === 'transcript'"
+                  v-model="form.transcript"
+                  :placeholder="t('Every word of the audio. Write each speaker in bold, e.g. Seller: Good morning!')"
                 />
               </VCol>
             </VRow>

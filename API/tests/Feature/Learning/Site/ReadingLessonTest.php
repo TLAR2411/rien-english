@@ -7,6 +7,7 @@ use App\Models\Learning\Lesson;
 use Database\Seeders\Learning\LevelSeeder;
 use Database\Seeders\Learning\SampleLessonSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -24,6 +25,7 @@ class ReadingLessonTest extends TestCase
     {
         parent::setUp();
         $this->seedRoles();
+        Storage::fake('public');
         $this->seed([LevelSeeder::class, SampleLessonSeeder::class]);
 
         // Samples are drafts until a teacher checks them

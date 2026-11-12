@@ -45,7 +45,7 @@ const { lesson, notFound, language, hasKhmer, isStudent, isSaving, markCompleted
       </VBtnToggle>
     </div>
 
-    <LessonView v-if="lesson" :lesson="lesson" :language="language" :fit-screen="false">
+    <LessonView v-if="lesson" :lesson="lesson" :language="language" :fit-screen="false" :show-transcript="lesson.quiz_taken">
       <template v-if="lesson.quiz || isStudent" #default>
         <VCard v-if="lesson.quiz" variant="tonal" color="primary" class="mb-6">
           <VCardText>

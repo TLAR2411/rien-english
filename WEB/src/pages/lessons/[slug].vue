@@ -60,7 +60,13 @@ const quizLink = computed(() => {
         </div>
       </div>
 
-      <LessonView v-if="lesson" :lesson="lesson" :language="language" :fit-screen="false">
+      <LessonView
+        v-if="lesson"
+        :lesson="lesson"
+        :language="language"
+        :fit-screen="false"
+        :show-transcript="lesson.quiz_taken"
+      >
         <template v-if="lesson.quiz || isStudent" #default>
           <div v-if="lesson.quiz" class="lesson-quiz">
             <h2 class="lesson-quiz__title">{{ $t("Check what you learned") }}</h2>

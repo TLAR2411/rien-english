@@ -51,7 +51,8 @@ class LessonController extends Controller
     /**
      * One lesson to read: text, examples, new words, and only the size of its quiz —
      * never the questions or answers (those need login, see T24).
-     * A logged-in student also gets `completed_at`.
+     * A logged-in user also gets `completed_at` and `quiz_taken` (tried the quiz at least once —
+     * a listening lesson then shows its transcript).
      */
     public function show(Request $request, Lesson $lesson): JsonResponse
     {
@@ -63,6 +64,8 @@ class LessonController extends Controller
         return $this->ok([
             ...(new StudentLessonResource($lesson))->resolve($request),
             'completed_at' => $student?->lessonProgress()->where('lesson_id', $lesson->id)->first()?->completed_at,
+            'quiz_taken' => $student && $lesson->quiz
+                && $lesson->quiz->attempts()->where('user_id', $student->id)->exists(),
         ]);
     }
 }

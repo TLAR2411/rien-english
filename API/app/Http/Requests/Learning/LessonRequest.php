@@ -15,6 +15,10 @@ class LessonRequest extends FormRequest
     {
         $maxHtml = 'max:'.config('learning.lesson_max_length');
 
+        // A listening lesson can be saved as a draft first; it needs its audio to be published
+        $needsAudio = $this->input('skill') === LessonSkill::Listening->value
+            && $this->input('status') === PublishStatus::Published->value;
+
         return [
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'skill' => ['required', Rule::enum(LessonSkill::class)],
@@ -24,9 +28,17 @@ class LessonRequest extends FormRequest
             'summary' => ['nullable', 'string', 'max:1000'],
             'content' => ['nullable', 'string', $maxHtml],
             'content_km' => ['nullable', 'string', $maxHtml],
-            'audio_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'transcript' => ['nullable', 'string', $maxHtml],
+            'audio_url' => [Rule::requiredIf($needsAudio), 'nullable', 'url:http,https', 'max:2048'],
             'video_url' => ['nullable', 'string', 'max:2048', new YouTubeUrl],
             'status' => ['required', Rule::enum(PublishStatus::class)],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'audio_url.required' => 'Add the audio before you publish a listening lesson.',
         ];
     }
 }

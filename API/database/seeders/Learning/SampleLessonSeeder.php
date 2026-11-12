@@ -8,6 +8,7 @@ use App\Models\Learning\Lesson;
 use App\Models\Learning\Quiz;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 /**
@@ -26,6 +27,7 @@ use RuntimeException;
  *   lesson       lesson columns (skill, title_en, title_km, slug, summary, content, content_km …); skill defaults to grammar
  *   examples     [[sentence, Khmer translation], …]
  *   words        optional new words: [[word, English meaning, Khmer meaning, example sentence], …]
+ *   audio        optional audio file in ./sample-media (listening), copied to the uploads disk
  *   quiz         ['title' => …, 'questions' => [question, …]]
  *   question     type, prompt, explanation, explanation_km, and its answer:
  *                  multiple_choice / find_error → 'options' => ['text' => is correct?]
@@ -48,7 +50,10 @@ class SampleLessonSeeder extends Seeder
 
         $lesson = Lesson::updateOrCreate(
             ['slug' => $data['lesson']['slug']],
-            ['status' => 'draft', 'skill' => 'grammar', ...$data['lesson'], 'course_id' => $course->id],
+            [
+                'status' => 'draft', 'skill' => 'grammar', ...$data['lesson'], 'course_id' => $course->id,
+                ...(isset($data['audio']) ? ['audio_url' => $this->copyAudio($data['audio'])] : []),
+            ],
         );
 
         $lesson->examples()->delete();
@@ -87,6 +92,18 @@ class SampleLessonSeeder extends Seeder
                 $question->options()->create(['text' => $text, 'is_correct' => $isCorrect, 'sort_order' => $position + 1]);
             }
         }
+    }
+
+    /** Puts a sample audio file on the uploads disk → its short path (saved in audio_url). */
+    private function copyAudio(string $file): string
+    {
+        $source = __DIR__.'/sample-media/'.$file;
+        is_file($source) || throw new RuntimeException("Sample audio [{$file}] not found in sample-media.");
+
+        $path = config('learning.uploads.folder').'/audio/samples/'.$file;
+        Storage::disk(config('learning.uploads.disk'))->put($path, file_get_contents($source));
+
+        return $path;
     }
 
     /** @return list<array{0: string, 1: bool}> */

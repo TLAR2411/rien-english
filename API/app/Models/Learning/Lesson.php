@@ -24,7 +24,7 @@ class Lesson extends Model
 
     protected $fillable = [
         'course_id', 'skill', 'title_en', 'title_km', 'slug', 'summary',
-        'content', 'content_km', 'audio_url', 'video_url', 'sort_order', 'status',
+        'content', 'content_km', 'transcript', 'audio_url', 'video_url', 'sort_order', 'status',
     ];
 
     protected $casts = [
@@ -33,6 +33,7 @@ class Lesson extends Model
         // Lesson HTML is cleaned when saved (rules: config/purify.php → lesson)
         'content' => PurifyHtmlOnSet::class.':lesson',
         'content_km' => PurifyHtmlOnSet::class.':lesson',
+        'transcript' => PurifyHtmlOnSet::class.':lesson',
     ];
 
     public function sortGroupColumn(): ?string

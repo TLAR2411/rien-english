@@ -1,10 +1,11 @@
 /*
- * Lesson templates: Grammar (PLAN.md → Appendix A) and Reading (T31).
+ * Lesson templates: Grammar (PLAN.md → Appendix A), Reading (T31), Listening (T32).
  * The editor shows the sections as a guide and can insert the starting text.
  * Change the wording here; it is used for every new lesson of that skill.
  *
  * `heading` — the section's heading in the lesson text (used to tick it off
  *             in the guide). Sections without one are filled in elsewhere.
+ * `field`   — a lesson field that ticks the section off once it is filled in.
  * `where`   — where the teacher fills it in (shown in the guide).
  */
 export const GRAMMAR_SECTIONS = [
@@ -72,6 +73,28 @@ export const READING_TEMPLATE_KM = [
   "<p>អានអត្ថបទជាភាសាអង់គ្លេសម្តងពីរដង។ ព្យាយាមយល់អត្ថន័យទូទៅសិន មុននឹងមើលពាក្យថ្មី។ បន្ទាប់មកធ្វើលំហាត់ដើម្បីពិនិត្យថាអ្នកយល់។</p>",
 ].join("");
 
+// ---- Listening lesson: audio, its transcript, and questions about it ----
+export const LISTENING_SECTIONS = [
+  { title: "Title and level", hint: "English + Khmer title, and the course (level)", where: "Details" },
+  { title: "Before you listen", hint: "Who is talking, where, and what to listen for", heading: "Before you listen" },
+  { title: "Audio", hint: "mp3, clear voices, 30 seconds – 3 minutes. Needed to publish.", field: "audio_url", where: "Details" },
+  { title: "Transcript", hint: "Every word of the audio. Students open it after listening.", field: "transcript", where: "Transcript" },
+  { title: "Words to know", hint: "5–10 new words from the audio, with meaning and Khmer", where: "Words" },
+  { title: "Quiz", hint: "5–10 questions about the audio, each with an explanation", where: "Quiz" },
+];
+
+export const LISTENING_TEMPLATE_EN = [
+  "<h2>Before you listen</h2>",
+  "<p>Say who is talking and where. Give one or two things to listen for.</p>",
+  "<h2>How to listen</h2>",
+  "<ol><li><p>Listen one time. Do not read the transcript yet.</p></li><li><p>Listen again at <strong>0.75x</strong> speed.</p></li><li><p>Do the quiz. Then read the transcript and listen one more time.</p></li></ol>",
+].join("");
+
+export const LISTENING_TEMPLATE_KM = [
+  "<h2>ការណែនាំ</h2>",
+  "<ol><li><p>ស្តាប់ម្តងសិន។ កុំទាន់អានអត្ថបទ។</p></li><li><p>ស្តាប់ម្តងទៀតក្នុងល្បឿន <strong>0.75x</strong>។</p></li><li><p>ធ្វើលំហាត់។ បន្ទាប់មកអានអត្ថបទ ហើយស្តាប់ម្តងទៀត។</p></li></ol>",
+].join("");
+
 // Guide + starting text for each skill that has a template (other skills: no guide yet)
 export const LESSON_GUIDES = {
   grammar: {
@@ -87,6 +110,13 @@ export const LESSON_GUIDES = {
     sections: READING_SECTIONS,
     en: READING_TEMPLATE_EN,
     km: READING_TEMPLATE_KM,
+  },
+  listening: {
+    title: "Listening lesson guide",
+    insert: "Insert listening template",
+    sections: LISTENING_SECTIONS,
+    en: LISTENING_TEMPLATE_EN,
+    km: LISTENING_TEMPLATE_KM,
   },
 };
 

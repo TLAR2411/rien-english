@@ -92,10 +92,13 @@ export const findOption = (list, value) => list.find((item) => item.value === va
 // Reading texts should have 5–10 "Words to know"
 export const RECOMMENDED_WORDS = { min: 5, max: 10 };
 
+// Speeds of the listening player (PLAN.md T32)
+export const LISTENING_SPEEDS = [0.75, 1];
+
 // Tabs of the lesson page next to "Lesson". Each part saves on its own,
 // so they open once the lesson is saved. `skills`: only for lessons of these skills.
 export const LESSON_TABS = [
-  { value: "words", title: "Words", icon: "tabler-vocabulary", skills: ["reading", "vocabulary"] },
+  { value: "words", title: "Words", icon: "tabler-vocabulary", skills: ["reading", "listening", "vocabulary"] },
   { value: "examples", title: "Examples", icon: "tabler-message-2" },
   { value: "quiz", title: "Quiz", icon: "tabler-checklist" },
   { value: "preview", title: "Preview", icon: "tabler-eye" },
