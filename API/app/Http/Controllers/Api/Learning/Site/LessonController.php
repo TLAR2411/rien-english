@@ -49,7 +49,7 @@ class LessonController extends Controller
     }
 
     /**
-     * One lesson to read: text, examples, and only the size of its quiz —
+     * One lesson to read: text, examples, new words, and only the size of its quiz —
      * never the questions or answers (those need login, see T24).
      * A logged-in student also gets `completed_at`.
      */
@@ -57,7 +57,7 @@ class LessonController extends Controller
     {
         abort_unless(Lesson::visible()->whereKey($lesson->id)->exists(), 404);
 
-        $lesson->load(['course.level', 'examples', 'quiz' => fn ($quiz) => $quiz->withCount('questions')]);
+        $lesson->load(['course.level', 'examples', 'words', 'quiz' => fn ($quiz) => $quiz->withCount('questions')]);
         $student = $request->user('api');
 
         return $this->ok([

@@ -16,7 +16,7 @@ class PreviewController extends Controller
     public function __invoke(Lesson $lesson): JsonResponse
     {
         return $this->ok(new StudentLessonResource(
-            $lesson->load(['course.level', 'examples', 'quiz.questions.options'])
+            $lesson->load(['course.level', 'examples', 'words', 'quiz.questions.options'])
         ));
     }
 }

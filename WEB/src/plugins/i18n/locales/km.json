@@ -2318,5 +2318,22 @@
   "Log in with your email and your new password.": "សូមចូលគណនី ដោយប្រើអ៊ីម៉ែល និងពាក្យសម្ងាត់ថ្មីរបស់អ្នក។",
   "This link does not work any more": "តំណភ្ជាប់នេះប្រើលែងបានហើយ",
   "Each link works one time, for 60 minutes. Please ask for a new one.": "តំណភ្ជាប់នីមួយៗប្រើបានតែម្តង ក្នុងរយៈពេល ៦០ នាទី។ សូមស្នើសុំតំណភ្ជាប់ថ្មី។",
-  "Send me a new link": "ផ្ញើតំណភ្ជាប់ថ្មីមកខ្ញុំ"
+  "Send me a new link": "ផ្ញើតំណភ្ជាប់ថ្មីមកខ្ញុំ",
+  "Words": "ពាក្យ",
+  "Words to know": "ពាក្យដែលត្រូវដឹង",
+  "Word": "ពាក្យ",
+  "Khmer meaning": "អត្ថន័យជាភាសាខ្មែរ",
+  "Meaning in simple English": "អត្ថន័យជាភាសាអង់គ្លេសងាយៗ",
+  "Example sentence": "ប្រយោគឧទាហរណ៍",
+  "Edit Word": "កែពាក្យ",
+  "New Word": "ពាក្យថ្មី",
+  "{count} new words": "ពាក្យថ្មី {count}",
+  "Reading lesson guide": "មគ្គុទ្ទេសក៍មេរៀនអាន",
+  "Insert reading template": "បញ្ចូលគំរូមេរៀនអាន",
+  "Before you read": "មុនពេលអាន",
+  "Read the text": "អានអត្ថបទ",
+  "1–2 sentences: what the text is about, what to look for": "១–២ ប្រយោគ៖ អត្ថបទនិយាយអំពីអ្វី និងត្រូវរកមើលអ្វី",
+  "The passage: short paragraphs, simple words for the level (A1 ≈ 100–200 words)": "អត្ថបទ៖ កថាខណ្ឌខ្លីៗ ពាក្យងាយៗតាមកម្រិត (A1 ប្រហែល ១០០–២០០ ពាក្យ)",
+  "5–10 new words from the text, with meaning and Khmer": "ពាក្យថ្មី ៥–១០ ពីអត្ថបទ មានអត្ថន័យ និងភាសាខ្មែរ",
+  "5–10 questions about the text, each with an explanation": "សំណួរ ៥–១០ អំពីអត្ថបទ សំណួរនីមួយៗមានការពន្យល់"
 }

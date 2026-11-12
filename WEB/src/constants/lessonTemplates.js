@@ -1,7 +1,7 @@
 /*
- * Grammar Lesson Template (PLAN.md → Appendix A).
- * The editor shows these sections as a guide and can insert the starting text.
- * Change the wording here; it is used for every new grammar lesson.
+ * Lesson templates: Grammar (PLAN.md → Appendix A) and Reading (T31).
+ * The editor shows the sections as a guide and can insert the starting text.
+ * Change the wording here; it is used for every new lesson of that skill.
  *
  * `heading` — the section's heading in the lesson text (used to tick it off
  *             in the guide). Sections without one are filled in elsewhere.
@@ -49,6 +49,46 @@ export const GRAMMAR_TEMPLATE_KM = [
   "<h2>កំហុសដែលអ្នកនិយាយខ្មែរតែងធ្វើ</h2>",
   "<ul><li><p>❌ … → ✅ … — មូលហេតុ</p></li></ul>",
 ].join("");
+
+// ---- Reading lesson: a short text, its new words, and questions about it ----
+export const READING_SECTIONS = [
+  { title: "Title and level", hint: "English + Khmer title, and the course (level)", where: "Details" },
+  { title: "Before you read", hint: "1–2 sentences: what the text is about, what to look for", heading: "Before you read" },
+  { title: "Read the text", hint: "The passage: short paragraphs, simple words for the level (A1 ≈ 100–200 words)", heading: "Read the text" },
+  { title: "Words to know", hint: "5–10 new words from the text, with meaning and Khmer", where: "Words" },
+  { title: "Quiz", hint: "5–10 questions about the text, each with an explanation", where: "Quiz" },
+];
+
+export const READING_TEMPLATE_EN = [
+  "<h2>Before you read</h2>",
+  "<p>Say in one or two sentences what the text is about.</p>",
+  "<h2>Read the text</h2>",
+  "<p>First paragraph of the text…</p>",
+  "<p>Second paragraph…</p>",
+].join("");
+
+export const READING_TEMPLATE_KM = [
+  "<h2>ការណែនាំ</h2>",
+  "<p>អានអត្ថបទជាភាសាអង់គ្លេសម្តងពីរដង។ ព្យាយាមយល់អត្ថន័យទូទៅសិន មុននឹងមើលពាក្យថ្មី។ បន្ទាប់មកធ្វើលំហាត់ដើម្បីពិនិត្យថាអ្នកយល់។</p>",
+].join("");
+
+// Guide + starting text for each skill that has a template (other skills: no guide yet)
+export const LESSON_GUIDES = {
+  grammar: {
+    title: "Grammar lesson guide",
+    insert: "Insert grammar template",
+    sections: GRAMMAR_SECTIONS,
+    en: GRAMMAR_TEMPLATE_EN,
+    km: GRAMMAR_TEMPLATE_KM,
+  },
+  reading: {
+    title: "Reading lesson guide",
+    insert: "Insert reading template",
+    sections: READING_SECTIONS,
+    en: READING_TEMPLATE_EN,
+    km: READING_TEMPLATE_KM,
+  },
+};
 
 /** Section headings found in the HTML, to tick them off in the guide. */
 export const headingsIn = (html) =>

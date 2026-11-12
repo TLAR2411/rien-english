@@ -4,7 +4,7 @@
 // (Khmer text: please also check with a Khmer teacher.)
 
 return [
-    'course' => 'grammar-a1',
+    'course' => 'english-for-beginners',
 
     'lesson' => [
         'slug' => 'present-simple',

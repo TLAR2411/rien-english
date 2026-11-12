@@ -1,6 +1,7 @@
 <script setup>
 import LessonEditor from "@/views/admin/learning/lessons/LessonEditor.vue";
 import LessonExamples from "@/views/admin/learning/lessons/examples/LessonExamples.vue";
+import LessonWords from "@/views/admin/learning/lessons/words/LessonWords.vue";
 import LessonQuiz from "@/views/admin/learning/lessons/quiz/LessonQuiz.vue";
 import LessonPreview from "@/views/admin/learning/lessons/preview/LessonPreview.vue";
 
@@ -18,8 +19,11 @@ const route = useRoute();
 </script>
 
 <template>
-  <!-- One page, four tabs: Lesson · Examples · Quiz · Preview -->
+  <!-- One page, tabs: Lesson · Words (reading / vocabulary) · Examples · Quiz · Preview -->
   <LessonEditor :lesson-id="route.params.id">
+    <template #tab-words="{ lesson }">
+      <LessonWords :lesson-id="lesson.id" />
+    </template>
     <template #tab-examples="{ lesson }">
       <LessonExamples :lesson-id="lesson.id" />
     </template>

@@ -12,7 +12,7 @@ class LevelCourseTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeder_creates_levels_with_one_free_grammar_course_each(): void
+    public function test_seeder_creates_levels_with_one_free_course_each(): void
     {
         $this->seed(LevelSeeder::class);
         $this->seed(LevelSeeder::class); // safe to run twice
@@ -20,10 +20,11 @@ class LevelCourseTest extends TestCase
         $this->assertSame(['A1', 'A2', 'B1', 'B2', 'C1'], Level::ordered()->pluck('code')->all());
         $this->assertSame(5, Course::count());
 
-        $a1 = Level::where('code', 'A1')->first();
-        $this->assertSame('Grammar A1', $a1->courses->first()->title);
-        $this->assertTrue($a1->courses->first()->is_free);
-        $this->assertSame('grammar-a1', $a1->courses->first()->slug);
+        $a1 = Level::where('code', 'A1')->first()->courses->sole();
+        $this->assertSame('English for Beginners', $a1->title);
+        $this->assertSame('english-for-beginners', $a1->slug);
+        $this->assertTrue($a1->is_free);
+        $this->assertTrue($a1->isPublished());
     }
 
     public function test_new_course_goes_to_the_end_of_its_level_and_gets_a_unique_slug(): void

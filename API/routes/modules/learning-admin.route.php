@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Learning\Admin\CourseController;
 use App\Http\Controllers\Api\Learning\Admin\DashboardController;
 use App\Http\Controllers\Api\Learning\Admin\LessonController;
 use App\Http\Controllers\Api\Learning\Admin\LessonExampleController;
+use App\Http\Controllers\Api\Learning\Admin\LessonWordController;
 use App\Http\Controllers\Api\Learning\Admin\LevelController;
 use App\Http\Controllers\Api\Learning\Admin\PreviewController;
 use App\Http\Controllers\Api\Learning\Admin\QuestionController;
@@ -37,6 +38,10 @@ Route::apiResource('lessons', LessonController::class);
 // Example sentences: /lessons/{lesson}/examples (list, add), /examples/{example} (edit, move, delete)
 Route::patch('examples/{example}/move', [LessonExampleController::class, 'move']);
 Route::apiResource('lessons.examples', LessonExampleController::class)->shallow()->except('show');
+
+// New words ("Words to know"): /lessons/{lesson}/words (list, add), /words/{word} (edit, move, delete)
+Route::patch('words/{word}/move', [LessonWordController::class, 'move']);
+Route::apiResource('lessons.words', LessonWordController::class)->shallow()->except('show');
 
 // Quiz of a lesson (one per lesson) + list of all quizzes
 Route::get('quizzes', [QuizController::class, 'index']);

@@ -6,12 +6,7 @@ import { useFitToScreen } from "@/composables/useFitToScreen";
 import { getCourses } from "@/services/dataService";
 import { requiredValidator } from "@/@core/utils/validators";
 import { LESSON_TABS, PUBLISH_STATUSES, SKILLS } from "@/constants/learning";
-import {
-  GRAMMAR_SECTIONS,
-  GRAMMAR_TEMPLATE_EN,
-  GRAMMAR_TEMPLATE_KM,
-  headingsIn,
-} from "@/constants/lessonTemplates";
+import { LESSON_GUIDES, headingsIn } from "@/constants/lessonTemplates";
 import { uploadImage } from "@/services/uploads";
 import { youtubeId, youtubeThumbnail, youtubeValidator } from "@/utils/youtube";
 import AudioField from "@/components/learning/AudioField.vue";
@@ -23,6 +18,7 @@ import StatusChip from "@/components/learning/StatusChip.vue";
  * Parts saved on their own (examples, quiz, preview) are extra tabs
  * (`tabs` = [{ value, title, icon }]) with a `tab-<value>` slot for each.
  * They are always visible, but open only once the lesson is saved.
+ * A tab with `skills` shows only for lessons of those skills (e.g. Words).
  * The open tab is kept in ?tab=.
  */
 const props = defineProps({
@@ -63,11 +59,19 @@ const textTab = ref("en");
 const { isSaving, save } = useCrud("admin/lessons");
 
 const isEdit = computed(() => !!form.value.id);
+const skillTabs = computed(() =>
+  props.tabs.filter((item) => !item.skills || item.skills.includes(form.value.skill)),
+);
 const allTabs = computed(() => [
   { value: "lesson", title: "Lesson", icon: "tabler-notebook" },
-  ...props.tabs,
+  ...skillTabs.value,
 ]);
-const isGrammar = computed(() => form.value.skill === "grammar");
+// The open tab is hidden for this skill (e.g. Words after changing the skill)
+watch(skillTabs, (list) => {
+  if (tab.value !== "lesson" && !list.some((item) => item.value === tab.value)) tab.value = "lesson";
+});
+// Template guide of the lesson's skill (grammar, reading); null = no guide
+const guide = computed(() => LESSON_GUIDES[form.value.skill] ?? null);
 const videoId = computed(() => youtubeId(form.value.video_url));
 const videoRule = (value) => youtubeValidator(value) === true || t(youtubeValidator(value));
 
@@ -89,10 +93,10 @@ watch(() => props.lessonId, load, { immediate: true });
 
 const courseTitle = (course) => `${course.level?.code ?? ""} · ${course.title}`;
 
-// ---- Grammar template guide ----
+// ---- Template guide ----
 const foundHeadings = computed(() => headingsIn(form.value.content));
 const sections = computed(() =>
-  GRAMMAR_SECTIONS.map((section) => ({
+  (guide.value?.sections ?? []).map((section) => ({
     ...section,
     done: section.heading
       ? foundHeadings.value.includes(section.heading.toLowerCase())
@@ -101,8 +105,8 @@ const sections = computed(() =>
 );
 
 const insertTemplate = () => {
-  if (!form.value.content) form.value.content = GRAMMAR_TEMPLATE_EN;
-  if (!form.value.content_km) form.value.content_km = GRAMMAR_TEMPLATE_KM;
+  if (!form.value.content) form.value.content = guide.value.en;
+  if (!form.value.content_km) form.value.content_km = guide.value.km;
 };
 
 // ---- Save (AppCard gives the form validation) ----
@@ -154,7 +158,7 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
       {{ t("Create the lesson first, then add examples and a quiz.") }}
     </p>
 
-    <template v-for="item in tabs" :key="item.value">
+    <template v-for="item in skillTabs" :key="item.value">
       <slot
         v-if="isEdit && tab === item.value"
         :name="`tab-${item.value}`"
@@ -185,7 +189,7 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
         </template>
 
         <VRow>
-          <VCol cols="12" :lg="isGrammar ? 8 : 12">
+          <VCol cols="12" :lg="guide ? 8 : 12">
             <VRow>
               <!-- Details -->
               <AppLabel title="Details" />
@@ -296,13 +300,13 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                     <VTab value="km">{{ t("Khmer") }}</VTab>
                   </VTabs>
                   <VBtn
-                    v-if="isGrammar && !form.content"
+                    v-if="guide && !form.content"
                     variant="tonal"
                     size="small"
                     prepend-icon="tabler-template"
                     @click="insertTemplate"
                   >
-                    {{ t("Insert grammar template") }}
+                    {{ t(guide.insert) }}
                   </VBtn>
                 </div>
                 <RichTextEditor
@@ -321,10 +325,10 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
             </VRow>
           </VCol>
 
-          <!-- Guide: the Grammar Lesson Template (PLAN.md Appendix A) -->
-          <VCol v-if="isGrammar" cols="12" lg="4">
+          <!-- Guide: the template of the lesson's skill (constants/lessonTemplates.js) -->
+          <VCol v-if="guide" cols="12" lg="4">
             <VRow>
-              <AppLabel title="Grammar lesson guide" />
+              <AppLabel :title="guide.title" />
               <VCol cols="12">
                 <VList density="compact" class="guide py-0">
                   <VListItem

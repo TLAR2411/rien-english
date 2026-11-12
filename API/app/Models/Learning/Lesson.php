@@ -81,6 +81,12 @@ class Lesson extends Model
         return $this->hasMany(LessonExample::class)->ordered();
     }
 
+    /** New words ("Words to know" of a reading text, flashcards of a vocabulary lesson). */
+    public function words(): HasMany
+    {
+        return $this->hasMany(LessonWord::class)->ordered();
+    }
+
     /** Students who finished this lesson. */
     public function progress(): HasMany
     {

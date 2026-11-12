@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** A course inside a level, e.g. "Grammar A1". */
+/** A course inside a level, e.g. "English for Beginners" (A1). It holds lessons of every skill. */
 class Course extends Model
 {
     use HasFactory, HasPublishStatus, HasSlug, HasSortOrder;

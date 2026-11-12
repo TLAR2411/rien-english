@@ -51,12 +51,27 @@ const body = computed(() => {
 });
 
 const exampleCount = computed(() => props.lesson.examples?.length ?? 0);
+const wordCount = computed(() => props.lesson.words?.length ?? 0);
+
+// "Words to know": the meaning follows the language (Khmer, else simple English).
+// `sentence` + a "word-" id let useSpeech read the word without mixing it up with examples.
+const words = computed(() =>
+  (props.lesson.words ?? []).map((word) => ({
+    ...word,
+    id: `word-${word.id}`,
+    sentence: word.word,
+    meaning: (isKhmer.value && word.meaning_km) || word.meaning_en,
+  })),
+);
 const questionCount = computed(() => props.lesson.quiz?.questions?.length ?? props.lesson.quiz?.questions_count ?? 0);
-const minutes = computed(() => Math.max(1, Math.round(body.value.words / 150 + exampleCount.value * 0.25)));
+const minutes = computed(() =>
+  Math.max(1, Math.round(body.value.words / 150 + exampleCount.value * 0.25 + wordCount.value * 0.15)),
+);
 
 const outline = computed(() => [
   ...(props.lesson.youtube_id ? [{ id: "lesson-video", title: t("Video") }] : []),
   ...body.value.sections,
+  ...(wordCount.value ? [{ id: "lesson-words", title: t("Words to know") }] : []),
   ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
   ...(slots.default ? [{ id: "lesson-quiz", title: t("Quiz") }] : []),
 ]);
@@ -149,6 +164,7 @@ onBeforeUnmount(() => {
 
         <ul class="lesson-sheet__facts">
           <li>{{ $t("{count} min read", { count: minutes }) }}</li>
+          <li v-if="wordCount">{{ $t("{count} new words", { count: wordCount }) }}</li>
           <li v-if="exampleCount">{{ $t("{count} examples", { count: exampleCount }) }}</li>
           <li v-if="questionCount">{{ $t("{count} questions", { count: questionCount }) }}</li>
         </ul>
@@ -171,6 +187,33 @@ onBeforeUnmount(() => {
 
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="lesson-content" v-html="body.html" />
+
+        <!-- New words of the text (reading) -->
+        <section v-if="wordCount" id="lesson-words" class="lesson-sheet__section">
+          <h2 class="lesson-sheet__section-title">{{ $t("Words to know") }}</h2>
+          <ul class="examples">
+            <li v-for="word in words" :key="word.id" class="examples__item">
+              <div class="flex-grow-1">
+                <p class="examples__sentence">
+                  {{ word.word }}
+                  <span v-if="word.meaning" class="words__meaning">— {{ word.meaning }}</span>
+                </p>
+                <p v-if="word.example" class="words__example">{{ word.example }}</p>
+              </div>
+              <VBtn
+                v-if="speech.canPlay(word)"
+                icon
+                variant="text"
+                color="primary"
+                size="44"
+                :aria-label="$t('Listen')"
+                @click="speech.toggle(word)"
+              >
+                <VIcon :icon="speech.isPlaying(word) ? 'tabler-player-stop' : 'tabler-volume'" size="22" />
+              </VBtn>
+            </li>
+          </ul>
+        </section>
 
         <section v-if="exampleCount" id="lesson-examples" class="lesson-sheet__section">
           <h2 class="lesson-sheet__section-title">{{ $t("Examples") }}</h2>
@@ -453,6 +496,19 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .examples__translation {
   margin: 0.125rem 0 0;
   line-height: 1.7;
+  color: $muted;
+}
+
+// ── Words to know ──
+.words__meaning {
+  font-weight: 400;
+  line-height: 1.7;
+  color: $muted;
+}
+
+.words__example {
+  margin: 0.125rem 0 0;
+  font-style: italic;
   color: $muted;
 }
 </style>

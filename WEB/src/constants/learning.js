@@ -89,9 +89,13 @@ export const RECOMMENDED_EXAMPLES = { min: 8, max: 10 };
 
 export const findOption = (list, value) => list.find((item) => item.value === value);
 
+// Reading texts should have 5–10 "Words to know"
+export const RECOMMENDED_WORDS = { min: 5, max: 10 };
+
 // Tabs of the lesson page next to "Lesson". Each part saves on its own,
-// so they open once the lesson is saved.
+// so they open once the lesson is saved. `skills`: only for lessons of these skills.
 export const LESSON_TABS = [
+  { value: "words", title: "Words", icon: "tabler-vocabulary", skills: ["reading", "vocabulary"] },
   { value: "examples", title: "Examples", icon: "tabler-message-2" },
   { value: "quiz", title: "Quiz", icon: "tabler-checklist" },
   { value: "preview", title: "Preview", icon: "tabler-eye" },

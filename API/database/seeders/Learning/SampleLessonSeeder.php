@@ -21,10 +21,11 @@ use RuntimeException;
  * Safe to run again: lessons are matched by slug and their examples / quiz
  * are replaced — except a quiz students already took, which is left alone.
  *
- * File format (see a1-1-to-be.php):
- *   course       course slug, e.g. "grammar-a1" (from LevelSeeder)
- *   lesson       lesson columns (title_en, title_km, slug, summary, content, content_km …)
+ * File format (see a1-1-to-be.php; a reading lesson: a1-5-my-family.php):
+ *   course       course slug, e.g. "english-for-beginners" (from LevelSeeder)
+ *   lesson       lesson columns (skill, title_en, title_km, slug, summary, content, content_km …); skill defaults to grammar
  *   examples     [[sentence, Khmer translation], …]
+ *   words        optional new words: [[word, English meaning, Khmer meaning, example sentence], …]
  *   quiz         ['title' => …, 'questions' => [question, …]]
  *   question     type, prompt, explanation, explanation_km, and its answer:
  *                  multiple_choice / find_error → 'options' => ['text' => is correct?]
@@ -51,8 +52,13 @@ class SampleLessonSeeder extends Seeder
         );
 
         $lesson->examples()->delete();
-        foreach ($data['examples'] as [$sentence, $translation]) {
+        foreach ($data['examples'] ?? [] as [$sentence, $translation]) {
             $lesson->examples()->create(['sentence' => $sentence, 'translation_km' => $translation]);
+        }
+
+        $lesson->words()->delete();
+        foreach ($data['words'] ?? [] as [$word, $meaning, $meaningKm, $example]) {
+            $lesson->words()->create(['word' => $word, 'meaning_en' => $meaning, 'meaning_km' => $meaningKm, 'example' => $example]);
         }
 
         $this->seedQuiz($lesson, $data['quiz']);

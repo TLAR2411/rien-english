@@ -10,7 +10,7 @@
 return [
 
     // Levels created by LevelSeeder (code => English / Khmer name).
-    // LevelSeeder also creates one free "Grammar <code>" course per level.
+    // LevelSeeder also creates one free course per level (e.g. A1 "English for Beginners").
     'levels' => [
         'A1' => ['name' => 'Beginner', 'name_km' => 'កម្រិតដំបូង'],
         'A2' => ['name' => 'Elementary', 'name_km' => 'កម្រិតបឋម'],

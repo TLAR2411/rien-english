@@ -46,11 +46,11 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
 | 6 | Student progress & scores | T28–T30 | 3/3 |
-| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
+| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 1/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T31
+**Current task:** T32
 
 ---
 
@@ -104,7 +104,7 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 - [x] **T07 — Levels & Courses**
   - `levels`: id, code (A1, A2, B1, B2, C1), name, sort_order.
   - `courses`: id, level_id, title, title_km, description, slug, is_free (default true), price (nullable), status (draft/published), sort_order.
-  - Seeder: levels A1–C1 and one free course per level ("Grammar A1", ...).
+  - Seeder: levels A1–C1 and one free course per level ("English for Beginners" for A1, ...). A course holds lessons of every skill.
   - ✅ Done when: migrate + seed works; models have relationships.
 
 - [x] **T08 — Lessons**
@@ -253,7 +253,7 @@ After login, students see a **system-style layout** (side menu), like the admin 
 
 Lessons stay public. Quizzes and writing submissions need login (same as Phase 4–5).
 
-- [ ] **T31 — Reading lessons**
+- [x] **T31 — Reading lessons**
   - Uses `skill = reading`. Passage + vocabulary list + comprehension quiz (reuse quiz system).
   - ✅ Done when: one sample reading lesson works end to end.
 
@@ -472,3 +472,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-12 — T29 — My Progress top row: "Scores over time" line chart (`student/ScoreHistoryChart.vue`, vue-chartjs; last 30 quiz tries oldest → newest, green point = passed, amber = not yet, lesson name in the tooltip; number in `config/learning.php` → progress.chart_attempts) and "Topics to review" (quizzes whose best score is under the pass score, weakest first; tap → read the lesson again); API `GET student/progress` now also sends `history` + `to_review` — tests: pass (183), build: pass
 - 2026-11-12 — T30 — Users list (search, role, block/unblock already there) got a "View" row button → new page `/admin/users/view/<id>` (name, role, Active/Inactive, email, joined, last login; tiles Lessons done · Quizzes taken · Quizzes passed · Average score; lessons by skill; scores per quiz incl. draft lessons; table of every quiz try); API `GET /api/web/users/{user}/learning` + `/users/{user}/quiz-attempts` (admin only, `view-users`, other company's users → 404); admin dashboard: Students, New sign-ups, Active students (logged in / finished a lesson / took a quiz), Quizzes taken, Average score, Teachers + "Most popular lessons" (most finished, then most quiz tries) via `Services/Learning/LearningStats` (`config/learning.php` → dashboard: 7 days, 5 lessons); `Lesson::quizAttempts()`; chart line no longer curves past a score (T29); checked on desktop + phone with temporary test users (removed afterwards) — tests: pass (189), build: pass
 - 2026-11-12 — UI (T30) — owner asked for a cleaner admin dashboard: one Overview card with 4 numbers side by side (Students + new this week, Active students + % of students, Quizzes taken + this week, Average score), "Activity" bar chart (quiz tries + sign-ups per day, last 14 days), "Quiz results" ring (share of tries passed, passed / not passed, average), "Most popular lessons" with a bar to compare; Teachers tile removed (see Users); parts in `views/admin/dashboards/` (DashboardOverview, ActivityChart, QuizResultsCard, PopularLessons); API adds `quizzes_passed` + `activity` (`config/learning.php` → dashboard.activity_days) — tests: pass (190), build: pass
+- 2026-11-12 — T31 — Reading lessons: new table `lesson_words` (word, simple English meaning, Khmer meaning, example, audio; T35 flashcards can reuse it) + model `LessonWord`; admin API `lessons/{lesson}/words` + `words/{word}` (list, add, edit, move, delete; `LessonWordRequest`); lesson page gets a "Words" tab for reading + vocabulary lessons (`views/admin/learning/lessons/words/`, "5–10 recommended"); editor has a Reading lesson guide + "Insert reading template" (Before you read · Read the text · Words to know · Quiz — `LESSON_GUIDES` in `constants/lessonTemplates.js`); lesson page (public, student, preview) shows "Words to know" under the text with 🔊 (meaning in Khmer or simple English, follows the language); quiz = the normal quiz system; sample reading lesson "My family" (A1, draft) now has 8 words; owner's course rename (one course per level, all skills) + "Family words" / "My family" samples included — tests: pass (201), build: pass

@@ -34,6 +34,7 @@ class StudentLessonResource extends JsonResource
                 'level' => $this->course->relationLoaded('level') ? $this->course->level->only(['id', 'code', 'name', 'name_km']) : null,
             ]),
             'examples' => $this->whenLoaded('examples', fn () => $this->examples->map->only(['id', 'sentence', 'translation_km', 'audio_url'])),
+            'words' => $this->whenLoaded('words', fn () => $this->words->map->only(['id', 'word', 'meaning_en', 'meaning_km', 'example', 'audio_url'])),
             'quiz' => new StudentQuizResource($this->whenLoaded('quiz')),
         ];
     }
