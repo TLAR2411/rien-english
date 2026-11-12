@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
-/** T28 — My Progress: % of lessons done per skill / level, quiz scores per lesson. */
+/** T28–T29 — My Progress: % of lessons done per skill / level, quiz scores, chart, topics to review. */
 class MyProgressTest extends TestCase
 {
     use RefreshDatabase;
@@ -136,6 +136,43 @@ class MyProgressTest extends TestCase
             ->assertJsonCount(2, 'data.quizzes')
             ->assertJsonPath('data.quizzes.0.quiz_id', $newer->id)
             ->assertJsonPath('data.quizzes.1.quiz_id', $older->id);
+    }
+
+    /** T29 */
+    public function test_the_chart_has_the_newest_tries_oldest_first(): void
+    {
+        config(['learning.progress.chart_attempts' => 3]);
+        $quiz = Quiz::factory()->for($this->lesson($this->a1, 'grammar', ['title_en' => 'To be']))->create();
+        foreach ([10, 20, 30, 40] as $percent) {
+            $this->attempt($quiz, $percent);
+            $this->travel(1)->minutes();
+        }
+        $this->attempt($quiz, 99, $this->userWithRole('student')); // someone else
+
+        $this->progress()
+            ->assertJsonCount(3, 'data.history')
+            ->assertJsonPath('data.history.0.percent', 20)
+            ->assertJsonPath('data.history.2.percent', 40)
+            ->assertJsonPath('data.history.2.lesson.title_en', 'To be')
+            ->assertJsonStructure(['data' => ['history' => [['id', 'percent', 'passed', 'finished_at']]]]);
+    }
+
+    /** T29 */
+    public function test_topics_to_review_are_quizzes_not_passed_yet_weakest_first(): void
+    {
+        $passed = Quiz::factory()->for($this->lesson($this->a1))->create(['pass_score' => 70]);
+        $weak = Quiz::factory()->for($this->lesson($this->a1))->create(['pass_score' => 70]);
+        $weakest = Quiz::factory()->for($this->lesson($this->a1))->create(['pass_score' => 80]);
+        $this->attempt($passed, 40);
+        $this->attempt($passed, 70); // best = pass score → passed
+        $this->attempt($weak, 60);
+        $this->attempt($weakest, 50);
+
+        $this->progress()
+            ->assertJsonCount(2, 'data.to_review')
+            ->assertJsonPath('data.to_review.0.quiz_id', $weakest->id)
+            ->assertJsonPath('data.to_review.1.quiz_id', $weak->id)
+            ->assertJsonPath('data.to_review.1.best_percent', 60);
     }
 
     public function test_guests_and_staff_cannot_open_it(): void

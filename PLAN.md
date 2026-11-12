@@ -45,12 +45,12 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 3 | Admin: manage content | T11–T17 | 7/7 |
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
-| 6 | Student progress & scores | T28–T30 | 1/3 |
+| 6 | Student progress & scores | T28–T30 | 2/3 |
 | 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 0/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T29
+**Current task:** T30
 
 ---
 
@@ -240,7 +240,7 @@ After login, students see a **system-style layout** (side menu), like the admin 
   - Table of quiz scores per lesson/grammar topic: best score, last score, attempts count, date.
   - ✅ Done when: student sees their scores.
 
-- [ ] **T29 — Charts & weak topics**
+- [x] **T29 — Charts & weak topics**
   - Chart of scores over time. List "Topics to review" (best score < pass_score).
   - ✅ Done when: chart renders with real data.
 
@@ -469,3 +469,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-11 — T22 — Forgot password: "Forgot password?" link on the login page (keeps a typed email); `/forgot-password` (email → "Check your email", same reply for every email so nobody can find out who has an account; disabled accounts get no email); email (`Notifications/Auth/ResetPasswordNotification`, English + one Khmer line) with a button to `/reset-password?token=…&email=…` on the website (`FRONTEND_URL` in `.env`); `/reset-password` (new password + confirm, same rule as sign-up via `Password::defaults()`; link works 60 minutes, one time; bad / used / old link → "Send me a new link"); after a reset all old logins are logged out; API `POST /api/web/forgot-password`, `POST /api/web/reset-password` (`ForgotPasswordRequest`, `ResetPasswordRequest`, `PASSWORD_RESET_PER_MINUTE`=5 per IP); mail settings only from `.env` (`MAIL_*`); `{ silent: true }` API calls now also skip the success pop-up; sign-up / forgot / reset pages share `assets/styles/_auth-page.scss` — tests: pass (172), build: pass
 - 2026-11-11 — T27 — Quiz submit is rate limited: 10 per minute per student (`QUIZ_SUBMIT_PER_MINUTE`, `config/learning.php` → quiz; over the limit → 429 "Too Many Attempts" pop-up); `SubmitQuizRequest` now checks every answer belongs to the quiz: question not in this quiz → 422, picked option not of that question → 422, wrong answer shape for the type (text for a choice, list for fill blank, text for word order) → 422, nothing saved; hidden / empty quizzes still 404 (`Quiz::isOpen()`); the quiz page sends only the quiz's current questions (an old saved draft can't send a removed question) — tests: pass (175), build: pass
 - 2026-11-12 — T28 — My Progress `/student/my-progress` (side menu): lessons done per skill (all 5, "No lessons yet" when a skill has none) and per level (A1→C1) with a bar and %; quiz scores table (lesson, best %, last %, tries, last date; a list on phones; tap → last result); API `GET /api/web/student/progress` via `Services/Learning/ProgressReport` (only published lessons count; `quizScores()` can include hidden lessons for teachers, T30); shared `components/learning/QuizScoreTable.vue` + `student/ProgressRow.vue` — tests: pass (181), build: pass
+- 2026-11-12 — T29 — My Progress top row: "Scores over time" line chart (`student/ScoreHistoryChart.vue`, vue-chartjs; last 30 quiz tries oldest → newest, green point = passed, amber = not yet, lesson name in the tooltip; number in `config/learning.php` → progress.chart_attempts) and "Topics to review" (quizzes whose best score is under the pass score, weakest first; tap → read the lesson again); API `GET student/progress` now also sends `history` + `to_review` — tests: pass (183), build: pass

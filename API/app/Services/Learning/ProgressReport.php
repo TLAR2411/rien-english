@@ -65,6 +65,39 @@ class ProgressReport
             ->values();
     }
 
+    /**
+     * The newest quiz tries (config: learning.progress.chart_attempts), oldest first,
+     * for the "Scores over time" chart. Only quizzes of visible lessons.
+     */
+    public function scoreHistory(User $student): Collection
+    {
+        return $student->quizAttempts()
+            ->whereHas('quiz.lesson', fn (Builder $lesson) => $lesson->visible())
+            ->with('quiz:id,lesson_id', 'quiz.lesson:id,title_en,title_km')
+            ->latest('finished_at')
+            ->latest('id')
+            ->limit(config('learning.progress.chart_attempts'))
+            ->get(['id', 'quiz_id', 'percent', 'passed', 'finished_at'])
+            ->reverse()
+            ->map(fn (QuizAttempt $attempt) => [
+                'id' => $attempt->id,
+                'percent' => $attempt->percent,
+                'passed' => $attempt->passed,
+                'finished_at' => $attempt->finished_at,
+                'lesson' => $attempt->quiz->lesson->only(['title_en', 'title_km']),
+            ])
+            ->values();
+    }
+
+    /** Quizzes whose best score is still under the pass score, weakest first. $scores = quizScores(). */
+    public function topicsToReview(Collection $scores): Collection
+    {
+        return $scores
+            ->reject(fn (array $row) => $row['passed'])
+            ->sortBy('best_percent')
+            ->values();
+    }
+
     private function scoreRow(object $row, Quiz $quiz, ?int $lastPercent): array
     {
         $lesson = $quiz->lesson;

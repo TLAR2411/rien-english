@@ -29,6 +29,11 @@ return [
         'submit_per_minute' => (int) env('QUIZ_SUBMIT_PER_MINUTE', 10),
     ],
 
+    'progress' => [
+        // Quiz tries shown in the "Scores over time" chart (the newest ones)
+        'chart_attempts' => 30,
+    ],
+
     // Longest lesson text accepted (characters of HTML, per language)
     'lesson_max_length' => 200000,
 
