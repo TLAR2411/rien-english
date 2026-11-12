@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Stevebauman\Purify\Casts\PurifyHtmlOnSet;
 
@@ -89,5 +90,11 @@ class Lesson extends Model
     public function quiz(): HasOne
     {
         return $this->hasOne(Quiz::class);
+    }
+
+    /** Every try of this lesson's quiz, by any student. */
+    public function quizAttempts(): HasManyThrough
+    {
+        return $this->hasManyThrough(QuizAttempt::class, Quiz::class);
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\Admin\PermissionController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\Learning\Admin\UserLearningController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserController;
 
@@ -31,6 +32,10 @@ Route::post('users-change-password', [UserController::class, 'changePassword'])-
 Route::post('users-change-username-email', [UserController::class, 'changeUsernameEmail'])->middleware('permission:edit-users');
 Route::post('users-change-image-path', [UserController::class, 'changeImagePath']);
 Route::post('users-link-user', [UserController::class, 'linkUser'])->middleware('permission:add-users');
+
+// A user's learning: numbers, scores per quiz, every quiz try (admin user page)
+Route::get('users/{user}/learning', [UserLearningController::class, 'show'])->middleware('permission:view-users');
+Route::get('users/{user}/quiz-attempts', [UserLearningController::class, 'attempts'])->middleware('permission:view-users');
 
 // Branches
 Route::get('branches-all', [BranchController::class, 'all']);

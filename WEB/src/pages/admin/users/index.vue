@@ -161,6 +161,11 @@ const onEdit = async (item) => {
   router.push({ name: "admin-users-edit", query: { id: item.id } });
 };
 
+// The user's learning: numbers, quiz scores, every quiz try
+const onView = (item) => {
+  router.push({ name: "admin-users-view-id", params: { id: item.id } });
+};
+
 const onDisable = async (item) => {
   try {
     isLoading.value = true;
@@ -290,6 +295,8 @@ const onUpdatePermission = async (data, callback) => {
     create-page="admin-users-create"
     is-check-branch
     is-filter
+    is-view
+    can-view="view-users"
     is-edit
     is-delete
     is-disable
@@ -301,6 +308,7 @@ const onUpdatePermission = async (data, callback) => {
     save-state
     :is-back="false"
     @on-delete="onDelete"
+    @on-view="onView"
     @on-edit="onEdit"
     @on-disable="onDisable"
     @on-password="onPassword"

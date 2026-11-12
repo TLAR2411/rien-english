@@ -31,7 +31,8 @@ const chartData = computed(() => {
         borderColor: primary,
         backgroundColor: `${primary}14`,
         fill: true,
-        tension: 0.3,
+        // smooth, but never curves above / below a real score
+        cubicInterpolationMode: "monotone",
         borderWidth: 2,
         pointRadius: 5,
         pointHoverRadius: 7,

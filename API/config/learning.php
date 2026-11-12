@@ -34,6 +34,13 @@ return [
         'chart_attempts' => 30,
     ],
 
+    'dashboard' => [
+        // "New sign-ups", "active students" and "quizzes taken" count the last N days
+        'recent_days' => 7,
+        // How many lessons the "Most popular lessons" list shows
+        'popular_lessons' => 5,
+    ],
+
     // Longest lesson text accepted (characters of HTML, per language)
     'lesson_max_length' => 200000,
 
