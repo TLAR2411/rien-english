@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Learning\Admin\PreviewController;
 use App\Http\Controllers\Api\Learning\Admin\QuestionController;
 use App\Http\Controllers\Api\Learning\Admin\QuizController;
 use App\Http\Controllers\Api\Learning\Admin\UploadController;
+use App\Http\Controllers\Api\Learning\Admin\WritingReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', DashboardController::class);
@@ -55,6 +56,11 @@ Route::post('quizzes/{quiz}/questions', [QuestionController::class, 'store']);
 Route::put('questions/{question}', [QuestionController::class, 'update']);
 Route::patch('questions/{question}/move', [QuestionController::class, 'move']);
 Route::delete('questions/{question}', [QuestionController::class, 'destroy']);
+
+// Writing Review: students' writings, give a score + feedback
+Route::get('writings', [WritingReviewController::class, 'index']);
+Route::get('writings/{writing}', [WritingReviewController::class, 'show']);
+Route::put('writings/{writing}/review', [WritingReviewController::class, 'review']);
 
 // Audio / image files (limits: config/learning.php → uploads)
 Route::post('uploads', UploadController::class)->middleware('permission:add-lessons|edit-lessons');

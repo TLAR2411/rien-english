@@ -3,6 +3,7 @@ import { useI18n } from "vue-i18n";
 import { getMyWriting, submitWriting } from "@/services/site";
 import { useAuthStore } from "@/stores/authStore";
 import { formatLearningDate } from "@/utils/learningDate";
+import { myWritingRoute } from "@/utils/studentRoutes";
 import { wordCount, wordTargetText } from "@/utils/wordCount";
 
 /**
@@ -225,9 +226,15 @@ const date = (value) => formatLearningDate(value, locale.value);
 
     <!-- The student's text, after sending -->
     <div v-if="!isLoading && mode !== 'write'" class="writing__sent">
-      <p class="writing__label">
-        {{ $t("Your writing") }} · {{ $t("{count} words", { count: latest.word_count }) }}
-      </p>
+      <div class="d-flex flex-wrap align-center justify-space-between gap-2 mb-2">
+        <p class="writing__label mb-0">
+          {{ $t("Your writing") }} · {{ $t("{count} words", { count: latest.word_count }) }}
+        </p>
+        <RouterLink :to="myWritingRoute()" class="writing__link">
+          {{ $t("All my writing") }}
+          <VIcon icon="tabler-arrow-right" size="16" />
+        </RouterLink>
+      </div>
       <p class="writing__text">{{ latest.text }}</p>
     </div>
 
@@ -411,6 +418,16 @@ $line: rgba(var(--v-border-color), var(--v-border-opacity));
 .writing__sent,
 .writing__sample {
   margin-block-start: 2rem;
+}
+
+.writing__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--v-theme-primary));
+  text-decoration: none;
 }
 
 .writing__text {

@@ -13,7 +13,7 @@ export const useAdminNavigation = () => {
     },
 
     // ---- Learning content (admin + teacher) ----
-    { heading: "Learning", permission: ["view-levels", "view-courses", "view-lessons", "view-quizzes"] },
+    { heading: "Learning", permission: ["view-levels", "view-courses", "view-lessons", "view-quizzes", "view-writing"] },
     {
       title: "Levels",
       to: { name: "admin-levels" },
@@ -32,6 +32,13 @@ export const useAdminNavigation = () => {
       to: { name: "admin-lessons" },
       icon: { icon: "tabler-notebook" },
       permission: "view-lessons",
+    },
+    {
+      // Students' writings: give a score + feedback
+      title: "Writing Review",
+      to: { name: "admin-writing" },
+      icon: { icon: "tabler-writing" },
+      permission: "view-writing",
     },
 
     // ---- People (admin) ----

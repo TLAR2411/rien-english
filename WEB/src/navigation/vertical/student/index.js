@@ -1,10 +1,14 @@
 import { computed } from "vue";
-import { myLessonsRoute, myProgressRoute, myQuizzesRoute, studentDashboardRoute, studentLessonsRoute } from "@/utils/studentRoutes";
+import {
+  myLessonsRoute,
+  myProgressRoute,
+  myQuizzesRoute,
+  myWritingRoute,
+  studentDashboardRoute,
+  studentLessonsRoute,
+} from "@/utils/studentRoutes";
 
-/**
- * Student sidebar. Add an item here when its page is built
- * (PLAN.md: My Writing T34).
- */
+/** Student sidebar. Add an item here when its page is built. */
 export const useStudentNavigation = () =>
   computed(() => [
     {
@@ -21,6 +25,11 @@ export const useStudentNavigation = () =>
       title: "My Quizzes",
       to: myQuizzesRoute(),
       icon: { icon: "tabler-checklist" },
+    },
+    {
+      title: "My Writing",
+      to: myWritingRoute(),
+      icon: { icon: "tabler-writing" },
     },
     {
       title: "My Progress",

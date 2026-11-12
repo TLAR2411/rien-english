@@ -49,3 +49,9 @@ export const getMyWriting = async (slug) =>
 /** Send a writing → { submission, sample_answer }. Errors (word target, already waiting) come back to the page. */
 export const submitWriting = async (slug, text) =>
   (await api.post(`student/lessons/${encodeURIComponent(slug)}/writing`, { text }, { silent: true })).data.data;
+
+/** My Writing: { data, meta } — params: page */
+export const getMyWritings = async (params) => (await api.get("student/writings", { params })).data.data;
+
+/** One of my writings + the lesson's task and sample answer. Not mine / missing → 404, no pop-up. */
+export const getMyWritingOne = async (id) => (await api.get(`student/writings/${id}`, { silent: true })).data.data;

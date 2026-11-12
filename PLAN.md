@@ -46,11 +46,11 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
 | 6 | Student progress & scores | T28–T30 | 3/3 |
-| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 3/5 |
+| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 4/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T34
+**Current task:** T35
 
 ---
 
@@ -266,7 +266,7 @@ Lessons stay public. Quizzes and writing submissions need login (same as Phase 4
   - Guests can read the prompt; they must sign up to submit. Student submits → `writing_submissions` (pending).
   - ✅ Done when: student can submit and see "waiting for review".
 
-- [ ] **T34 — Writing review (teacher)**
+- [x] **T34 — Writing review (teacher)**
   - Admin/teacher list of pending submissions, give score + feedback. Student sees feedback in My Writing / My Progress.
   - ✅ Done when: full review loop works.
 
@@ -475,3 +475,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-12 — T31 — Reading lessons: new table `lesson_words` (word, simple English meaning, Khmer meaning, example, audio; T35 flashcards can reuse it) + model `LessonWord`; admin API `lessons/{lesson}/words` + `words/{word}` (list, add, edit, move, delete; `LessonWordRequest`); lesson page gets a "Words" tab for reading + vocabulary lessons (`views/admin/learning/lessons/words/`, "5–10 recommended"); editor has a Reading lesson guide + "Insert reading template" (Before you read · Read the text · Words to know · Quiz — `LESSON_GUIDES` in `constants/lessonTemplates.js`); lesson page (public, student, preview) shows "Words to know" under the text with 🔊 (meaning in Khmer or simple English, follows the language); quiz = the normal quiz system; sample reading lesson "My family" (A1, draft) now has 8 words; owner's course rename (one course per level, all skills) + "Family words" / "My family" samples included — tests: pass (201), build: pass
 - 2026-11-12 — T32 — Listening lessons: new `lessons.transcript` (HTML, cleaned on save); a listening lesson needs its audio to be **published** (drafts can wait; `LessonRequest`); lesson API sends `quiz_taken` for a logged-in student; editor: Listening lesson guide (ticks Audio + Transcript when filled), "Insert listening template", "Transcript" text tab, Words tab also for listening; lesson page: `ListeningPlayer.vue` (play/pause, back 5s, play again, time bar, speed 0.75x / 1x remembered in the browser), transcript closed until "Show transcript" — opens by itself once the student has tried the quiz; sample "Listening: At the market" (A1, draft, 6 words, 6 questions; audio `sample-media/at-the-market.m4a` made with a computer voice — replace with a real recording before launch; the seeder copies it to storage) — tests: pass (206), build: pass
 - 2026-11-12 — T33 — Writing lessons: new lesson columns `checklist` (list), `min_words`, `max_words`, `sample_answer` (HTML); the task itself is the lesson text; editor: Writing lesson guide + template, "Writing task" part (word target, checklist items) and a "Sample answer" text tab; public API sends checklist + word target but **never the sample answer**; student API `GET/POST /api/web/student/lessons/{slug}/writing` (`SubmitWritingRequest`: published writing lesson only, fits the word target, only one writing waiting per lesson; 5 per minute — `WRITING_SUBMIT_PER_MINUTE`; words counted by `Support/WordCount` = `utils/wordCount.js`); `WritingTask.vue` in the student lesson page: tick the checklist, write with a live word counter and bar, draft kept in the browser, "Send to teacher" with a check, then "Waiting for review" + the student's text + the sample answer (reviewed: score + feedback + "Write again"); public page: "Write and get feedback" card (visitor → sign up → back to the lesson); admin preview shows the box + sample answer; sample "Writing: About my family" (A1, draft, 50–100 words, 5 checklist items) — tests: pass (215), build: pass
+- 2026-11-12 — T34 — Writing review: permissions `view-writing` + `review-writing` (admin + teacher) added by a migration that **adds** them to the roles without resetting other permissions (also in PermissionSeeder / config/roles.php); admin API `GET /api/web/admin/writings` (filters status, search student / lesson; waiting = oldest first), `GET writings/{id}` (full text + the lesson's task, checklist, sample answer, the student's earlier writings, `next_pending_id`, waiting count), `PUT writings/{id}/review` (`ReviewWritingRequest`: score 0–100 + feedback; can be changed later); admin menu "Writing Review" → `/admin/writing` (tabs Waiting · Reviewed · All) and review page `/admin/writing/<id>` (student's text with word count vs target, task / checklist / sample answer to compare, score box + slider + quick scores, feedback, "Save and next"); student API `GET /api/web/student/writings` + `writings/{id}` (own only); student menu "My Writing" → `/student/my-writing` list and one writing with score, feedback, own text, sample answer; lesson page writing box links to it; checked in the browser with a temporary student + teacher (removed afterwards) — tests: pass (222), build: pass

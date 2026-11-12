@@ -22,3 +22,9 @@ export const quizResultRoute = (id) => ({ name: "student-quiz-results-id", param
 export const myQuizzesRoute = () => ({ name: "student-my-quizzes" });
 
 export const myProgressRoute = () => ({ name: "student-my-progress" });
+
+/** My Writing: every writing with the teacher's feedback */
+export const myWritingRoute = () => ({ name: "student-my-writing" });
+
+/** One of my writings: /student/my-writing/12 */
+export const writingRoute = (id) => ({ name: "student-my-writing-id", params: { id } });

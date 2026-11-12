@@ -74,5 +74,8 @@ class PermissionSeeder extends Seeder
         $this->insert('courses', self::CRUD, false);
         $this->insert('lessons', self::CRUD, false);
         $this->insert('quizzes', self::CRUD, false);
+
+        // Writing Review: read students' writing, give a score + feedback (T34)
+        $this->insert('writing', ['view', 'review'], false);
     }
 }

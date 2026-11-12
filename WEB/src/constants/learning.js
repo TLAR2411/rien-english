@@ -9,6 +9,12 @@ export const PUBLISH_STATUSES = [
   { value: "published", title: "Published", color: "success" },
 ];
 
+// API/app/Enums/WritingStatus.php — a student's writing
+export const WRITING_STATUSES = [
+  { value: "pending", title: "Waiting for review", short: "Waiting", color: "warning", icon: "tabler-clock-hour-4" },
+  { value: "reviewed", title: "Reviewed", short: "Reviewed", color: "success", icon: "tabler-circle-check-filled" },
+];
+
 // API/app/Enums/LessonSkill.php
 export const SKILLS = [
   { value: "grammar", title: "Grammar", icon: "tabler-abc" },

@@ -45,6 +45,7 @@ return [
             'courses',
             'lessons',
             'quizzes',
+            'writing',
         ],
     ],
 

@@ -31,6 +31,9 @@ Route::get('quiz-attempts', [QuizAttemptController::class, 'index']);
 Route::get('quiz-attempts/{attempt}', [QuizAttemptController::class, 'show']);
 
 // Writing lessons: send a writing (waits for a teacher), see my writings for a lesson
+// My Writing: every writing with the teacher's score + feedback
+Route::get('writings', [WritingController::class, 'index']);
+Route::get('writings/{writing}', [WritingController::class, 'mine']);
 Route::get('lessons/{lesson:slug}/writing', [WritingController::class, 'show']);
 Route::post('lessons/{lesson:slug}/writing', [WritingController::class, 'store'])
     ->middleware('throttle:'.config('learning.writing.submit_per_minute').',1');

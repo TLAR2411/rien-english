@@ -37,6 +37,8 @@ return [
         'max_words' => 2000,
         // Most checklist items on one writing task
         'checklist_max' => 10,
+        // Longest teacher feedback (characters)
+        'feedback_max_length' => 5000,
     ],
 
     'progress' => [
