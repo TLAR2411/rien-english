@@ -75,6 +75,27 @@ class DashboardTest extends TestCase
             ->assertJsonPath('data.popular_lessons.0.title_en', 'To be')
             ->assertJsonPath('data.popular_lessons.0.finished_count', 2)
             ->assertJsonPath('data.popular_lessons.0.attempts_count', 2)
-            ->assertJsonPath('data.popular_lessons.1.id', $other->id);
+            ->assertJsonPath('data.popular_lessons.1.id', $other->id)
+            ->assertJsonPath('data.quizzes_passed', 1);
+    }
+
+    public function test_activity_has_one_row_per_day_with_quiz_tries_and_sign_ups(): void
+    {
+        $branch = $this->makeBranch($this->makeCompany());
+        $student = $this->makeUser($branch, ['created_at' => now()->subDays(30)], 'student');
+        $this->makeUser($branch, [], 'student'); // signed up today
+        $quiz = Quiz::factory()->for(Lesson::factory()->for(Course::factory()))->create();
+        $this->attempt($student, $quiz, 50);
+        $this->attempt($student, $quiz, 90);
+        $this->attempt($student, $quiz, 90, now()->subDays(2));
+        $this->attempt($student, $quiz, 90, now()->subDays(40)); // too old for the chart
+
+        Passport::actingAs($this->makeUser($branch, [], 'admin'));
+        $this->getJson('/api/web/admin/dashboard')
+            ->assertOk()
+            ->assertJsonCount(14, 'data.activity')
+            ->assertJsonPath('data.activity.13', ['date' => today()->toDateString(), 'quizzes' => 2, 'sign_ups' => 1])
+            ->assertJsonPath('data.activity.11.quizzes', 1)
+            ->assertJsonPath('data.activity.0.quizzes', 0);
     }
 }

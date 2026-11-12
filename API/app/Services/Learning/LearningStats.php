@@ -27,9 +27,35 @@ class LearningStats
             'active_students' => $this->activeStudents($since),
             'quizzes_taken' => QuizAttempt::count(),
             'quizzes_taken_recent' => QuizAttempt::where('finished_at', '>=', $since)->count(),
+            'quizzes_passed' => QuizAttempt::where('passed', true)->count(),
             'average_percent' => $this->roundOrNull(QuizAttempt::avg('percent')),
             'popular_lessons' => $this->popularLessons(),
+            'activity' => $this->dailyActivity(),
         ];
+    }
+
+    /**
+     * One row per day for the last config('learning.dashboard.activity_days') days, oldest first:
+     * [date, quizzes (tries that day), sign_ups (new students that day)]. Days with nothing show 0.
+     */
+    private function dailyActivity(): Collection
+    {
+        $from = today()->subDays(config('learning.dashboard.activity_days') - 1);
+
+        $quizzes = QuizAttempt::where('finished_at', '>=', $from)
+            ->selectRaw('DATE(finished_at) as day, COUNT(*) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+        $signUps = $this->students()->where('users.created_at', '>=', $from)
+            ->selectRaw('DATE(users.created_at) as day, COUNT(*) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        return collect(range(0, config('learning.dashboard.activity_days') - 1))->map(function (int $offset) use ($from, $quizzes, $signUps) {
+            $day = $from->copy()->addDays($offset)->toDateString();
+
+            return ['date' => $day, 'quizzes' => (int) ($quizzes[$day] ?? 0), 'sign_ups' => (int) ($signUps[$day] ?? 0)];
+        });
     }
 
     /** Students who logged in, finished a lesson or took a quiz since $since. */

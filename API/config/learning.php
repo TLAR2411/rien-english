@@ -37,6 +37,8 @@ return [
     'dashboard' => [
         // "New sign-ups", "active students" and "quizzes taken" count the last N days
         'recent_days' => 7,
+        // Days shown in the "Activity" chart (quiz tries + sign-ups per day)
+        'activity_days' => 14,
         // How many lessons the "Most popular lessons" list shows
         'popular_lessons' => 5,
     ],
