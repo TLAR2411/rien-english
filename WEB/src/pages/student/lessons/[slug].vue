@@ -1,5 +1,6 @@
 <script setup>
 import LessonView from "@/components/learning/student/LessonView.vue";
+import WritingTask from "@/components/learning/student/WritingTask.vue";
 import { useLessonReader } from "@/composables/useLessonReader";
 import { quizRoute } from "@/utils/siteRoutes";
 import { studentLessonsRoute } from "@/utils/studentRoutes";
@@ -47,6 +48,8 @@ const { lesson, notFound, language, hasKhmer, isStudent, isSaving, markCompleted
 
     <LessonView v-if="lesson" :lesson="lesson" :language="language" :fit-screen="false" :show-transcript="lesson.quiz_taken">
       <template v-if="lesson.quiz || isStudent" #default>
+        <!-- Writing lesson: write and send to the teacher -->
+        <WritingTask v-if="lesson.skill === 'writing'" :lesson="lesson" class="mb-8" />
         <VCard v-if="lesson.quiz" variant="tonal" color="primary" class="mb-6">
           <VCardText>
             <h2 class="text-h5 font-weight-bold text-high-emphasis mb-1">{{ $t("Check what you learned") }}</h2>

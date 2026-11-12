@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Learning\Student\MyLessonController;
 use App\Http\Controllers\Api\Learning\Student\ProgressController;
 use App\Http\Controllers\Api\Learning\Student\QuizAttemptController;
 use App\Http\Controllers\Api\Learning\Student\QuizController;
+use App\Http\Controllers\Api\Learning\Student\WritingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', DashboardController::class);
@@ -28,3 +29,8 @@ Route::post('quizzes/{quiz}/submit', [QuizController::class, 'submit'])
 // My Quizzes: the student's own attempts and old results
 Route::get('quiz-attempts', [QuizAttemptController::class, 'index']);
 Route::get('quiz-attempts/{attempt}', [QuizAttemptController::class, 'show']);
+
+// Writing lessons: send a writing (waits for a teacher), see my writings for a lesson
+Route::get('lessons/{lesson:slug}/writing', [WritingController::class, 'show']);
+Route::post('lessons/{lesson:slug}/writing', [WritingController::class, 'store'])
+    ->middleware('throttle:'.config('learning.writing.submit_per_minute').',1');

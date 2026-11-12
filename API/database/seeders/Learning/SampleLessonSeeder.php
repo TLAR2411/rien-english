@@ -28,7 +28,8 @@ use RuntimeException;
  *   examples     [[sentence, Khmer translation], …]
  *   words        optional new words: [[word, English meaning, Khmer meaning, example sentence], …]
  *   audio        optional audio file in ./sample-media (listening), copied to the uploads disk
- *   quiz         ['title' => …, 'questions' => [question, …]]
+ *   quiz         optional: ['title' => …, 'questions' => [question, …]]
+ *   writing      (writing lessons) is part of `lesson`: checklist, min_words, max_words, sample_answer
  *   question     type, prompt, explanation, explanation_km, and its answer:
  *                  multiple_choice / find_error → 'options' => ['text' => is correct?]
  *                  true_false                   → 'correct' => true | false
@@ -66,7 +67,9 @@ class SampleLessonSeeder extends Seeder
             $lesson->words()->create(['word' => $word, 'meaning_en' => $meaning, 'meaning_km' => $meaningKm, 'example' => $example]);
         }
 
-        $this->seedQuiz($lesson, $data['quiz']);
+        if (isset($data['quiz'])) {
+            $this->seedQuiz($lesson, $data['quiz']);
+        }
     }
 
     private function seedQuiz(Lesson $lesson, array $data): void

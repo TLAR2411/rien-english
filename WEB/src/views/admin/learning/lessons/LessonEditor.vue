@@ -48,6 +48,10 @@ const emptyForm = () => ({
   content: "",
   content_km: "",
   transcript: "",
+  checklist: [],
+  min_words: null,
+  max_words: null,
+  sample_answer: "",
   audio_url: "",
   video_url: "",
   status: "draft",
@@ -74,9 +78,19 @@ watch(skillTabs, (list) => {
 // Template guide of the lesson's skill (grammar, reading, listening); null = no guide
 const guide = computed(() => LESSON_GUIDES[form.value.skill] ?? null);
 const isListening = computed(() => form.value.skill === "listening");
-watch(isListening, (listening) => {
-  if (!listening && textTab.value === "transcript") textTab.value = "en";
+const isWriting = computed(() => form.value.skill === "writing");
+// Extra text tabs (Transcript, Sample answer) only for their skill
+watch([isListening, isWriting], ([listening, writing]) => {
+  if ((!listening && textTab.value === "transcript") || (!writing && textTab.value === "sample")) textTab.value = "en";
 });
+
+// ---- Writing task: checklist items ----
+const CHECKLIST_MAX = 10; // API/config/learning.php → writing.checklist_max
+const addChecklistItem = () => form.value.checklist.push("");
+const removeChecklistItem = (index) => form.value.checklist.splice(index, 1);
+const wordNumber = (value) => (value === "" || value === null ? null : Number(value));
+const maxWordsRule = (value) =>
+  !value || !form.value.min_words || Number(value) >= Number(form.value.min_words) || t("Must be at least the minimum");
 const videoId = computed(() => youtubeId(form.value.video_url));
 const videoRule = (value) => youtubeValidator(value) === true || t(youtubeValidator(value));
 
@@ -86,6 +100,7 @@ const load = async () => {
   try {
     const res = await api.get(`admin/lessons/${props.lessonId}`);
     form.value = { ...emptyForm(), ...res.data.data };
+    form.value.checklist = [...(form.value.checklist ?? [])];
   } finally {
     isLoading.value = false;
   }
@@ -125,6 +140,9 @@ const onSubmit = async (validation) => {
     ...form.value,
     audio_url: form.value.audio_url || null,
     video_url: form.value.video_url?.trim() || null,
+    checklist: form.value.checklist.map((item) => item.trim()).filter(Boolean),
+    min_words: wordNumber(form.value.min_words),
+    max_words: wordNumber(form.value.max_words),
   });
   if (!saved) return;
 
@@ -294,6 +312,66 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                 </a>
               </VCol>
 
+              <!-- Writing task: word target + checklist (the task itself is the lesson text) -->
+              <template v-if="isWriting">
+                <AppLabel title="Writing task" />
+                <VCol cols="6" md="3">
+                  <AppTextField
+                    v-model="form.min_words"
+                    label="Minimum words"
+                    type="number"
+                    min="1"
+                    placeholder="50"
+                  />
+                </VCol>
+                <VCol cols="6" md="3">
+                  <AppTextField
+                    v-model="form.max_words"
+                    label="Maximum words"
+                    type="number"
+                    min="1"
+                    placeholder="100"
+                    :rules="[maxWordsRule]"
+                  />
+                </VCol>
+                <VCol cols="12">
+                  <p class="text-body-2 text-medium-emphasis mb-2">
+                    {{ t("Checklist — students tick these before they send their writing.") }}
+                  </p>
+                  <div
+                    v-for="(item, index) in form.checklist"
+                    :key="index"
+                    class="d-flex align-center gap-2 mb-2"
+                  >
+                    <VIcon icon="tabler-square-check" color="disabled" size="20" />
+                    <AppTextField
+                      v-model="form.checklist[index]"
+                      :placeholder="t('Use the Present Simple: he works, she likes.')"
+                      class="flex-grow-1"
+                    />
+                    <VBtn
+                      icon
+                      variant="text"
+                      size="small"
+                      color="error"
+                      :aria-label="t('Remove')"
+                      @click="removeChecklistItem(index)"
+                    >
+                      <VIcon icon="tabler-x" size="18" />
+                    </VBtn>
+                  </div>
+                  <VBtn
+                    v-if="form.checklist.length < CHECKLIST_MAX"
+                    variant="text"
+                    size="small"
+                    prepend-icon="tabler-plus"
+                    @click="addChecklistItem"
+                  >
+                    {{ t("Add checklist item") }}
+                  </VBtn>
+                </VCol>
+              </template>
+
               <!-- Lesson text -->
               <AppLabel title="Lesson text" />
               <VCol cols="12">
@@ -306,6 +384,7 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                     <VTab value="en">{{ t("English") }}</VTab>
                     <VTab value="km">{{ t("Khmer") }}</VTab>
                     <VTab v-if="isListening" value="transcript">{{ t("Transcript") }}</VTab>
+                    <VTab v-if="isWriting" value="sample">{{ t("Sample answer") }}</VTab>
                   </VTabs>
                   <VBtn
                     v-if="guide && !form.content"
@@ -334,6 +413,12 @@ const { box: formBox, isFit, height: formHeight } = useFitToScreen();
                   v-show="textTab === 'transcript'"
                   v-model="form.transcript"
                   :placeholder="t('Every word of the audio. Write each speaker in bold, e.g. Seller: Good morning!')"
+                />
+                <RichTextEditor
+                  v-if="isWriting"
+                  v-show="textTab === 'sample'"
+                  v-model="form.sample_answer"
+                  :placeholder="t('A model answer. Students see it right after they send their own writing.')"
                 />
               </VCol>
             </VRow>

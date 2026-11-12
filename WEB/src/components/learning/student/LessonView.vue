@@ -4,6 +4,7 @@ import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
 import { youtubeEmbedUrl } from "@/utils/youtube";
 import ListeningPlayer from "@/components/learning/student/ListeningPlayer.vue";
+import { wordTargetText } from "@/utils/wordCount";
 
 /**
  * A lesson as students see it. Used by the admin preview now, and by the
@@ -67,6 +68,8 @@ const body = computed(() => {
 
 const exampleCount = computed(() => props.lesson.examples?.length ?? 0);
 const wordCount = computed(() => props.lesson.words?.length ?? 0);
+// Writing: "50–100 words"
+const wordTarget = computed(() => wordTargetText(t, props.lesson.min_words, props.lesson.max_words));
 
 // "Words to know": the meaning follows the language (Khmer, else simple English).
 // `sentence` + a "word-" id let useSpeech read the word without mixing it up with examples.
@@ -90,7 +93,9 @@ const outline = computed(() => [
   ...(props.lesson.transcript ? [{ id: "lesson-transcript", title: t("Transcript") }] : []),
   ...(wordCount.value ? [{ id: "lesson-words", title: t("Words to know") }] : []),
   ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
-  ...(slots.default ? [{ id: "lesson-quiz", title: t("Quiz") }] : []),
+  ...(slots.default
+    ? [{ id: "lesson-quiz", title: props.lesson.skill === "writing" ? t("Your writing") : t("Quiz") }]
+    : []),
 ]);
 
 // Big screens: the outline stays still and only the lesson card scrolls.
@@ -181,6 +186,7 @@ onBeforeUnmount(() => {
 
         <ul class="lesson-sheet__facts">
           <li>{{ $t("{count} min read", { count: minutes }) }}</li>
+          <li v-if="wordTarget">{{ $t("Write {target}", { target: wordTarget }) }}</li>
           <li v-if="wordCount">{{ $t("{count} new words", { count: wordCount }) }}</li>
           <li v-if="exampleCount">{{ $t("{count} examples", { count: exampleCount }) }}</li>
           <li v-if="questionCount">{{ $t("{count} questions", { count: questionCount }) }}</li>

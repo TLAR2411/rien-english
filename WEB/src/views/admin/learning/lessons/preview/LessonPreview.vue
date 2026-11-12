@@ -2,6 +2,7 @@
 import { api } from "@/utils/api";
 import LessonView from "@/components/learning/student/LessonView.vue";
 import QuizView from "@/components/learning/student/QuizView.vue";
+import WritingTask from "@/components/learning/student/WritingTask.vue";
 
 // The saved lesson and its quiz exactly as a student gets them (also drafts).
 const props = defineProps({
@@ -11,17 +12,19 @@ const props = defineProps({
 const emit = defineEmits(["loaded"]);
 
 const lesson = ref(null);
+const saved = ref(null); // the editor's copy: has the writing sample answer
 const isLoading = ref(true);
 
 const load = async () => {
   isLoading.value = true;
   try {
-    const [preview, saved] = await Promise.all([
+    const [preview, savedRes] = await Promise.all([
       api.get(`admin/lessons/${props.lessonId}/preview`),
       api.get(`admin/lessons/${props.lessonId}`),
     ]);
     lesson.value = preview.data.data;
-    emit("loaded", saved.data.data);
+    saved.value = savedRes.data.data;
+    emit("loaded", saved.value);
   } finally {
     isLoading.value = false;
   }
@@ -40,6 +43,13 @@ watch(() => props.lessonId, load, { immediate: true });
     />
 
     <LessonView v-if="lesson" :lesson="lesson">
+      <WritingTask
+        v-if="lesson.skill === 'writing'"
+        :lesson="lesson"
+        :sample-answer="saved?.sample_answer"
+        preview
+        class="mb-8"
+      />
       <QuizView v-if="lesson.quiz?.questions?.length" :quiz="lesson.quiz" preview />
     </LessonView>
   </div>

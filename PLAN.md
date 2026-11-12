@@ -46,11 +46,11 @@ A website where Cambodian students learn English: **Grammar, Reading, Listening,
 | 4 | Public website & student sign-up | T18–T22 | 5/5 |
 | 5 | Student system: dashboard & quizzes | T23–T27 | 5/5 |
 | 6 | Student progress & scores | T28–T30 | 3/3 |
-| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 2/5 |
+| 7 | Reading, Listening, Writing, Vocabulary | T31–T35 | 3/5 |
 | 8 | Khmer/English, Google sign-in, polish, launch | T36–T42 | 0/7 |
 | 9 | (Later) Paid courses | T43–T46 | 0/4 |
 
-**Current task:** T33
+**Current task:** T34
 
 ---
 
@@ -261,7 +261,7 @@ Lessons stay public. Quizzes and writing submissions need login (same as Phase 4
   - `skill = listening`. Audio player (play, pause, replay, speed 0.75x/1x). Transcript hidden until "Show transcript" or quiz finished.
   - ✅ Done when: one sample listening lesson works end to end.
 
-- [ ] **T33 — Writing lessons & submission**
+- [x] **T33 — Writing lessons & submission**
   - `skill = writing`. Prompt, sample answer (hidden until submit), checklist, word counter, textarea.
   - Guests can read the prompt; they must sign up to submit. Student submits → `writing_submissions` (pending).
   - ✅ Done when: student can submit and see "waiting for review".
@@ -474,3 +474,4 @@ _(One line per finished task: date — task — what changed — tests result)_
 - 2026-11-12 — UI (T30) — owner asked for a cleaner admin dashboard: one Overview card with 4 numbers side by side (Students + new this week, Active students + % of students, Quizzes taken + this week, Average score), "Activity" bar chart (quiz tries + sign-ups per day, last 14 days), "Quiz results" ring (share of tries passed, passed / not passed, average), "Most popular lessons" with a bar to compare; Teachers tile removed (see Users); parts in `views/admin/dashboards/` (DashboardOverview, ActivityChart, QuizResultsCard, PopularLessons); API adds `quizzes_passed` + `activity` (`config/learning.php` → dashboard.activity_days) — tests: pass (190), build: pass
 - 2026-11-12 — T31 — Reading lessons: new table `lesson_words` (word, simple English meaning, Khmer meaning, example, audio; T35 flashcards can reuse it) + model `LessonWord`; admin API `lessons/{lesson}/words` + `words/{word}` (list, add, edit, move, delete; `LessonWordRequest`); lesson page gets a "Words" tab for reading + vocabulary lessons (`views/admin/learning/lessons/words/`, "5–10 recommended"); editor has a Reading lesson guide + "Insert reading template" (Before you read · Read the text · Words to know · Quiz — `LESSON_GUIDES` in `constants/lessonTemplates.js`); lesson page (public, student, preview) shows "Words to know" under the text with 🔊 (meaning in Khmer or simple English, follows the language); quiz = the normal quiz system; sample reading lesson "My family" (A1, draft) now has 8 words; owner's course rename (one course per level, all skills) + "Family words" / "My family" samples included — tests: pass (201), build: pass
 - 2026-11-12 — T32 — Listening lessons: new `lessons.transcript` (HTML, cleaned on save); a listening lesson needs its audio to be **published** (drafts can wait; `LessonRequest`); lesson API sends `quiz_taken` for a logged-in student; editor: Listening lesson guide (ticks Audio + Transcript when filled), "Insert listening template", "Transcript" text tab, Words tab also for listening; lesson page: `ListeningPlayer.vue` (play/pause, back 5s, play again, time bar, speed 0.75x / 1x remembered in the browser), transcript closed until "Show transcript" — opens by itself once the student has tried the quiz; sample "Listening: At the market" (A1, draft, 6 words, 6 questions; audio `sample-media/at-the-market.m4a` made with a computer voice — replace with a real recording before launch; the seeder copies it to storage) — tests: pass (206), build: pass
+- 2026-11-12 — T33 — Writing lessons: new lesson columns `checklist` (list), `min_words`, `max_words`, `sample_answer` (HTML); the task itself is the lesson text; editor: Writing lesson guide + template, "Writing task" part (word target, checklist items) and a "Sample answer" text tab; public API sends checklist + word target but **never the sample answer**; student API `GET/POST /api/web/student/lessons/{slug}/writing` (`SubmitWritingRequest`: published writing lesson only, fits the word target, only one writing waiting per lesson; 5 per minute — `WRITING_SUBMIT_PER_MINUTE`; words counted by `Support/WordCount` = `utils/wordCount.js`); `WritingTask.vue` in the student lesson page: tick the checklist, write with a live word counter and bar, draft kept in the browser, "Send to teacher" with a check, then "Waiting for review" + the student's text + the sample answer (reviewed: score + feedback + "Write again"); public page: "Write and get feedback" card (visitor → sign up → back to the lesson); admin preview shows the box + sample answer; sample "Writing: About my family" (A1, draft, 50–100 words, 5 checklist items) — tests: pass (215), build: pass

@@ -1,5 +1,5 @@
 /*
- * Lesson templates: Grammar (PLAN.md → Appendix A), Reading (T31), Listening (T32).
+ * Lesson templates: Grammar (PLAN.md → Appendix A), Reading (T31), Listening (T32), Writing (T33).
  * The editor shows the sections as a guide and can insert the starting text.
  * Change the wording here; it is used for every new lesson of that skill.
  *
@@ -95,6 +95,28 @@ export const LISTENING_TEMPLATE_KM = [
   "<ol><li><p>ស្តាប់ម្តងសិន។ កុំទាន់អានអត្ថបទ។</p></li><li><p>ស្តាប់ម្តងទៀតក្នុងល្បឿន <strong>0.75x</strong>។</p></li><li><p>ធ្វើលំហាត់។ បន្ទាប់មកអានអត្ថបទ ហើយស្តាប់ម្តងទៀត។</p></li></ol>",
 ].join("");
 
+// ---- Writing lesson: a task, help, a checklist, a word target and a sample answer ----
+export const WRITING_SECTIONS = [
+  { title: "Title and level", hint: "English + Khmer title, and the course (level)", where: "Details" },
+  { title: "Your task", hint: "What to write about, and how long", heading: "Your task" },
+  { title: "Useful sentences", hint: "Model sentences or words students can use", heading: "Useful sentences" },
+  { title: "Checklist", hint: "3–6 things to check before sending", field: "checklist", where: "Writing task" },
+  { title: "Word target", hint: "e.g. 50–100 words for A1", field: "min_words", where: "Writing task" },
+  { title: "Sample answer", hint: "A model answer. Students see it after they send theirs.", field: "sample_answer", where: "Sample answer" },
+];
+
+export const WRITING_TEMPLATE_EN = [
+  "<h2>Your task</h2>",
+  "<p>Write about … Say … Write <strong>50 to 100 words</strong>.</p>",
+  "<h2>Useful sentences</h2>",
+  "<ul><li><p>Model sentence 1</p></li><li><p>Model sentence 2</p></li></ul>",
+].join("");
+
+export const WRITING_TEMPLATE_KM = [
+  "<h2>ការណែនាំ</h2>",
+  "<p>ពន្យល់កិច្ចការជាភាសាខ្មែរ៖ ត្រូវសរសេរអំពីអ្វី និងប្រវែងប៉ុន្មានពាក្យ។</p>",
+].join("");
+
 // Guide + starting text for each skill that has a template (other skills: no guide yet)
 export const LESSON_GUIDES = {
   grammar: {
@@ -110,6 +132,13 @@ export const LESSON_GUIDES = {
     sections: READING_SECTIONS,
     en: READING_TEMPLATE_EN,
     km: READING_TEMPLATE_KM,
+  },
+  writing: {
+    title: "Writing lesson guide",
+    insert: "Insert writing template",
+    sections: WRITING_SECTIONS,
+    en: WRITING_TEMPLATE_EN,
+    km: WRITING_TEMPLATE_KM,
   },
   listening: {
     title: "Listening lesson guide",

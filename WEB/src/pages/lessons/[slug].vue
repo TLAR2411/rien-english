@@ -2,6 +2,8 @@
 import LessonView from "@/components/learning/student/LessonView.vue";
 import { useLessonReader } from "@/composables/useLessonReader";
 import { lessonsRoute, quizRoute, signUpRoute } from "@/utils/siteRoutes";
+import { studentLessonRoute } from "@/utils/studentRoutes";
+import { wordTargetText } from "@/utils/wordCount";
 
 /**
  * Public lesson page (no login): the lesson text with a Khmer/English switch,
@@ -28,6 +30,13 @@ const quizLink = computed(() => {
   const quiz = quizRoute(lesson.value.slug);
   return isLoggedIn.value ? quiz : signUpRoute(quiz.path);
 });
+
+// Writing lesson: students write inside their system; a visitor signs up first
+const isWriting = computed(() => lesson.value?.skill === "writing");
+const writeLink = computed(() =>
+  isLoggedIn.value ? studentLessonRoute(lesson.value.slug) : signUpRoute(`/student/lessons/${lesson.value.slug}`),
+);
+const wordTarget = computed(() => wordTargetText(t, lesson.value?.min_words, lesson.value?.max_words));
 </script>
 
 <template>
@@ -67,7 +76,27 @@ const quizLink = computed(() => {
         :fit-screen="false"
         :show-transcript="lesson.quiz_taken"
       >
-        <template v-if="lesson.quiz || isStudent" #default>
+        <template v-if="lesson.quiz || isStudent || isWriting" #default>
+          <div v-if="isWriting" class="lesson-quiz lesson-write">
+            <h2 class="lesson-quiz__title">{{ $t("Write and get feedback") }}</h2>
+            <p class="lesson-quiz__facts">
+              <template v-if="wordTarget">{{ wordTarget }} · </template>
+              {{ $t("A teacher reads it and gives you a score and feedback.") }}
+            </p>
+            <ul v-if="lesson.checklist?.length" class="lesson-write__list">
+              <li v-for="(item, index) in lesson.checklist" :key="index">
+                <VIcon icon="tabler-check" size="18" />
+                {{ item }}
+              </li>
+            </ul>
+            <RouterLink :to="writeLink" class="site-btn lesson-quiz__btn">
+              {{ isLoggedIn ? $t("Write your answer") : $t("Sign up free to write") }}
+            </RouterLink>
+            <p v-if="!isLoggedIn" class="lesson-quiz__hint">
+              {{ $t("Sign up free to send your writing. You come back here right after.") }}
+            </p>
+          </div>
+
           <div v-if="lesson.quiz" class="lesson-quiz">
             <h2 class="lesson-quiz__title">{{ $t("Check what you learned") }}</h2>
             <p class="lesson-quiz__facts">
@@ -172,6 +201,31 @@ const quizLink = computed(() => {
   margin: 12px 0 0;
   color: var(--rien-grey);
   font-size: 15px;
+}
+
+.lesson-write + .lesson-quiz {
+  margin-block-start: 24px;
+}
+
+.lesson-write__list {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.6;
+  }
+
+  .v-icon {
+    flex: 0 0 auto;
+    margin-block-start: 4px;
+    color: var(--rien-blue);
+  }
 }
 
 .lesson-done {

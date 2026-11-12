@@ -5,6 +5,7 @@ namespace Tests\Feature\Learning\Database;
 use App\Enums\LessonSkill;
 use App\Enums\QuestionType;
 use App\Models\Learning\Lesson;
+use App\Support\WordCount;
 use Database\Seeders\Learning\LevelSeeder;
 use Database\Seeders\Learning\SampleLessonSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -58,7 +59,7 @@ class SampleLessonSeederTest extends TestCase
         $lessons = Lesson::with(['course.level', 'examples', 'quiz.questions.options'])->ordered()->get();
 
         $this->assertSame(['english-for-beginners'], $lessons->pluck('course.slug')->unique()->values()->all());
-        $this->assertSame(['grammar', 'vocabulary', 'reading', 'listening'], $lessons->pluck('skill.value')->unique()->values()->all());
+        $this->assertSame(['grammar', 'vocabulary', 'reading', 'listening', 'writing'], $lessons->pluck('skill.value')->unique()->values()->all());
 
         foreach ($lessons as $lesson) {
             $this->assertSame('A1', $lesson->course->level->code);
@@ -66,6 +67,10 @@ class SampleLessonSeederTest extends TestCase
             $this->assertNotEmpty($lesson->title_km);
             $this->assertNotEmpty($lesson->content_km);
             $this->assertNotEmpty($lesson->examples);
+
+            if ($lesson->skill === LessonSkill::Writing) {
+                continue; // a teacher checks writing — no quiz
+            }
             $this->assertNotEmpty($lesson->quiz->questions);
 
             foreach ($lesson->quiz->questions as $question) {
@@ -103,12 +108,25 @@ class SampleLessonSeederTest extends TestCase
         $this->assertGreaterThanOrEqual(5, $lesson->quiz->questions->count());
     }
 
+    public function test_writing_lesson_has_a_task_a_checklist_a_word_target_and_a_sample_answer(): void
+    {
+        $lesson = Lesson::where('skill', LessonSkill::Writing)->sole();
+
+        $this->assertStringContainsString('<h2>Your task</h2>', $lesson->content);
+        $this->assertGreaterThanOrEqual(3, count($lesson->checklist));
+        $this->assertSame([50, 100], [$lesson->min_words, $lesson->max_words]);
+
+        $words = WordCount::of(strip_tags($lesson->sample_answer));
+        $this->assertTrue($words >= 50 && $words <= 100, "The sample answer has {$words} words, it should fit the task.");
+        $this->assertNull($lesson->quiz);
+    }
+
     public function test_seeder_can_run_again_without_duplicates(): void
     {
         $this->seed(SampleLessonSeeder::class);
 
-        $this->assertSame(6, Lesson::count());
-        $this->assertSame(44, Lesson::withCount('examples')->get()->sum('examples_count'));
+        $this->assertSame(7, Lesson::count());
+        $this->assertSame(47, Lesson::withCount('examples')->get()->sum('examples_count'));
         $this->assertSame(14, Lesson::withCount('words')->get()->sum('words_count'));
     }
 
@@ -119,7 +137,7 @@ class SampleLessonSeederTest extends TestCase
 
         $this->getJson('/api/web/admin/lessons?filter[status]=draft')
             ->assertOk()
-            ->assertJsonPath('data.meta.total', 6);
+            ->assertJsonPath('data.meta.total', 7);
     }
 
     public function test_word_order_questions_have_words_to_mix(): void

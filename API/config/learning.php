@@ -29,6 +29,16 @@ return [
         'submit_per_minute' => (int) env('QUIZ_SUBMIT_PER_MINUTE', 10),
     ],
 
+    'writing' => [
+        // Writings one student may send per minute
+        'submit_per_minute' => (int) env('WRITING_SUBMIT_PER_MINUTE', 5),
+        // Longest writing accepted (characters) and the highest word target a teacher can set
+        'max_length' => 20000,
+        'max_words' => 2000,
+        // Most checklist items on one writing task
+        'checklist_max' => 10,
+    ],
+
     'progress' => [
         // Quiz tries shown in the "Scores over time" chart (the newest ones)
         'chart_attempts' => 30,

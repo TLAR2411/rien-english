@@ -41,3 +41,11 @@ export const getQuizAttempts = async (params) => (await api.get("student/quiz-at
 
 /** One quiz result with the correct answers. Not mine / missing → 404, no pop-up. */
 export const getQuizResult = async (id) => (await api.get(`student/quiz-attempts/${id}`, { silent: true })).data.data;
+
+/** My writings for a writing lesson (newest first) + the sample answer once I sent one. Missing → 404, no pop-up. */
+export const getMyWriting = async (slug) =>
+  (await api.get(`student/lessons/${encodeURIComponent(slug)}/writing`, { silent: true })).data.data;
+
+/** Send a writing → { submission, sample_answer }. Errors (word target, already waiting) come back to the page. */
+export const submitWriting = async (slug, text) =>
+  (await api.post(`student/lessons/${encodeURIComponent(slug)}/writing`, { text }, { silent: true })).data.data;

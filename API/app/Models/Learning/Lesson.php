@@ -25,6 +25,8 @@ class Lesson extends Model
     protected $fillable = [
         'course_id', 'skill', 'title_en', 'title_km', 'slug', 'summary',
         'content', 'content_km', 'transcript', 'audio_url', 'video_url', 'sort_order', 'status',
+        // Writing lessons (T33)
+        'checklist', 'min_words', 'max_words', 'sample_answer',
     ];
 
     protected $casts = [
@@ -34,6 +36,10 @@ class Lesson extends Model
         'content' => PurifyHtmlOnSet::class.':lesson',
         'content_km' => PurifyHtmlOnSet::class.':lesson',
         'transcript' => PurifyHtmlOnSet::class.':lesson',
+        'sample_answer' => PurifyHtmlOnSet::class.':lesson',
+        'checklist' => 'array',
+        'min_words' => 'integer',
+        'max_words' => 'integer',
     ];
 
     public function sortGroupColumn(): ?string
@@ -50,6 +56,18 @@ class Lesson extends Model
     public function scopeVisible(Builder $query): Builder
     {
         return $query->published()->whereHas('course', fn (Builder $course) => $course->published());
+    }
+
+    /** Can visitors and students see this lesson? (see scopeVisible) */
+    public function isVisible(): bool
+    {
+        return static::visible()->whereKey($this->id)->exists();
+    }
+
+    /** A published writing lesson: students may send their writing for it. */
+    public function acceptsWriting(): bool
+    {
+        return $this->skill === LessonSkill::Writing && $this->isVisible();
     }
 
     /** Learning order: easiest level first (A1 before A2 …), then course, then lesson order. */
@@ -86,6 +104,12 @@ class Lesson extends Model
     public function words(): HasMany
     {
         return $this->hasMany(LessonWord::class)->ordered();
+    }
+
+    /** Writing lessons: what students sent (T33). */
+    public function writingSubmissions(): HasMany
+    {
+        return $this->hasMany(WritingSubmission::class);
     }
 
     /** Students who finished this lesson. */

@@ -25,6 +25,11 @@ class StudentLessonResource extends JsonResource
             'content_km' => $this->content_km,
             // Listening: the page keeps it hidden until "Show transcript" or the quiz is done
             'transcript' => $this->transcript,
+            // Writing: the task's checklist and word target. Never the sample answer —
+            // the student gets it only after sending their own writing (T33).
+            'checklist' => $this->checklist ?? [],
+            'min_words' => $this->min_words,
+            'max_words' => $this->max_words,
             'audio_url' => $this->audio_url,
             // Only the video ID: the page plays it with YouTube's player
             'youtube_id' => $this->youtubeId(),

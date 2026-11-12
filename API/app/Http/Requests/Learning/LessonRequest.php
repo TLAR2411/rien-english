@@ -29,6 +29,15 @@ class LessonRequest extends FormRequest
             'content' => ['nullable', 'string', $maxHtml],
             'content_km' => ['nullable', 'string', $maxHtml],
             'transcript' => ['nullable', 'string', $maxHtml],
+            // Writing lessons
+            'checklist' => ['nullable', 'array', 'max:'.config('learning.writing.checklist_max')],
+            'checklist.*' => ['required', 'string', 'max:200', 'distinct'],
+            'min_words' => ['nullable', 'integer', 'min:1', 'max:'.config('learning.writing.max_words')],
+            'max_words' => [
+                'nullable', 'integer', 'max:'.config('learning.writing.max_words'),
+                ...($this->filled('min_words') ? ['gte:min_words'] : []),
+            ],
+            'sample_answer' => ['nullable', 'string', $maxHtml],
             'audio_url' => [Rule::requiredIf($needsAudio), 'nullable', 'url:http,https', 'max:2048'],
             'video_url' => ['nullable', 'string', 'max:2048', new YouTubeUrl],
             'status' => ['required', Rule::enum(PublishStatus::class)],
