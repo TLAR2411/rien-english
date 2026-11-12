@@ -33,6 +33,7 @@ $crud('levels', LevelController::class, 'level');
 $crud('courses', CourseController::class, 'course');
 
 Route::patch('lessons/{lesson}/move', [LessonController::class, 'move']);
+Route::patch('lessons/{lesson}/status', [LessonController::class, 'status']);
 Route::get('lessons/{lesson}/preview', PreviewController::class)->middleware('permission:view-lessons');
 Route::apiResource('lessons', LessonController::class);
 

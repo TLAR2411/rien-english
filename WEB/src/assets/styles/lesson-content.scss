@@ -67,21 +67,26 @@
     border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   }
 
-  // Tables scroll sideways on a phone instead of breaking the page
+  // Tables scroll sideways on a phone instead of breaking the page.
+  // Rounded outer frame, only row lines inside — lighter than a full grid.
   table {
     display: block;
     width: max-content;
     max-width: 100%;
     overflow-x: auto;
-    margin: 0 0 1.25em;
-    border-collapse: collapse;
+    margin: 0.5em 0 1.5em;
+    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border-radius: 10px;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
   th,
   td {
     min-width: 6rem;
-    padding: 0.5em 0.75em;
-    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    padding: 0.625em 1em;
+    border: 0;
+    border-block-end: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
     vertical-align: top;
     text-align: start;
 
@@ -90,8 +95,18 @@
     }
   }
 
+  tr:last-child > th,
+  tr:last-child > td {
+    border-block-end: 0;
+  }
+
   th {
     font-weight: 600;
-    background: rgba(var(--v-theme-on-surface), 0.04);
+    background: rgba(var(--v-theme-primary), 0.06);
+  }
+
+  // First column = row labels (I / You / He…)
+  td:first-child {
+    font-weight: 600;
   }
 }

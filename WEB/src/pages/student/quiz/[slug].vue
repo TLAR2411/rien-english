@@ -36,6 +36,7 @@ const load = async () => {
   try {
     quiz.value = await getStudentQuiz(slug.value);
     document.title = `${quiz.value.lesson.title_en} — Quiz — Rien English`;
+    // The draft is saved per quiz id, so read it after the quiz is loaded
     const saved = draft.read();
     answers.value = saved?.answers ?? {};
     startedAt.value = saved?.started_at ?? new Date().toISOString();
@@ -48,6 +49,7 @@ watch(slug, load, { immediate: true });
 watch(answers, (value) => quiz.value && draft.write(value, startedAt.value), { deep: true });
 
 const submit = async () => {
+  if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
     const result = await submitQuiz(quiz.value.id, {
@@ -64,24 +66,19 @@ const submit = async () => {
 
 <template>
   <section>
-    <VBtn :to="studentLessonRoute(slug)" variant="text" prepend-icon="tabler-arrow-left" class="ms-n3 mb-4">
-      {{ $t("Back to the lesson") }}
-    </VBtn>
-
     <template v-if="quiz">
-      <VCard>
-        <VCardText class="pa-5 pa-sm-8">
-          <header class="text-center mb-6">
-            <p class="text-body-2 text-medium-emphasis mb-1">{{ quiz.lesson.title_en }}</p>
-            <h1 class="text-h4 font-weight-bold mb-1">{{ quiz.title }}</h1>
-            <p class="text-body-2 text-medium-emphasis mb-0">
-              {{ $t("Pass with {score}%", { score: quiz.pass_score }) }}
-            </p>
-          </header>
+      <VBtn :to="studentLessonRoute(slug)" variant="text" prepend-icon="tabler-arrow-left" class="ms-n3 mb-4 d-none d-md-inline-flex">
+        {{ $t("Back to the lesson") }}
+      </VBtn>
 
-          <QuizPlayer v-model:answers="answers" :quiz="quiz" :submitting="isSubmitting" @submit="submit" />
-        </VCardText>
-      </VCard>
+      <QuizPlayer
+        v-model:answers="answers"
+        :quiz="quiz"
+        :started-at="startedAt"
+        :close-to="studentLessonRoute(slug)"
+        :submitting="isSubmitting"
+        @submit="submit"
+      />
     </template>
 
     <VCard v-else-if="notFound">

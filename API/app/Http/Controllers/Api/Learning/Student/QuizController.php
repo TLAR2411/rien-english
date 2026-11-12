@@ -27,7 +27,7 @@ class QuizController extends Controller
 
         return $this->ok([
             ...(new StudentQuizResource($quiz))->resolve(),
-            'lesson' => $lesson->only(['id', 'slug', 'title_en', 'title_km']),
+            'lesson' => $lesson->only(['id', 'slug', 'skill', 'title_en', 'title_km']),
         ]);
     }
 

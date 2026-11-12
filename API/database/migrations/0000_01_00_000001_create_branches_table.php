@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -45,7 +46,6 @@ return new class extends Migration {
             $table->unsignedTinyInteger('region')->nullable();
             $table->boolean('is_head')->default(false)->comment('True if this branch is the head office');
             $table->boolean('is_active')->default(true)->comment('True if the branch is active');
-
 
             $table->unsignedMediumInteger('created_by')->nullable();
             $table->unsignedMediumInteger('updated_by')->nullable();

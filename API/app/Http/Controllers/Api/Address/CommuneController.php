@@ -20,6 +20,7 @@ class CommuneController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -33,6 +34,7 @@ class CommuneController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -50,6 +52,7 @@ class CommuneController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -63,14 +66,15 @@ class CommuneController extends Controller
                 'code' => $lastCode,
                 'name_kh' => $request->name_kh,
                 'name_en' => $request->name_en,
-                'district_code' => $request->district_code
+                'district_code' => $request->district_code,
             ]);
 
-            $result['message'] = "Successfully created commune";
+            $result['message'] = 'Successfully created commune';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -83,14 +87,15 @@ class CommuneController extends Controller
                 ->update([
                     'name_kh' => $request->name_kh,
                     'name_en' => $request->name_en,
-                    'district_code' => $request->district_code
+                    'district_code' => $request->district_code,
                 ]);
 
-            $result['message'] = "Successfully updated commune";
+            $result['message'] = 'Successfully updated commune';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 

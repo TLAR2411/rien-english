@@ -17,8 +17,9 @@ class OAtuhSeeder extends Seeder
         $id = config('services.passport.client_id');
         $secret = config('services.passport.client_secret');
 
-        if (!$id || !$secret) {
+        if (! $id || ! $secret) {
             $this->command?->warn('PASSPORT_CLIENT_ID or PASSPORT_CLIENT_SECRET is empty. Run: php artisan passport:client --password');
+
             return;
         }
 

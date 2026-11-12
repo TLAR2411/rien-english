@@ -40,6 +40,14 @@ export const ROW_ACTIONS = [
     { key: "detail", title: "Detail", icon: "tabler-file-description", color: "success" },
     { key: "permission", title: "Permission", icon: "tabler-shield", color: "warning" },
     { key: "edit", title: "Edit", icon: "tabler-pencil", color: "warning", condition: true },
+    // Draft ⇄ Published switch (uses the edit permission)
+    {
+        key: "publish", title: "Publish", icon: "tabler-world-upload", color: "success",
+        permissionFrom: "canEdit", checkPublished: true,
+        firstColor: "warning", secondColor: "success",
+        firstTitle: "Move to draft", secondTitle: "Publish",
+        firstIcon: "tabler-world-off", secondIcon: "tabler-world-upload",
+    },
     // Reorder a row (uses the edit permission)
     { key: "moveUp", title: "Move up", icon: "tabler-arrow-up", color: "secondary", permissionFrom: "canEdit" },
     { key: "moveDown", title: "Move down", icon: "tabler-arrow-down", color: "secondary", permissionFrom: "canEdit" },
@@ -149,21 +157,29 @@ export function useRowActions(emit, props, { t, showDialog, debounce, DEBOUNCE_D
 }
 
 // ---------------------------------------------------------------------------
-// Per-row display helpers (unchanged)
+// Per-row display helpers. "first" = the row is on (active / default / published).
+
+const isOn = (button, item) => {
+    if (button.checkPublished) return item.status === "published";
+    if (button.checkDefault) return Boolean(item.default);
+    return Boolean(item.is_active);
+};
 
 export const getButtonColor = (button, item) => {
-    if (button.checkActive) return item.is_active ? button.firstColor : button.secondColor;
-    if (button.checkDefault) return item.default ? button.firstColor : button.secondColor;
+    if (button.checkActive || button.checkDefault || button.checkPublished)
+        return isOn(button, item) ? button.firstColor : button.secondColor;
     return button.color;
 };
 
 export const getButtonTitle = (button, item) => {
-    if (button.checkTitle) return item.is_active ? button.firstTitle : button.secondTitle;
+    if (button.checkTitle || button.checkPublished)
+        return isOn(button, item) ? button.firstTitle : button.secondTitle;
     return button.title;
 };
 
 export const getButtonIcon = (button, item) => {
-    if (button.checkIcon) return item.is_active ? button.firstIcon : button.secondIcon;
+    if (button.checkIcon || button.checkPublished)
+        return isOn(button, item) ? button.firstIcon : button.secondIcon;
     return button.icon;
 };
 

@@ -17,24 +17,26 @@ class ActivityLogController extends Controller
             $subjectType = sprintf('App\\Models\\%s', $filters['subject_type'] ?? null);
             $activity = Activity::query()
                 ->with(['causer', 'subject'])
-                ->when(!empty($filters['user_id']), function ($query) use ($filters) {
+                ->when(! empty($filters['user_id']), function ($query) use ($filters) {
                     return $query->where('causer_id', $filters['user_id']);
                 })
-                ->when(!empty($filters['event']), function ($query) use ($filters) {
+                ->when(! empty($filters['event']), function ($query) use ($filters) {
                     return $query->where('event', $filters['event']);
                 })
-                ->when(!empty($filters['subject_type']), function ($query) use ($subjectType) {
+                ->when(! empty($filters['subject_type']), function ($query) use ($subjectType) {
                     return $query->where('subject_type', $subjectType);
                 })
-                ->when(!empty($filters['search']), function ($query) use ($filters) {
+                ->when(! empty($filters['search']), function ($query) use ($filters) {
                     return $query->where(function ($q) use ($filters) {
-                        $searchTerm = '%' . trim($filters['search']) . '%';
+                        $searchTerm = '%'.trim($filters['search']).'%';
+
                         return $q->where('description', 'like', $searchTerm);
                     });
                 })
-                ->when(!empty($filters['start_date']), function ($query) use ($filters) {
+                ->when(! empty($filters['start_date']), function ($query) use ($filters) {
                     return $query->where(function ($q) use ($filters) {
-                        $searchTerm = '%' . Carbon::parse($filters['start_date'])->format("Y-m-d") . '%';
+                        $searchTerm = '%'.Carbon::parse($filters['start_date'])->format('Y-m-d').'%';
+
                         return $q->where('created_at', 'like', $searchTerm);
                     });
                 })
@@ -44,12 +46,12 @@ class ActivityLogController extends Controller
 
             return response()->json([
                 'status' => true,
-                'data' => $activity
+                'data' => $activity,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -65,12 +67,12 @@ class ActivityLogController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Successful Delete!'
+                'message' => 'Successful Delete!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

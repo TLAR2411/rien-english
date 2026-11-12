@@ -2,9 +2,9 @@
 
 namespace App\Models\Auth;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Agent;
 
@@ -28,7 +28,7 @@ class LoginHistory extends Model
      */
     protected static function context(Request $request): array
     {
-        $agent = new Agent();
+        $agent = new Agent;
         $agent->setUserAgent($request->userAgent());
 
         $ip = static::clientIp($request);
@@ -71,10 +71,10 @@ class LoginHistory extends Model
     {
         $ctx = static::context($request);
 
-        $isNew = $successful && !static::where('user_id', $user->id)
-                ->where('fingerprint_hash', $ctx['fingerprint_hash'])
-                ->where('successful', true)
-                ->exists();
+        $isNew = $successful && ! static::where('user_id', $user->id)
+            ->where('fingerprint_hash', $ctx['fingerprint_hash'])
+            ->where('successful', true)
+            ->exists();
 
         return static::create(array_merge($ctx, [
             'user_id' => $user->id,

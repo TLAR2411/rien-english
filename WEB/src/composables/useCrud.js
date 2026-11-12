@@ -6,7 +6,7 @@ import { api } from "@/utils/api";
  * Each action returns true when it worked. Error and success messages are shown
  * by the api interceptor (utils/api.js), so pages don't repeat that code.
  *
- *   const { isSaving, save, remove, move } = useCrud("admin/levels", { onDone: reloadTable });
+ *   const { isSaving, save, remove, move, toggleStatus } = useCrud("admin/levels", { onDone: reloadTable });
  *
  * `createUrl`: where new rows are posted when it is not `resource`
  * (e.g. examples are created under their lesson: "admin/lessons/5/examples").
@@ -43,5 +43,13 @@ export function useCrud(resource, { onDone, createUrl } = {}) {
   const move = (item, direction) =>
     run(() => api.patch(`${resource}/${item.id}/move`, { direction }));
 
-  return { isSaving, save, remove, move };
+  /** Draft ⇄ Published switch. */
+  const toggleStatus = (item) =>
+    run(() =>
+      api.patch(`${resource}/${item.id}/status`, {
+        status: item.status === "published" ? "draft" : "published",
+      }),
+    );
+
+  return { isSaving, save, remove, move, toggleStatus };
 }

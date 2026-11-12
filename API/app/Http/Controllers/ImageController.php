@@ -12,9 +12,9 @@ class ImageController extends Controller
     public function resize(Request $r)
     {
         $url = $r->query('url');
-        $w   = (int) $r->query('w', 72);
-        $h   = (int) $r->query('h', 72);
-        $q   = (int) $r->query('q', 60);
+        $w = (int) $r->query('w', 72);
+        $h = (int) $r->query('h', 72);
+        $q = (int) $r->query('q', 60);
         $fmt = $r->query('fmt', 'webp');
         $fit = $r->query('fit', 'inside'); // Get the fit instruction
 
@@ -26,7 +26,7 @@ class ImageController extends Controller
         // Include $fit in the cache key so 'cover' and 'inside' versions don't conflict
         $cacheKey = "thumbs/{$fit}_{$w}x{$h}/".pathinfo($path, PATHINFO_FILENAME).".{$ext}";
 
-        if (!Storage::disk('public')->exists($cacheKey)) {
+        if (! Storage::disk('public')->exists($cacheKey)) {
             $img = Image::read(Storage::disk('public')->get($path));
 
             // --- CHANGE THIS SECTION ---
@@ -51,8 +51,11 @@ class ImageController extends Controller
         }
 
         $data = Storage::disk('public')->get($cacheKey);
+
         return response($data, 200)
-            ->header('Content-Type', match($ext) { 'avif'=>'image/avif', 'jpeg','jpg'=>'image/jpeg', default=>'image/webp' })
+            ->header('Content-Type', match ($ext) {
+                'avif' => 'image/avif', 'jpeg','jpg' => 'image/jpeg', default => 'image/webp'
+            })
             ->header('Cache-Control', 'public, max-age=31536000, immutable');
     }
 }

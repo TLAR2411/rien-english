@@ -14,7 +14,7 @@ const levels = ref([]);
 const courses = ref([]);
 const filter = ref({ search: null, level_id: null, course_id: null, skill: null, status: null });
 
-const { remove, move } = useCrud("admin/lessons", {
+const { remove, move, toggleStatus } = useCrud("admin/lessons", {
   onDone: () => tableRef.value?.reload(),
 });
 
@@ -71,6 +71,7 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     is-view
     can-view="view-lessons"
     is-edit
+    is-publish
     is-move-up
     is-move-down
     can-edit="edit-lessons"
@@ -79,6 +80,7 @@ const skillTitle = (value) => t(findOption(SKILLS, value)?.title ?? value);
     :is-back="false"
     @on-view="onView"
     @on-edit="onEdit"
+    @on-publish="toggleStatus"
     @on-move-up="(item) => move(item, 'up')"
     @on-move-down="(item) => move(item, 'down')"
     @on-delete="remove"

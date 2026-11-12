@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api\Learning\Admin;
 
+use App\Enums\LessonSkill;
+use App\Enums\PublishStatus;
 use App\Http\Requests\Learning\LessonRequest;
 use App\Http\Requests\Learning\MoveRequest;
+use App\Http\Requests\Learning\StatusRequest;
 use App\Http\Resources\Learning\LessonResource;
 use App\Models\Learning\Lesson;
 use App\Models\Learning\QuizAttempt;
@@ -61,6 +64,22 @@ class LessonController extends AdminController
         $lesson->move($request->validated('direction'));
 
         return $this->ok();
+    }
+
+    /** Quick Draft ⇄ Published switch from the lesson list. */
+    public function status(StatusRequest $request, Lesson $lesson): JsonResponse
+    {
+        $status = $request->enum('status', PublishStatus::class);
+
+        abort_if(
+            $status === PublishStatus::Published && $lesson->skill === LessonSkill::Listening && blank($lesson->audio_url),
+            422,
+            'Add the audio before you publish a listening lesson.',
+        );
+
+        $lesson->update(['status' => $status->value]);
+
+        return $this->ok(message: $status === PublishStatus::Published ? 'Published.' : 'Moved to draft.');
     }
 
     public function destroy(Lesson $lesson): JsonResponse

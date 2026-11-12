@@ -12,15 +12,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsureBranchAccess
 {
-    public function __construct(private BranchContext $context)
-    {
-    }
+    public function __construct(private BranchContext $context) {}
 
     public function handle(Request $request, Closure $next): Response
     {
         $branchId = $request->header('X-Branch-Id', '*');
 
-        if ($branchId !== '*' && !$this->context->allows($request->user(), $branchId)) {
+        if ($branchId !== '*' && ! $this->context->allows($request->user(), $branchId)) {
             return response()->json([
                 'status' => false,
                 'message' => 'You do not have access to this branch.',

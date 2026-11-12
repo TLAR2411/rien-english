@@ -82,6 +82,7 @@ class QuizTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.id', $this->quiz->id)
             ->assertJsonPath('data.lesson.slug', 'to-be')
+            ->assertJsonPath('data.lesson.skill', 'grammar')
             ->assertJsonCount(5, 'data.questions')
             ->assertJsonCount(3, 'data.questions.0.options');
 

@@ -2,9 +2,7 @@
 
 namespace App\Models\Core;
 
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class Branch extends Model
 {
@@ -38,7 +36,7 @@ class Branch extends Model
         'deleted_at',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
     ];
 
     protected function branchColumn(): string
@@ -46,7 +44,8 @@ class Branch extends Model
         return 'branches.id';
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
 }

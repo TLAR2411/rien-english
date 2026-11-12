@@ -24,7 +24,7 @@ class BranchContext
      */
     public function allowedBranchIds(?User $user): Collection
     {
-        if (!$user) {
+        if (! $user) {
             return collect();
         }
 
@@ -45,7 +45,7 @@ class BranchContext
     private function resolve(User $user): Collection
     {
         $companyId = $this->companyId($user);
-        if (!$companyId) {
+        if (! $companyId) {
             return collect();
         }
 
@@ -53,7 +53,7 @@ class BranchContext
             ->where('company_id', $companyId)
             ->where('is_active', true);
 
-        $listed = fn() => UserBranch::where('user_id', $user->id)->pluck('branch_id');
+        $listed = fn () => UserBranch::where('user_id', $user->id)->pluck('branch_id');
 
         match ((int) $user->manage_branch) {
             1 => $branches->whereKey($user->branch_id),
@@ -64,6 +64,6 @@ class BranchContext
             default => $branches->whereRaw('1 = 0'),
         };
 
-        return $branches->orderBy('id')->pluck('id')->map(fn($id) => (int) $id)->values();
+        return $branches->orderBy('id')->pluck('id')->map(fn ($id) => (int) $id)->values();
     }
 }

@@ -20,6 +20,7 @@ class VillageController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -33,6 +34,7 @@ class VillageController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -50,6 +52,7 @@ class VillageController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -63,14 +66,15 @@ class VillageController extends Controller
                 'code' => $lastCode,
                 'name_kh' => $request->name_kh,
                 'name_en' => $request->name_en,
-                'commune_code' => $request->commune_code
+                'commune_code' => $request->commune_code,
             ]);
 
-            $result['message'] = "Successfully created village";
+            $result['message'] = 'Successfully created village';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -83,14 +87,15 @@ class VillageController extends Controller
                 ->update([
                     'name_kh' => $request->name_kh,
                     'name_en' => $request->name_en,
-                    'commune_code' => $request->commune_code
+                    'commune_code' => $request->commune_code,
                 ]);
 
-            $result['message'] = "Successfully updated village";
+            $result['message'] = 'Successfully updated village';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 

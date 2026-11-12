@@ -75,7 +75,7 @@ const onSubmit = async (validation) => {
         />
       </VCol>
       <VCol cols="12" sm="6">
-        <AppTextField v-model="form.title" label="Title English" placeholder="Grammar A1" :rules="[requiredValidator]" />
+        <AppTextField v-model="form.title" label="Title English" placeholder="English for Beginners" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12" sm="6">
         <AppTextField v-model="form.title_km" label="Title Khmer" placeholder="វេយ្យាករណ៍ A1" />
@@ -87,7 +87,7 @@ const onSubmit = async (validation) => {
         <AppTextField
           v-model="form.slug"
           label="Slug"
-          placeholder="grammar-a1"
+          placeholder="english-for-beginners"
           :hint="$t('Web address name. Leave empty to make it from the title.')"
           persistent-hint
         />

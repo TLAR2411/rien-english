@@ -13,17 +13,17 @@ class LogViewerController extends Controller
         try {
             $logPath = storage_path('logs/laravel.log');
 
-            if (!File::exists($logPath)) {
+            if (! File::exists($logPath)) {
                 // Return an empty but correctly structured response
                 return response()->json([
                     'status' => true,
                     'data' => [
                         'data' => [],
                         'links' => [
-                            'first' => $request->url() . '?page=1',
-                            'last' => $request->url() . '?page=1',
+                            'first' => $request->url().'?page=1',
+                            'last' => $request->url().'?page=1',
                             'prev' => null,
-                            'next' => null
+                            'next' => null,
                         ],
                         'meta' => [
                             'current_page' => 1,
@@ -34,27 +34,27 @@ class LogViewerController extends Controller
                                     'url' => null,
                                     'label' => '&laquo; Previous',
                                     'page' => null,
-                                    'active' => false
+                                    'active' => false,
                                 ],
                                 [
-                                    'url' => $request->url() . '?page=1',
+                                    'url' => $request->url().'?page=1',
                                     'label' => '1',
                                     'page' => 1,
-                                    'active' => true
+                                    'active' => true,
                                 ],
                                 [
                                     'url' => null,
                                     'label' => 'Next &raquo;',
                                     'page' => null,
-                                    'active' => false
-                                ]
+                                    'active' => false,
+                                ],
                             ],
                             'path' => $request->url(),
                             'per_page' => 15,
                             'to' => null,
-                            'total' => 0
-                        ]
-                    ]
+                            'total' => 0,
+                        ],
+                    ],
                 ]);
             }
 
@@ -120,10 +120,10 @@ class LogViewerController extends Controller
 
             // Previous link
             $links[] = [
-                'url' => $currentPage > 1 ? $request->url() . '?page=' . ($currentPage - 1) : null,
+                'url' => $currentPage > 1 ? $request->url().'?page='.($currentPage - 1) : null,
                 'label' => '&laquo; Previous',
                 'page' => $currentPage > 1 ? $currentPage - 1 : null,
-                'active' => false
+                'active' => false,
             ];
 
             // Page number links (show up to 10 pages)
@@ -132,19 +132,19 @@ class LogViewerController extends Controller
 
             for ($i = $startPage; $i <= $endPage; $i++) {
                 $links[] = [
-                    'url' => $request->url() . '?page=' . $i,
+                    'url' => $request->url().'?page='.$i,
                     'label' => (string) $i,
                     'page' => $i,
-                    'active' => $i === $currentPage
+                    'active' => $i === $currentPage,
                 ];
             }
 
             // Next link
             $links[] = [
-                'url' => $currentPage < $lastPage ? $request->url() . '?page=' . ($currentPage + 1) : null,
+                'url' => $currentPage < $lastPage ? $request->url().'?page='.($currentPage + 1) : null,
                 'label' => 'Next &raquo;',
                 'page' => $currentPage < $lastPage ? $currentPage + 1 : null,
-                'active' => false
+                'active' => false,
             ];
 
             // 5. Build response structure matching the user list format
@@ -153,10 +153,10 @@ class LogViewerController extends Controller
                 'data' => [
                     'data' => $currentPageItems,
                     'links' => [
-                        'first' => $request->url() . '?page=1',
-                        'last' => $request->url() . '?page=' . $lastPage,
-                        'prev' => $currentPage > 1 ? $request->url() . '?page=' . ($currentPage - 1) : null,
-                        'next' => $currentPage < $lastPage ? $request->url() . '?page=' . ($currentPage + 1) : null
+                        'first' => $request->url().'?page=1',
+                        'last' => $request->url().'?page='.$lastPage,
+                        'prev' => $currentPage > 1 ? $request->url().'?page='.($currentPage - 1) : null,
+                        'next' => $currentPage < $lastPage ? $request->url().'?page='.($currentPage + 1) : null,
                     ],
                     'meta' => [
                         'current_page' => $currentPage,
@@ -166,9 +166,9 @@ class LogViewerController extends Controller
                         'path' => $request->url(),
                         'per_page' => $perPage,
                         'to' => $to,
-                        'total' => $total
-                    ]
-                ]
+                        'total' => $total,
+                    ],
+                ],
             ];
 
             return response()->json($response);
@@ -176,7 +176,7 @@ class LogViewerController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

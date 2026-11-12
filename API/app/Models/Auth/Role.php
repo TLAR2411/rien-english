@@ -10,7 +10,7 @@ class Role extends RoleModel
     protected $fillable = [
         'name',
         'display_name',
-        'abbr'
+        'abbr',
     ];
 
     public function permissions(): BelongsToMany

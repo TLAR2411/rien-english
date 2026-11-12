@@ -15,14 +15,14 @@ class AddressSeeder extends Seeder
     {
         $sqlFiles = [
 
-            "provinces.sql",
-            "districts.sql",
-            "communes.sql",
-            "villages.sql",
+            'provinces.sql',
+            'districts.sql',
+            'communes.sql',
+            'villages.sql',
         ];
 
         foreach ($sqlFiles as $file) {
-            $path = database_path('seeders/Address/' . $file);
+            $path = database_path('seeders/Address/'.$file);
             if (File::exists($path)) {
                 $sql = File::get($path);
                 DB::unprepared($sql);

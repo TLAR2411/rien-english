@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Laravel\Passport\Passport;
-use Mockery\Generator\StringManipulation\Pass\Pass;
 
 class AuthServiceProvider extends ServiceProvider
 {
