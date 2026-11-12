@@ -1,5 +1,6 @@
 /*
- * Lesson templates: Grammar (PLAN.md → Appendix A), Reading (T31), Listening (T32), Writing (T33).
+ * Lesson templates: Grammar (PLAN.md → Appendix A), Reading (T31), Listening (T32),
+ * Writing (T33), Vocabulary (T35).
  * The editor shows the sections as a guide and can insert the starting text.
  * Change the wording here; it is used for every new lesson of that skill.
  *
@@ -117,6 +118,25 @@ export const WRITING_TEMPLATE_KM = [
   "<p>ពន្យល់កិច្ចការជាភាសាខ្មែរ៖ ត្រូវសរសេរអំពីអ្វី និងប្រវែងប៉ុន្មានពាក្យ។</p>",
 ].join("");
 
+// ---- Vocabulary lesson: words (flashcards + matching game), notes, and a quiz ----
+export const VOCABULARY_SECTIONS = [
+  { title: "Title and level", hint: "English + Khmer title, and the course (level)", where: "Details" },
+  { title: "Words", hint: "8–15 words: simple English meaning, Khmer, an example, audio if you have it", where: "Words" },
+  { title: "Good to know", hint: "Short notes: differences from Khmer, word families, common mistakes", heading: "Good to know" },
+  { title: "Quiz", hint: "Optional: 5–10 questions. The matching game is made from the words.", where: "Quiz" },
+];
+
+export const VOCABULARY_TEMPLATE_EN = [
+  "<p>Learn the words with the <strong>flashcards</strong>: tap a card to see the meaning. Then play the <strong>matching game</strong>.</p>",
+  "<h2>Good to know</h2>",
+  "<ul><li><p>A short note about the words…</p></li></ul>",
+].join("");
+
+export const VOCABULARY_TEMPLATE_KM = [
+  "<h2>ចំណាំ</h2>",
+  "<ul><li><p>ពន្យល់ចំណុចសំខាន់ៗអំពីពាក្យទាំងនេះជាភាសាខ្មែរ…</p></li></ul>",
+].join("");
+
 // Guide + starting text for each skill that has a template (other skills: no guide yet)
 export const LESSON_GUIDES = {
   grammar: {
@@ -139,6 +159,13 @@ export const LESSON_GUIDES = {
     sections: WRITING_SECTIONS,
     en: WRITING_TEMPLATE_EN,
     km: WRITING_TEMPLATE_KM,
+  },
+  vocabulary: {
+    title: "Vocabulary lesson guide",
+    insert: "Insert vocabulary template",
+    sections: VOCABULARY_SECTIONS,
+    en: VOCABULARY_TEMPLATE_EN,
+    km: VOCABULARY_TEMPLATE_KM,
   },
   listening: {
     title: "Listening lesson guide",

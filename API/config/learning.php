@@ -41,6 +41,14 @@ return [
         'feedback_max_length' => 5000,
     ],
 
+    'matching' => [
+        // Matching game of a vocabulary lesson: pairs per game (random words when there are more),
+        // fewest words a lesson needs for the game, games one student may check per minute
+        'max_pairs' => 8,
+        'min_words' => 3,
+        'submit_per_minute' => (int) env('MATCHING_SUBMIT_PER_MINUTE', 10),
+    ],
+
     'progress' => [
         // Quiz tries shown in the "Scores over time" chart (the newest ones)
         'chart_attempts' => 30,

@@ -95,8 +95,9 @@ export const RECOMMENDED_EXAMPLES = { min: 8, max: 10 };
 
 export const findOption = (list, value) => list.find((item) => item.value === value);
 
-// Reading texts should have 5–10 "Words to know"
+// "Words" tab: reading / listening 5–10 new words, vocabulary lessons 8–15 flashcards
 export const RECOMMENDED_WORDS = { min: 5, max: 10 };
+export const RECOMMENDED_VOCABULARY_WORDS = { min: 8, max: 15 };
 
 // Speeds of the listening player (PLAN.md T32)
 export const LISTENING_SPEEDS = [0.75, 1];

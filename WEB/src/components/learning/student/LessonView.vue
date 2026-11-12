@@ -4,6 +4,7 @@ import { useSpeech } from "@/composables/useSpeech";
 import { SKILLS, findOption } from "@/constants/learning";
 import { youtubeEmbedUrl } from "@/utils/youtube";
 import ListeningPlayer from "@/components/learning/student/ListeningPlayer.vue";
+import Flashcards from "@/components/learning/student/Flashcards.vue";
 import { wordTargetText } from "@/utils/wordCount";
 
 /**
@@ -36,6 +37,9 @@ const { locale, t } = useI18n();
 
 const skill = computed(() => findOption(SKILLS, props.lesson.skill));
 const isListening = computed(() => props.lesson.skill === "listening");
+// Vocabulary: the words are flashcards (the plain list opens on request)
+const isVocabulary = computed(() => props.lesson.skill === "vocabulary");
+const showWordList = ref(false);
 const hasPlayer = computed(() => isListening.value && Boolean(props.lesson.audio_url));
 
 // Listening: try first without reading
@@ -68,6 +72,12 @@ const body = computed(() => {
 
 const exampleCount = computed(() => props.lesson.examples?.length ?? 0);
 const wordCount = computed(() => props.lesson.words?.length ?? 0);
+// Name of the part under the lesson (the page's slot) in the side outline
+const practiceTitle = computed(() => {
+  if (props.lesson.skill === "writing") return t("Your writing");
+  if (props.lesson.skill === "vocabulary") return t("Practice");
+  return t("Quiz");
+});
 // Writing: "50–100 words"
 const wordTarget = computed(() => wordTargetText(t, props.lesson.min_words, props.lesson.max_words));
 
@@ -91,11 +101,11 @@ const outline = computed(() => [
   ...body.value.sections,
   ...(hasPlayer.value ? [{ id: "lesson-listen", title: t("Listen") }] : []),
   ...(props.lesson.transcript ? [{ id: "lesson-transcript", title: t("Transcript") }] : []),
-  ...(wordCount.value ? [{ id: "lesson-words", title: t("Words to know") }] : []),
-  ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
-  ...(slots.default
-    ? [{ id: "lesson-quiz", title: props.lesson.skill === "writing" ? t("Your writing") : t("Quiz") }]
+  ...(wordCount.value
+    ? [{ id: "lesson-words", title: isVocabulary.value ? t("Flashcards") : t("Words to know") }]
     : []),
+  ...(exampleCount.value ? [{ id: "lesson-examples", title: t("Examples") }] : []),
+  ...(slots.default ? [{ id: "lesson-quiz", title: practiceTitle.value }] : []),
 ]);
 
 // Big screens: the outline stays still and only the lesson card scrolls.
@@ -247,9 +257,30 @@ onBeforeUnmount(() => {
           </div>
         </section>
 
-        <!-- New words of the text (reading) -->
-        <section v-if="wordCount" id="lesson-words" class="lesson-sheet__section">
-          <h2 class="lesson-sheet__section-title">{{ $t("Words to know") }}</h2>
+        <!-- Vocabulary: flashcards -->
+        <section v-if="wordCount && isVocabulary" id="lesson-words" class="lesson-sheet__section">
+          <h2 class="lesson-sheet__section-title">{{ $t("Flashcards") }}</h2>
+          <Flashcards :words="lesson.words" :khmer="isKhmer" />
+          <div class="text-center mt-4">
+            <VBtn
+              variant="text"
+              size="small"
+              :prepend-icon="showWordList ? 'tabler-chevron-up' : 'tabler-list'"
+              @click="showWordList = !showWordList"
+            >
+              {{ $t(showWordList ? "Hide the word list" : "See all {count} words", { count: wordCount }) }}
+            </VBtn>
+          </div>
+        </section>
+
+        <!-- New words of the text (reading, listening) — or the vocabulary word list -->
+        <section
+          v-if="wordCount && (!isVocabulary || showWordList)"
+          :id="isVocabulary ? 'lesson-word-list' : 'lesson-words'"
+          class="lesson-sheet__section"
+          :class="{ 'mt-4': isVocabulary }"
+        >
+          <h2 v-if="!isVocabulary" class="lesson-sheet__section-title">{{ $t("Words to know") }}</h2>
           <ul class="examples">
             <li v-for="word in words" :key="word.id" class="examples__item">
               <div class="flex-grow-1">

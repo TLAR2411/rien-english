@@ -31,8 +31,10 @@ const quizLink = computed(() => {
   return isLoggedIn.value ? quiz : signUpRoute(quiz.path);
 });
 
-// Writing lesson: students write inside their system; a visitor signs up first
+// Writing / matching game: students do it inside their system; a visitor signs up first
 const isWriting = computed(() => lesson.value?.skill === "writing");
+// Vocabulary lesson: the matching game needs login (in the student system)
+const hasMatching = computed(() => lesson.value?.skill === "vocabulary" && (lesson.value?.words?.length ?? 0) >= 3);
 const writeLink = computed(() =>
   isLoggedIn.value ? studentLessonRoute(lesson.value.slug) : signUpRoute(`/student/lessons/${lesson.value.slug}`),
 );
@@ -76,7 +78,18 @@ const wordTarget = computed(() => wordTargetText(t, lesson.value?.min_words, les
         :fit-screen="false"
         :show-transcript="lesson.quiz_taken"
       >
-        <template v-if="lesson.quiz || isStudent || isWriting" #default>
+        <template v-if="lesson.quiz || isStudent || isWriting || hasMatching" #default>
+          <div v-if="hasMatching" class="lesson-quiz lesson-write">
+            <h2 class="lesson-quiz__title">{{ $t("Match the words") }}</h2>
+            <p class="lesson-quiz__facts">{{ $t("A quick game: match each word to its meaning. Your best score is saved.") }}</p>
+            <RouterLink :to="writeLink" class="site-btn lesson-quiz__btn">
+              {{ isLoggedIn ? $t("Play the matching game") : $t("Sign up free to play") }}
+            </RouterLink>
+            <p v-if="!isLoggedIn" class="lesson-quiz__hint">
+              {{ $t("Sign up free to play. You come back here right after.") }}
+            </p>
+          </div>
+
           <div v-if="isWriting" class="lesson-quiz lesson-write">
             <h2 class="lesson-quiz__title">{{ $t("Write and get feedback") }}</h2>
             <p class="lesson-quiz__facts">

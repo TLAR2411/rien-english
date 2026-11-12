@@ -121,13 +121,25 @@ class SampleLessonSeederTest extends TestCase
         $this->assertNull($lesson->quiz);
     }
 
+    public function test_vocabulary_lesson_has_flashcard_words_with_khmer_and_examples(): void
+    {
+        $lesson = Lesson::with('words')->where('skill', LessonSkill::Vocabulary)->sole();
+
+        $this->assertGreaterThanOrEqual(8, $lesson->words->count());
+        foreach ($lesson->words as $word) {
+            $this->assertNotEmpty($word->meaning_km, "{$word->word} needs a Khmer meaning");
+            $this->assertNotEmpty($word->meaning_en, "{$word->word} needs an English meaning");
+            $this->assertNotEmpty($word->example, "{$word->word} needs an example");
+        }
+    }
+
     public function test_seeder_can_run_again_without_duplicates(): void
     {
         $this->seed(SampleLessonSeeder::class);
 
         $this->assertSame(7, Lesson::count());
         $this->assertSame(47, Lesson::withCount('examples')->get()->sum('examples_count'));
-        $this->assertSame(14, Lesson::withCount('words')->get()->sum('words_count'));
+        $this->assertSame(26, Lesson::withCount('words')->get()->sum('words_count'));
     }
 
     public function test_seeded_lessons_appear_in_admin(): void

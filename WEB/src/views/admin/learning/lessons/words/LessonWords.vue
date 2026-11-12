@@ -2,13 +2,16 @@
 import { useI18n } from "vue-i18n";
 import { useCrud } from "@/composables/useCrud";
 import { useFitToScreen } from "@/composables/useFitToScreen";
-import { RECOMMENDED_WORDS } from "@/constants/learning";
+import { RECOMMENDED_VOCABULARY_WORDS, RECOMMENDED_WORDS } from "@/constants/learning";
 import WordDialog from "@/views/admin/learning/lessons/words/WordDialog.vue";
 
-// New words of one lesson ("Words to know"): add, edit, reorder, delete.
+// New words of one lesson ("Words to know", or a vocabulary lesson's flashcards): add, edit, reorder, delete.
 const props = defineProps({
   lessonId: { type: [Number, String], required: true },
+  skill: { type: String, default: "reading" },
 });
+
+const recommended = computed(() => (props.skill === "vocabulary" ? RECOMMENDED_VOCABULARY_WORDS : RECOMMENDED_WORDS));
 
 const { t } = useI18n();
 const tableRef = ref(null);
@@ -50,7 +53,7 @@ const { box: tableBox, isFit, height: tableHeight } = useFitToScreen();
 const countHint = computed(() =>
   t("{count} of {min}–{max} recommended", {
     count: total.value,
-    ...RECOMMENDED_WORDS,
+    ...recommended.value,
   }),
 );
 </script>
@@ -72,7 +75,7 @@ const countHint = computed(() =>
       ref="tableRef"
       v-model:is-dialog-create-visible="isDialogVisible"
       v-model:loading="isLoading"
-      title="Words to know"
+      :title="skill === 'vocabulary' ? 'Flashcards' : 'Words to know'"
       border=""
       title-icon="tabler-vocabulary"
       :api-url="`admin/lessons/${lessonId}/words`"
@@ -99,7 +102,7 @@ const countHint = computed(() =>
       <template #card-header>
         <span
           class="text-body-2 text-no-wrap me-3"
-          :class="total >= RECOMMENDED_WORDS.min ? 'text-success' : 'text-medium-emphasis'"
+          :class="total >= recommended.min ? 'text-success' : 'text-medium-emphasis'"
         >
           {{ countHint }}
         </span>

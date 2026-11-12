@@ -15,22 +15,7 @@ return [
         'sort_order' => 4,
 
         'content' => <<<'HTML'
-            <h2>New words</h2>
-            <table><tbody>
-            <tr><th><p>English</p></th><th><p>Khmer</p></th></tr>
-            <tr><td><p>mother / mom</p></td><td><p>ម្តាយ / ម៉ាក់</p></td></tr>
-            <tr><td><p>father / dad</p></td><td><p>ឪពុក / ប៉ា</p></td></tr>
-            <tr><td><p>parents</p></td><td><p>ឪពុកម្តាយ</p></td></tr>
-            <tr><td><p>brother</p></td><td><p>បងប្រុស / ប្អូនប្រុស</p></td></tr>
-            <tr><td><p>sister</p></td><td><p>បងស្រី / ប្អូនស្រី</p></td></tr>
-            <tr><td><p>grandmother</p></td><td><p>យាយ</p></td></tr>
-            <tr><td><p>grandfather</p></td><td><p>តា</p></td></tr>
-            <tr><td><p>son</p></td><td><p>កូនប្រុស</p></td></tr>
-            <tr><td><p>daughter</p></td><td><p>កូនស្រី</p></td></tr>
-            <tr><td><p>uncle</p></td><td><p>ពូ / មា</p></td></tr>
-            <tr><td><p>aunt</p></td><td><p>មីង / ម្តាយមីង</p></td></tr>
-            <tr><td><p>cousin</p></td><td><p>បងប្អូនជីដូនមួយ</p></td></tr>
-            </tbody></table>
+            <p>Learn the words with the <strong>flashcards</strong>: tap a card to see the meaning. Then play the <strong>matching game</strong>.</p>
             <h2>Good to know</h2>
             <ul>
             <li><p>Khmer has different words for older and younger (បង / ប្អូន). English uses one word: <strong>brother</strong> or <strong>sister</strong>. To be clear, say <em>older brother</em> or <em>younger sister</em>.</p></li>
@@ -46,6 +31,22 @@ return [
             <li><p><strong>Parents</strong> = ឪពុក និងម្តាយ។ <strong>Grandparents</strong> = យាយ និងតា។</p></li>
             </ul>
             HTML,
+    ],
+
+    // Flashcards + matching game: [word, simple English meaning, Khmer, example]
+    'words' => [
+        ['mother', 'the woman who is your parent', 'ម្តាយ / ម៉ាក់', 'This is my mother.'],
+        ['father', 'the man who is your parent', 'ឪពុក / ប៉ា', 'My father is a farmer.'],
+        ['parents', 'your mother and your father', 'ឪពុកម្តាយ', 'My parents live in Battambang.'],
+        ['brother', 'a boy or man with the same parents as you', 'បងប្រុស / ប្អូនប្រុស', 'I have two older brothers.'],
+        ['sister', 'a girl or woman with the same parents as you', 'បងស្រី / ប្អូនស្រី', 'My younger sister is ten.'],
+        ['grandmother', 'the mother of your mother or father', 'យាយ', 'My grandmother tells good stories.'],
+        ['grandfather', 'the father of your mother or father', 'តា', 'My grandfather is seventy.'],
+        ['son', 'a boy child of a mother or father', 'កូនប្រុស', 'My aunt has a son.'],
+        ['daughter', 'a girl child of a mother or father', 'កូនស្រី', 'They have one daughter.'],
+        ['uncle', 'the brother of your mother or father', 'ពូ / មា', 'My uncle is a doctor.'],
+        ['aunt', 'the sister of your mother or father', 'មីង / ម្តាយមីង', 'My aunt has a son and a daughter.'],
+        ['cousin', 'the child of your uncle or aunt', 'បងប្អូនជីដូនមួយ', 'My cousin lives in Phnom Penh.'],
     ],
 
     'examples' => [

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Learning\Student\MyLessonController;
 use App\Http\Controllers\Api\Learning\Student\ProgressController;
 use App\Http\Controllers\Api\Learning\Student\QuizAttemptController;
 use App\Http\Controllers\Api\Learning\Student\QuizController;
+use App\Http\Controllers\Api\Learning\Student\WordMatchController;
 use App\Http\Controllers\Api\Learning\Student\WritingController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,3 +38,8 @@ Route::get('writings/{writing}', [WritingController::class, 'mine']);
 Route::get('lessons/{lesson:slug}/writing', [WritingController::class, 'show']);
 Route::post('lessons/{lesson:slug}/writing', [WritingController::class, 'store'])
     ->middleware('throttle:'.config('learning.writing.submit_per_minute').',1');
+
+// Vocabulary lessons: matching game (words ↔ meanings), graded on the server
+Route::get('lessons/{lesson:slug}/matching', [WordMatchController::class, 'show']);
+Route::post('lessons/{lesson:slug}/matching', [WordMatchController::class, 'check'])
+    ->middleware('throttle:'.config('learning.matching.submit_per_minute').',1');

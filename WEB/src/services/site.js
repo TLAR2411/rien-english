@@ -55,3 +55,11 @@ export const getMyWritings = async (params) => (await api.get("student/writings"
 
 /** One of my writings + the lesson's task and sample answer. Not mine / missing → 404, no pop-up. */
 export const getMyWritingOne = async (id) => (await api.get(`student/writings/${id}`, { silent: true })).data.data;
+
+/** A new matching game of a vocabulary lesson → { words, meanings (token, text, text_en), best_percent }. No game → 404, no pop-up. */
+export const getWordMatch = async (slug) =>
+  (await api.get(`student/lessons/${encodeURIComponent(slug)}/matching`, { silent: true })).data.data;
+
+/** Check the pairs ([{ word_id, token }]) → { score, total, percent, best_percent, pairs } */
+export const checkWordMatch = async (slug, pairs) =>
+  (await api.post(`student/lessons/${encodeURIComponent(slug)}/matching`, { pairs }, { silent: true })).data.data;

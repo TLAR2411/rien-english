@@ -22,7 +22,7 @@ const route = useRoute();
   <!-- One page, tabs: Lesson · Words (reading / vocabulary) · Examples · Quiz · Preview -->
   <LessonEditor :lesson-id="route.params.id">
     <template #tab-words="{ lesson }">
-      <LessonWords :lesson-id="lesson.id" />
+      <LessonWords :lesson-id="lesson.id" :skill="lesson.skill" />
     </template>
     <template #tab-examples="{ lesson }">
       <LessonExamples :lesson-id="lesson.id" />
