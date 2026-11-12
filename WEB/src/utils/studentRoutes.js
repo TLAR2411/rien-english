@@ -20,3 +20,5 @@ export const studentQuizRoute = (slug) => ({ name: "student-quiz-slug", params: 
 export const quizResultRoute = (id) => ({ name: "student-quiz-results-id", params: { id } });
 
 export const myQuizzesRoute = () => ({ name: "student-my-quizzes" });
+
+export const myProgressRoute = () => ({ name: "student-my-progress" });

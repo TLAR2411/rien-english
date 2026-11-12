@@ -33,6 +33,9 @@ export const getStudentQuiz = async (slug) =>
 /** Send the answers ({ answers: [{ question_id, answer }], started_at }) → the graded result */
 export const submitQuiz = async (quizId, payload) => (await api.post(`student/quizzes/${quizId}/submit`, payload)).data.data;
 
+/** My Progress → { skills, levels, quizzes } */
+export const getMyProgress = async () => (await api.get("student/progress")).data.data;
+
 /** My Quizzes: { data, meta } — params: page */
 export const getQuizAttempts = async (params) => (await api.get("student/quiz-attempts", { params })).data.data;
 
