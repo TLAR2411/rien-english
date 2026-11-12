@@ -1,0 +1,37 @@
+// Account pages on the public website: sign-up, forgot password,
+// set a new password. One narrow column, one main button.
+.auth-page {
+  max-width: 440px;
+}
+
+.auth-page__form {
+  display: grid;
+  gap: 16px;
+  margin-block-start: 32px;
+}
+
+.auth-page__btn {
+  width: 100%;
+  margin-block-start: 24px;
+}
+
+.auth-page__form .auth-page__btn {
+  margin-block-start: 8px;
+}
+
+.auth-page__error {
+  color: var(--rien-red);
+  font-size: 15px;
+}
+
+.auth-page__note {
+  margin-block-start: 12px;
+  color: var(--rien-grey);
+  font-size: 15px;
+}
+
+.auth-page__switch {
+  margin-block-start: 24px;
+  color: var(--rien-grey);
+  text-align: center;
+}

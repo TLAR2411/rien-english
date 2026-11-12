@@ -28,7 +28,7 @@ trait TracksUserActions
 
         // When a model is being soft-deleted (if using soft deletes)
         static::deleting(function ($model) {
-            if (Auth::check() && method_exists($model, 'trashed') && !$model->isForceDeleting()) {
+            if (Auth::check() && method_exists($model, 'trashed') && ! $model->isForceDeleting()) {
                 $model->deleted_by = Auth::id();
                 // Save the model to persist the deleted_by field
                 $model->saveQuietly(); // Use saveQuietly to prevent recursive events
@@ -36,11 +36,11 @@ trait TracksUserActions
         });
 
         // For force deletion (permanent delete)
-//        static::forceDeleting(function ($model) {
-//            // Optionally handle force deletion if needed
-//            // For example, you might want to clear user tracking fields
-//            // when permanently deleting records
-//        });
+        //        static::forceDeleting(function ($model) {
+        //            // Optionally handle force deletion if needed
+        //            // For example, you might want to clear user tracking fields
+        //            // when permanently deleting records
+        //        });
     }
 
     /**

@@ -20,6 +20,7 @@ class ProvinceController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -33,6 +34,7 @@ class ProvinceController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -49,6 +51,7 @@ class ProvinceController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -59,11 +62,12 @@ class ProvinceController extends Controller
             $province = Province::create($request->all());
             $province->code = $province->id;
             $province->save();
-            $result['message'] = "Successfully create province.";
+            $result['message'] = 'Successfully create province.';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -74,11 +78,12 @@ class ProvinceController extends Controller
             $province = Province::findOrFail($request->id);
             $province->update($request->all());
             $province->save();
-            $result['message'] = "Successfully update province.";
+            $result['message'] = 'Successfully update province.';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -87,11 +92,12 @@ class ProvinceController extends Controller
         $result['status'] = 200;
         try {
             Province::findOrFail($request->id)->delete();
-            $result['message'] = "Successfully delete province.";
+            $result['message'] = 'Successfully delete province.';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 

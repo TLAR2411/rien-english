@@ -7,16 +7,9 @@ import { requiredValidator } from "@/@core/utils/validators";
 import AppCard from "@/components/AppCard.vue";
 import { api } from "@/utils/api";
 import { app } from "@/utils/app";
-import {
-  getBranches,
-  getPositions,
-  getRoles,
-  getUsers,
-} from "@/services/dataService";
-import { onMounted } from "vue";
-import { ref } from "vue";
+import { getBranches, getRoles } from "@/services/dataService";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import formatContact from "@/utils/formater/formatContact";
 
 definePage({
   meta: {
@@ -51,7 +44,6 @@ const gender = [
 
 // System the user lands on after login (users.default_part)
 const defaultParts = [
-  { name: "HR System", value: "hr" },
   { name: "Admin System", value: "admin" },
 ];
 
@@ -72,8 +64,6 @@ const manageBranch = [
 const isLoading = ref(false);
 const branches = ref([]);
 const roles = ref([]);
-const users = ref([]);
-const positions = ref([]);
 const provinces = ref([...app().provinces]);
 const districts = ref([]);
 const communes = ref([]);
@@ -168,39 +158,15 @@ const initData = async () => {
 
 onMounted(async () => {
   initData();
-  const dataBranches = await getBranches();
-  const dataRoles = await getRoles();
-  const dataPositions = await getPositions();
-  // const dataUsers = await getUsers();
+  const [dataBranches, dataRoles] = await Promise.all([
+    getBranches(),
+    getRoles(),
+  ]);
 
   roles.value = dataRoles;
-  positions.value = dataPositions;
   branches.value = dataBranches;
-  // users.value = dataUsers;
 });
 
-watch(
-  () => formData.value.choose_branch_id,
-  async (newVal, oldVal) => {
-    if (newVal) {
-      getUnderUsers();
-    }
-  },
-);
-
-const getUnderUsers = async () => {
-  try {
-    const res = await api.get("users-all-under-users", {
-      params: {
-        choose_branch_id: formData.value.choose_branch_id,
-      },
-    });
-
-    if (res.data.status) {
-      users.value = res.data.data;
-    }
-  } catch (error) {}
-};
 // Watchers for cascading location fields
 watch(
   () => formData.value.province_code,
@@ -436,55 +402,6 @@ const initializeAddressFields = async (data) => {
           label="Default System"
           autocomplete="off"
         />
-      </VCol>
-      <VCol cols="12" lg="3" md="4" sm="6">
-        <AppAutocomplete
-          v-model="formData.position_id"
-          label="Positions"
-          :items="positions"
-          :item-title="
-            (item) => {
-              return `${item.name_kh} (${item.abbr})`;
-            }
-          "
-          item-value="id"
-          autocomplete="off"
-        />
-      </VCol>
-      <VCol cols="12" lg="3" md="4" sm="6">
-        <AppAutocomplete
-          v-model="formData.under_user_id"
-          label="Under User"
-          :items="users"
-          :item-title="
-            (item) => {
-              return item.role_abbr
-                ? `${item.name_kh} (${item.role_abbr})`
-                : item.name_kh;
-            }
-          "
-          item-value="id"
-          autocomplete="off"
-          :disabled="!formData.choose_branch_id"
-        >
-          <template #item="{ props, item }">
-            <VListItem
-              v-bind="props"
-              :title="`${item?.raw?.name_kh}  (${item?.raw?.role_abbr})`"
-              :subtitle="`${formatContact(item?.raw.contact)}`"
-            >
-              <template #prepend>
-                <AppAvatar
-                  :title="item?.raw?.name_kh"
-                  :image="item?.raw?.image_path"
-                  :size="40"
-                  :is-show-full-image="false"
-                />
-                &nbsp;&nbsp;
-              </template>
-            </VListItem>
-          </template>
-        </AppAutocomplete>
       </VCol>
       <VCol cols="12" lg="3" md="4" sm="6">
         <AppDateTimePicker

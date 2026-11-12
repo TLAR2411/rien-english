@@ -17,7 +17,7 @@ const props = defineProps({
   // with its height fitting the content
   fullscreen: { type: Boolean, default: false },
   // on phones (xs): fill the whole screen, height as well as width — for
-  // long, read-only dialogs such as the client loan history
+  // long, read-only dialogs
   fullHeight: { type: Boolean, default: false },
   // keep the footer (submit button) pinned to the bottom while the content
   // scrolls. Unset: pinned on phones / full screen only. true: pinned on

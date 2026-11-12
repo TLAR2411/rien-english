@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Services\BranchContext;
-use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DataTableResource;
 use App\Models\Core\Branch;
+use App\Services\BranchContext;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BranchController extends Controller
 {
@@ -37,7 +37,6 @@ class BranchController extends Controller
         ]);
     }
 
-
     public function all(Request $request)
     {
         try {
@@ -47,29 +46,29 @@ class BranchController extends Controller
 
             return response()->json([
                 'status' => true,
-                'data' => $branches
+                'data' => $branches,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
 
     public function show(Request $request)
-
     {
         try {
             $branches = $this->ownBranches()->findOrFail($request->id);
+
             return response()->json([
                 'status' => true,
-                'data' => $branches
+                'data' => $branches,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -79,14 +78,15 @@ class BranchController extends Controller
         try {
             $branches = $this->ownBranches()->paginate($request->limit);
             $branches = DataTableResource::collection($branches)->response()->getData(true);
+
             return response()->json([
                 'status' => true,
-                'data' => $branches
+                'data' => $branches,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -103,12 +103,12 @@ class BranchController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Successfully created branch!"
+                'message' => 'Successfully created branch!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -136,12 +136,12 @@ class BranchController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Successfully updated branch!"
+                'message' => 'Successfully updated branch!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -153,12 +153,12 @@ class BranchController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Successfully deleted branch!"
+                'message' => 'Successfully deleted branch!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }
@@ -172,12 +172,12 @@ class BranchController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => $branch->is_active == 1 ? "Successfully open branch!" : "Successfully disable branch!"
+                'message' => $branch->is_active == 1 ? 'Successfully open branch!' : 'Successfully disable branch!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
     }

@@ -1,8 +1,8 @@
 import { computed, unref } from "vue";
 import { usePartStore } from "@/stores/partStore";
 import DefaultNavItems from "@/navigation/vertical/index";
-import { useHrNavigation } from "@/navigation/vertical/hr";
 import { useAdminNavigation } from "@/navigation/vertical/admin";
+import { useStudentNavigation } from "@/navigation/vertical/student";
 
 // The normalized `system_part` value for each part — what
 // usePartStore().system_part holds once router/guards.js applies
@@ -10,8 +10,8 @@ import { useAdminNavigation } from "@/navigation/vertical/admin";
 // files that need to branch on the active system part (e.g. choosing a
 // sidebar nav list) don't hardcode these strings themselves.
 export const SYSTEM_PART = {
-  HR: "hr",
   ADMIN: "admin",
+  STUDENT: "student",
 };
 
 /**
@@ -40,15 +40,6 @@ export const SYSTEM_PART = {
 // which calls each one lazily instead).
 const SYSTEM_PARTS = [
   {
-    title: "HR System",
-    icon: "tabler-users-group",
-    part: "hr",
-    matchValue: SYSTEM_PART.HR,
-    permission: "hr-allow-part",
-    profileRouteName: "hr-user-profile-tab",
-    navItems: useHrNavigation,
-  },
-  {
     title: "Admin System",
     icon: "tabler-shield-cog",
     part: "admin",
@@ -75,7 +66,17 @@ export function useSystemParts() {
 // Parts that exist (a URL segment, a `system_part` value, maybe a profile
 // route) but aren't shown as a switchable item in the user menu.
 // `part` doubles as the URL's first path segment for these.
-const HIDDEN_SYSTEM_PARTS = [];
+//
+// Student system (/student/...): students only use this part, so it is not
+// in the switch menu. No permission here — the student API itself allows only
+// the `student` role (API/config/roles.php → groups.student_area).
+const HIDDEN_SYSTEM_PARTS = [
+  {
+    part: "student",
+    matchValue: SYSTEM_PART.STUDENT,
+    navItems: useStudentNavigation,
+  },
+];
 
 const ALL_PARTS = [...SYSTEM_PARTS, ...HIDDEN_SYSTEM_PARTS];
 
@@ -86,8 +87,17 @@ export const SYSTEM_PART_SEGMENT_MAP = Object.fromEntries(
   ALL_PARTS.map((item) => [item.part, item.matchValue]),
 );
 
+// router/guards.js: the permission a user needs to open any page of a part
+// (e.g. "admin-allow-part" — roles get it from API/config/roles.php).
+export const PERMISSION_BY_PART = Object.fromEntries(
+  ALL_PARTS.filter((item) => item.permission).map((item) => [
+    item.matchValue,
+    item.permission,
+  ]),
+);
+
 // Where the profile icon (UserFullProfile.vue) sends each system part.
-// Keyed by SYSTEM_PART so it can't drift the way the old `systemPart == "hr"`
+// Keyed by SYSTEM_PART so it can't drift the way an old hard-coded part name
 // check did when the router guard normalized to a different string.
 export const PROFILE_ROUTE_BY_PART = Object.fromEntries(
   ALL_PARTS.filter((item) => item.profileRouteName).map((item) => [
@@ -97,10 +107,9 @@ export const PROFILE_ROUTE_BY_PART = Object.fromEntries(
 );
 
 // Which sidebar nav list to show for each system part, derived from
-// SYSTEM_PARTS' `navItems`. Parts not listed here (e.g. the
-// HIDDEN_SYSTEM_PARTS) fall back to the default sidebar.
+// each part's `navItems`. Parts without one fall back to the default sidebar.
 const NAV_ITEMS_FACTORY_BY_PART = Object.fromEntries(
-  SYSTEM_PARTS.filter((item) => item.navItems).map((item) => [
+  ALL_PARTS.filter((item) => item.navItems).map((item) => [
     item.matchValue,
     item.navItems,
   ]),

@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue";
 import { requiredValidator } from "@/@core/utils/validators";
 import { usePwaInstall } from "@/composables/usePwaInstall";
+import { forgotPasswordRoute, signUpRoute } from "@/utils/siteRoutes";
 
 const { canInstall, needsIosInstructions } = usePwaInstall();
 const showInstallRow = computed(
@@ -25,7 +26,7 @@ definePage({
 });
 
 const company = import.meta.env.VITE_BASE_COMPANY;
-const MainLogo = `/logo/${company}/logo-64.webp`;
+const MainLogo = `/logo/${company}/logo-64.png`;
 
 // Stays empty until loaded, so the built-in name doesn't flash first.
 const appName = ref("");
@@ -41,6 +42,7 @@ const loadAppName = async () => {
 
 onMounted(loadAppName);
 
+const route = useRoute();
 const refForm = ref();
 const isLoading = ref(false);
 const isPasswordVisible = ref(false);
@@ -90,6 +92,11 @@ const submit = async () => {
 };
 
 const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
+
+// Keeps the email already typed, so the student does not type it twice
+const forgotPasswordLink = computed(() =>
+  forgotPasswordRoute(form.value.username?.includes("@") ? form.value.username.trim() : null, route.query.redirect),
+);
 </script>
 
 <template>
@@ -170,6 +177,12 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
                 </AppTextField>
               </VCol>
 
+              <VCol cols="12" class="pt-1 pb-0 text-end text-body-2">
+                <RouterLink :to="forgotPasswordLink" class="text-primary">
+                  {{ $t("Forgot password?") }}
+                </RouterLink>
+              </VCol>
+
               <VCol cols="12" class="mt-0">
                 <VBtn
                   block
@@ -180,6 +193,14 @@ const onSubmit = debounce(submit, 400, { leading: true, trailing: false });
                 >
                   {{ $t("Login") }}
                 </VBtn>
+              </VCol>
+
+              <!-- New students: sign up (keeps the page to come back to) -->
+              <VCol cols="12" class="pt-0 text-center text-body-2">
+                {{ $t("New here?") }}
+                <RouterLink :to="signUpRoute(route.query.redirect)" class="text-primary font-weight-medium">
+                  {{ $t("Sign up free") }}
+                </RouterLink>
               </VCol>
 
               <VCol v-if="showInstallRow" cols="12" class="pt-0">

@@ -6,41 +6,45 @@ use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use Illuminate\Database\Seeder;
 
+/**
+ * Creates the roles and gives them their permissions.
+ * Which permissions each role gets is set in config/roles.php.
+ * Safe to run again: it updates existing roles.
+ */
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private const ROLES = [
+        // Old system roles (kept so existing accounts keep working)
+        ['name' => 'developer', 'display_name' => 'Developer', 'abbr' => 'DEV'],
+        ['name' => 'system-administrator', 'display_name' => 'System Administrator', 'abbr' => 'SYS'],
+        ['name' => 'staff', 'display_name' => 'បុគ្គលិក', 'abbr' => 'STF'],
+
+        // Learning platform roles
+        ['name' => 'admin', 'display_name' => 'Admin', 'abbr' => 'ADM'],
+        ['name' => 'teacher', 'display_name' => 'Teacher', 'abbr' => 'TCH'],
+        ['name' => 'student', 'display_name' => 'Student', 'abbr' => 'STU'],
+    ];
+
     public function run(): void
     {
-        $insert = [
-            [
-                'name' => 'developer',
-                'display_name' => 'Developer',
-                'abbr' => 'DEV'
-            ],
-            [
-                'name' => 'system-administrator',
-                'display_name' => 'System Administrator',
-                'abbr' => 'SYS'
-            ],
-            [
-                'name' => 'human-resource-manager',
-                'display_name' => 'ប្រធាននាយកដ្ឋានធនធានមនុស្ស',
-                'abbr' => 'HHR'
-            ],
-            [
-                'name' => 'staff',
-                'display_name' => 'បុគ្គលិក',
-                'abbr' => 'STF'
-            ],
-        ];
-
-        foreach ($insert as $value) {
-            Role::create($value);
+        foreach (self::ROLES as $role) {
+            Role::updateOrCreate(['name' => $role['name']], $role);
         }
 
-        $role = Role::where('name', 'developer')->first();
-        $role->syncPermissions(Permission::all());
+        Role::where('name', 'developer')->firstOrFail()->syncPermissions(Permission::all());
+
+        foreach (config('roles.permissions') as $roleName => $rule) {
+            Role::where('name', $roleName)->firstOrFail()->syncPermissions($this->permissionsFor($rule));
+        }
+    }
+
+    /** '*' = all permissions; otherwise a list of permission groups or names. */
+    private function permissionsFor(string|array $rule)
+    {
+        if ($rule === '*') {
+            return Permission::all();
+        }
+
+        return Permission::whereIn('group', $rule)->orWhereIn('name', $rule)->get();
     }
 }

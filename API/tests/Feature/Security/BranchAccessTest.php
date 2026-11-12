@@ -2,9 +2,7 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\Auth\Position;
 use App\Models\Auth\UserBranch;
-use App\Models\Core\Department;
 use App\Models\User;
 use App\Services\BranchContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -84,33 +82,7 @@ class BranchAccessTest extends TestCase
         $ids = collect($this->getJson('/api/web/branches-all')->json('data'))->pluck('id');
 
         $this->assertSame([$own->id], $ids->all());
-        $this->getJson('/api/web/branches-show?id=' . $otherOwner->id)->assertStatus(500);
-    }
-
-    public function test_under_users_stay_inside_the_owner_and_respect_filters(): void
-    {
-        $department = Department::forceCreate(['name_kh' => 'General', 'name_en' => 'General']);
-        $position = Position::forceCreate([
-            'name_kh' => 'Lead', 'name_en' => 'Lead', 'abbr' => 'LD', 'level' => 30, 'department_id' => $department->id,
-        ]);
-
-        $company = $this->makeCompany();
-        $own = $this->makeBranch($company);
-        $head = $this->makeBranch($company, ['is_head' => true]);
-        $otherHead = $this->makeBranch($this->makeCompany(), ['is_head' => true]);
-
-        $this->makeUser($own); // keeps id 1, which the query always leaves out
-        $lead = $this->makeUser($own, ['position_id' => $position->id]);
-        $headLead = $this->makeUser($head, ['position_id' => $position->id]);
-        $disabled = $this->makeUser($head, ['position_id' => $position->id, 'is_active' => false]);
-        $stranger = $this->makeUser($otherHead, ['position_id' => $position->id]);
-        Passport::actingAs($this->makeUser($own));
-
-        $ids = collect($this->getJson('/api/web/users-all-under-users?choose_branch_id=' . $own->id)->assertOk()->json('data'))->pluck('id');
-
-        $this->assertEqualsCanonicalizing([$lead->id, $headLead->id], $ids->all());
-        $this->assertFalse($ids->contains($disabled->id));
-        $this->assertFalse($ids->contains($stranger->id));
+        $this->getJson('/api/web/branches-show?id='.$otherOwner->id)->assertStatus(500);
     }
 
     public function test_session_routes_skip_the_branch_check(): void

@@ -1,11 +1,12 @@
 <?php
+
 // app/Http/Controllers/ExportController.php
 
 namespace App\Http\Controllers;
 
+use App\Exports\HtmlTemplateExport;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\HtmlTemplateExport; // Your custom export class
+use Maatwebsite\Excel\Facades\Excel; // Your custom export class
 
 class ExportController extends Controller
 {
@@ -13,11 +14,11 @@ class ExportController extends Controller
     {
         $request->validate([
             'html' => 'required|string',
-            'filename' => 'sometimes|string'
+            'filename' => 'sometimes|string',
         ]);
 
         $html = $request->input('html');
-        $filename = $request->input('filename', 'export_' . date('Y-m-d') . '.xlsx');
+        $filename = $request->input('filename', 'export_'.date('Y-m-d').'.xlsx');
 
         return Excel::download(
             new HtmlTemplateExport($html, 'Custom Report'),

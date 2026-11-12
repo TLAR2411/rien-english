@@ -22,9 +22,9 @@ class RefreshTokenRequest extends FormRequest
     public function rules(): array
     {
         return [
-//            'client_id' => 'required|string',
-//            'client_secret' => 'required|string',
-            'refreshToken' => 'required|string'
+            //            'client_id' => 'required|string',
+            //            'client_secret' => 'required|string',
+            'refreshToken' => 'required|string',
         ];
     }
 }

@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Http\Resources\Learning\Student;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * A lesson as students see it (public lesson page, student system, admin preview).
+ *
+ * @mixin \App\Models\Learning\Lesson
+ */
+class StudentLessonResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'skill' => $this->skill,
+            'title_en' => $this->title_en,
+            'title_km' => $this->title_km,
+            'summary' => $this->summary,
+            'content' => $this->content,
+            'content_km' => $this->content_km,
+            // Listening: the page keeps it hidden until "Show transcript" or the quiz is done
+            'transcript' => $this->transcript,
+            // Writing: the task's checklist and word target. Never the sample answer —
+            // the student gets it only after sending their own writing (T33).
+            'checklist' => $this->checklist ?? [],
+            'min_words' => $this->min_words,
+            'max_words' => $this->max_words,
+            'audio_url' => $this->audio_url,
+            // Only the video ID: the page plays it with YouTube's player
+            'youtube_id' => $this->youtubeId(),
+            'course' => $this->whenLoaded('course', fn () => [
+                'id' => $this->course->id,
+                'slug' => $this->course->slug,
+                'title' => $this->course->title,
+                'title_km' => $this->course->title_km,
+                'level' => $this->course->relationLoaded('level') ? $this->course->level->only(['id', 'code', 'name', 'name_km']) : null,
+            ]),
+            'examples' => $this->whenLoaded('examples', fn () => $this->examples->map->only(['id', 'sentence', 'translation_km', 'audio_url'])),
+            'words' => $this->whenLoaded('words', fn () => $this->words->map->only(['id', 'word', 'meaning_en', 'meaning_km', 'example', 'audio_url'])),
+            'quiz' => new StudentQuizResource($this->whenLoaded('quiz')),
+        ];
+    }
+}

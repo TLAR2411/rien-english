@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\Auth;
 
-use App\Models\Auth\Position;
 use App\Models\Auth\Role;
 use App\Models\Auth\UserBranch;
+use App\Models\Core\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -16,33 +16,35 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $password = env('ADMIN_PASSWORD') ?: Str::password(16);
-        if (!env('ADMIN_PASSWORD')) {
+        $password = config('app.admin.password') ?: Str::password(16);
+        if (! config('app.admin.password')) {
             $this->command?->warn("Generated admin password (shown once): {$password}");
         }
 
+        $branch = Branch::where('is_head', true)->firstOrFail();
+        $developer = Role::where('name', 'developer')->firstOrFail();
+
         $user = User::create([
-            'code' => 'B1-000001',
-            'branch_id' => 1,
+            'code' => $branch->abbr.'-000001',
+            'branch_id' => $branch->id,
             'name_kh' => 'Admin',
             'name_en' => 'Admin',
             'username' => 'admin',
-            'email' => 'admin@admin.com',
+            'email' => config('app.admin.email'),
             'password' => bcrypt($password),
             'is_super' => true,
             'manage_branch' => 3,
-            'role_id' => 1,
-            'position_id' => Position::where('abbr', 'CIO')->first()->id,
+            'role_id' => $developer->id,
             'join_date' => now(),
             'default_part' => 'admin',
         ]);
 
-        $role = Role::find(1);
-        $user->addRole($role);
+        // `developer` keeps all old permissions; `admin` opens the learning admin area
+        $user->addRoles([$developer, Role::where('name', 'admin')->firstOrFail()]);
 
         UserBranch::create([
             'user_id' => $user->id,
-            'branch_id' => 1,
+            'branch_id' => $branch->id,
         ]);
     }
 }

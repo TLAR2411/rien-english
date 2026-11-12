@@ -19,10 +19,13 @@ class PermissionSeeder extends Seeder
         'restore',
     ];
 
+    // Plain add / view / edit / delete (no restore) — used by the learning screens
+    private const CRUD = ['view', 'add', 'edit', 'delete'];
+
     private function insert($group, $attribute = null, $isAttribute = true)
     {
         // If $attribute is not null, merge it with the default $this->attribute
-        if (!is_null($attribute)) {
+        if (! is_null($attribute)) {
             $attribute = array_unique(array_merge(($isAttribute == true ? $this->attributes : []), $attribute));
         } else {
             $attribute = ($isAttribute == true ? $this->attributes : []);
@@ -31,10 +34,10 @@ class PermissionSeeder extends Seeder
         foreach ($attribute as $item) {
             // firstOrCreate so the seeder can be re-run without duplicates
             Permission::firstOrCreate(
-                ['name' => $item . '-' . $group],
+                ['name' => $item.'-'.$group],
                 [
                     'group' => $group,
-                    'display_name' => $item
+                    'display_name' => $item,
                 ]
             );
         }
@@ -44,7 +47,6 @@ class PermissionSeeder extends Seeder
     {
         // One permission per system part (see WEB/src/composables/useSystemParts.js)
         $this->insert('allow-part', [
-            'hr',
             'admin',
         ], false);
 
@@ -54,14 +56,9 @@ class PermissionSeeder extends Seeder
             'change-password',
             'change-permission',
         ]);
-        $this->insert('employees', [
-            'transfer',
-            'change-active',
-        ]);
 
         $this->insert('activity-log');
 
-        $this->insert('positions');
         $this->insert('roles');
         $this->insert('permissions');
         $this->insert('villages');
@@ -69,9 +66,16 @@ class PermissionSeeder extends Seeder
         $this->insert('districts');
         $this->insert('provinces');
 
-        $this->insert('departments');
-
         // Admin General Settings page (company info, default passwords, Telegram)
         $this->insert('settings', ['view', 'edit'], false);
+
+        // Learning content (admin + teacher, see config/roles.php)
+        $this->insert('levels', self::CRUD, false);
+        $this->insert('courses', self::CRUD, false);
+        $this->insert('lessons', self::CRUD, false);
+        $this->insert('quizzes', self::CRUD, false);
+
+        // Writing Review: read students' writing, give a score + feedback (T34)
+        $this->insert('writing', ['view', 'review'], false);
     }
 }

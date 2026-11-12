@@ -20,6 +20,7 @@ class DistrictController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -33,6 +34,7 @@ class DistrictController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -50,6 +52,7 @@ class DistrictController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -63,14 +66,15 @@ class DistrictController extends Controller
                 'code' => $lastCode,
                 'name_kh' => $request->name_kh,
                 'name_en' => $request->name_en,
-                'province_code' => $request->province_code
+                'province_code' => $request->province_code,
             ]);
 
-            $result['message'] = "Successfully created district";
+            $result['message'] = 'Successfully created district';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -83,14 +87,15 @@ class DistrictController extends Controller
                 ->update([
                     'name_kh' => $request->name_kh,
                     'name_en' => $request->name_en,
-                    'province_code' => $request->province_code
+                    'province_code' => $request->province_code,
                 ]);
 
-            $result['message'] = "Successfully updated district";
+            $result['message'] = 'Successfully updated district';
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 

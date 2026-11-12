@@ -348,3 +348,55 @@ body,
     }
   }
 }
+// AppCardTable inside a box sized by useFitToScreen(): fill the box, the rows
+// scroll inside and the column titles stay on top
+// (`!important`: the components' own height caps would win otherwise)
+.fit-table {
+  .list-tab-height {
+    height: 100% !important;
+  }
+
+  .v-table {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
+  .v-table__wrapper {
+    flex: 1 1 0;
+    height: auto !important;
+    min-block-size: 0;
+    overscroll-behavior: contain;
+  }
+}
+
+// AppCard inside a box sized by useFitToScreen(): fill the box, the card body
+// scrolls between the still title and the still Save bar
+.fit-card {
+  > .data-tab-list-height {
+    height: 100%;
+    max-height: none !important;
+  }
+
+  // The tabs frame around it already draws the border
+  .chat-app-layout {
+    border: 0 !important;
+    border-radius: 0;
+    box-shadow: none !important;
+  }
+
+  .chat-content-container > .d-flex > .v-card {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
+  #app-card-print-area {
+    flex: 1 1 0;
+    max-height: none !important;
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}

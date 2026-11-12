@@ -3,6 +3,7 @@ import { api, refreshAccessToken } from "@/utils/api";
 import { router } from "@/router/index";
 import { useAppStore } from "@/stores/appStore";
 import { homePathFor } from "@/utils/homePath";
+import { safeRedirect } from "@/utils/siteRoutes";
 import { useTempAppStore } from "@/stores/tempAppStore";
 import { useSettingStore } from "./settingStore";
 import { usePartStore } from "./partStore";
@@ -29,48 +30,38 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async login(payload) {
       try {
-        const response = await api.post("login", {
-          ...payload,
-        },
-          {               // Third argument: The config object
-            headers: {
-              'X-CLIENT-ID': import.meta.env.VITE_CLIENT_ID,
-            }
-          }
-        );
-
-        if (response.data.status) {
-
-          const data = response.data.data;
-
-          const token = data.access_token;
-          const refreshToken = data.refresh_token;
-          setAccessToken(token);
-          setRefreshToken(refreshToken);
-
-          this.$patch({
-            isAuthenticated: true,
-            accessToken: response.data.data.access_token,
-            refreshToken: response.data.data.refresh_token,
-            isTokenRefreshing: false,
-          });
-
-          useAppStore().getAllAppStore();
-
-          await this.bootstrap(token);
-          const defaultPart = response?.data?.data?.default_part;
-          const defaultBranch = response?.data?.data?.default_branch;
-          usePartStore().setSystemPart(defaultPart);
-          useSettingStore().setBranchId(defaultBranch);
-
-          router.push(homePathFor(defaultPart));
-
-        } else {
-          console.error("Login failed with status:", response.data.status);
-        }
+        const response = await api.post("login", { ...payload });
+        if (response.data.status) await this.startSession(response.data.data);
       } catch (error) {
         console.error("Login error:", error);
       }
+    },
+    // Student sign-up: the API creates the account and logs in right away.
+    // Errors go back to the page, so it can show them under each field.
+    async register(payload) {
+      const response = await api.post("register", { ...payload }, { silent: true });
+      if (response.data.status) await this.startSession(response.data.data);
+    },
+    // Save the tokens, load the user, then open the page that sent the user
+    // here (e.g. a lesson's quiz) or their own home page.
+    async startSession(data) {
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+
+      this.$patch({
+        isAuthenticated: true,
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        isTokenRefreshing: false,
+      });
+
+      await this.bootstrap(data.access_token);
+      useAppStore().getAllAppStore(); // after bootstrap: it needs the permissions
+      usePartStore().setSystemPart(data.default_part);
+      useSettingStore().setBranchId(data.default_branch);
+
+      const redirect = safeRedirect(router.currentRoute.value.query.redirect);
+      router.push(redirect ?? homePathFor(data.default_part));
     },
     async token(payload) {
       try {
@@ -198,7 +189,8 @@ export const useAuthStore = defineStore("auth", {
 
       removeAccessToken();
       removeRefreshToken();
-      router.replace({ name: 'login' });
+      // On the public website a visitor can stay where they are
+      if (!router.currentRoute.value.meta?.public) router.replace({ name: 'login' });
     },
   }
 });

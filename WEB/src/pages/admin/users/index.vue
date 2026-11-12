@@ -3,12 +3,7 @@ import { useI18n } from "vue-i18n";
 import { api } from "@/utils/api";
 import formatDate from "@/utils/formater/formatDate";
 import { onMounted, ref } from "vue";
-import {
-  getPermissions,
-  getPositions,
-  getRoles,
-  getUsers,
-} from "@/services/dataService";
+import { getPermissions, getRoles } from "@/services/dataService";
 import formatGender from "@/utils/formater/formatGender";
 import { useRouter } from "vue-router";
 import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue";
@@ -40,7 +35,6 @@ const isDialogVisible = ref(false);
 const isLoading = ref(true);
 const dataTableRef = ref(null);
 const roles = ref([]);
-const positions = ref([]);
 const isPasswordDialog = ref(false);
 const isUsernameDialog = ref(false);
 const isLinkUserDialog = ref(false);
@@ -53,16 +47,12 @@ const userPermissions = ref([]);
 const filter = ref({
   search: null,
   is_active: null,
-  position_id: null,
   role_id: null,
   gender: null,
-  under_user_id: null,
   join_from: null,
   join_to: null,
   last_login: null,
 });
-
-const users = ref([]);
 
 const statusOptions = [
   { title: t("Active"), value: "1" },
@@ -128,11 +118,6 @@ const headers = [
   },
 
   {
-    title: t("Position"),
-    key: "position.name_kh",
-    visible: true,
-  },
-  {
     title: t("Role"),
     key: "role.display_name",
     visible: true,
@@ -143,12 +128,6 @@ const headers = [
     value: (items) => formatDate(items.join_date),
     visible: true,
   },
-  {
-    title: t("Under User"),
-    key: "under_user.name_kh",
-    visible: true,
-  },
-  { title: t("Counts"), key: "loans_count", align: "center", visible: true },
   { title: t("Last Login"), key: "last_login", align: "center", visible: true },
   { title: t("Status"), key: "is_active", align: "center", visible: true },
   {
@@ -182,6 +161,11 @@ const onEdit = async (item) => {
   router.push({ name: "admin-users-edit", query: { id: item.id } });
 };
 
+// The user's learning: numbers, quiz scores, every quiz try
+const onView = (item) => {
+  router.push({ name: "admin-users-view-id", params: { id: item.id } });
+};
+
 const onDisable = async (item) => {
   try {
     isLoading.value = true;
@@ -207,18 +191,13 @@ const copyToClipboard = (text) => {
 };
 
 onMounted(async () => {
-  const [dataRoles, dataPositions, dataPermissions, dataUsers] =
-    await Promise.all([
-      getRoles(),
-      getPositions(),
-      getPermissions(),
-      getUsers(),
-    ]);
+  const [dataRoles, dataPermissions] = await Promise.all([
+    getRoles(),
+    getPermissions(),
+  ]);
 
   roles.value = dataRoles;
-  positions.value = dataPositions;
   permissions.value = dataPermissions;
-  users.value = dataUsers || [];
 });
 
 const onPassword = (item) => {
@@ -316,6 +295,8 @@ const onUpdatePermission = async (data, callback) => {
     create-page="admin-users-create"
     is-check-branch
     is-filter
+    is-view
+    can-view="view-users"
     is-edit
     is-delete
     is-disable
@@ -327,6 +308,7 @@ const onUpdatePermission = async (data, callback) => {
     save-state
     :is-back="false"
     @on-delete="onDelete"
+    @on-view="onView"
     @on-edit="onEdit"
     @on-disable="onDisable"
     @on-password="onPassword"
@@ -360,21 +342,6 @@ const onUpdatePermission = async (data, callback) => {
         </VCol>
         <VCol cols="12" sm="4" md="3" lg="2">
           <AppAutocomplete
-            v-model="filter.position_id"
-            :items="positions"
-            item-title="name_kh"
-            item-value="id"
-            prepend-inner-icon="tabler-id-badge-2"
-            clearable
-            hide-details
-            autocomplete="off"
-            clear-icon="tabler-x"
-          >
-            <template #label>{{ t("Position") }}</template>
-          </AppAutocomplete>
-        </VCol>
-        <VCol cols="12" sm="4" md="3" lg="2">
-          <AppAutocomplete
             v-model="filter.role_id"
             :items="roles"
             item-title="display_name"
@@ -386,21 +353,6 @@ const onUpdatePermission = async (data, callback) => {
             clear-icon="tabler-x"
           >
             <template #label>{{ t("Role") }}</template>
-          </AppAutocomplete>
-        </VCol>
-        <VCol cols="12" sm="4" md="3" lg="2">
-          <AppAutocomplete
-            v-model="filter.under_user_id"
-            :items="users"
-            :item-title="(u) => u.name_kh"
-            item-value="id"
-            prepend-inner-icon="tabler-hierarchy"
-            clearable
-            hide-details
-            autocomplete="off"
-            clear-icon="tabler-x"
-          >
-            <template #label>{{ t("Under User") }}</template>
           </AppAutocomplete>
         </VCol>
         <VCol cols="12" sm="4" md="3" lg="2">

@@ -18,31 +18,19 @@ class PermissionController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
-    public function show(Request $request)
-    {
-    }
+    public function show(Request $request) {}
 
-    public function list(Request $request)
-    {
-    }
+    public function list(Request $request) {}
 
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
-    public function update(Request $request)
-    {
-    }
+    public function update(Request $request) {}
 
-    public function delete(Request $request)
-    {
-    }
+    public function delete(Request $request) {}
 
-    public function disable(Request $request)
-    {
-    }
-
+    public function disable(Request $request) {}
 }

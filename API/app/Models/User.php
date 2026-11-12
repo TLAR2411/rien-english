@@ -4,16 +4,19 @@ namespace App\Models;
 
 use App\Models\Address\Village;
 use App\Models\Auth\PermissionUser;
-use App\Models\Auth\Position;
 use App\Models\Auth\Role;
 use App\Models\Auth\UserBranch;
 use App\Models\Core\Branch;
+use App\Models\Learning\Enrollment;
+use App\Models\Learning\LessonProgress;
+use App\Models\Learning\QuizAttempt;
+use App\Models\Learning\WritingSubmission;
+use App\Notifications\Auth\ResetPasswordNotification;
 use App\Traits\TracksUserActions;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
 use Laravel\Passport\HasApiTokens;
@@ -24,8 +27,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class User extends Authenticatable implements LaratrustUser
 {
     use \App\Models\Concerns\ScopesBranch;
-
-    use HasFactory, Notifiable, HasApiTokens, TracksUserActions, LogsActivity;
+    use HasApiTokens, HasFactory, LogsActivity, Notifiable, TracksUserActions;
     use HasRolesAndPermissions {
         hasPermission as protected laratrustHasPermission;
     }
@@ -59,11 +61,9 @@ class User extends Authenticatable implements LaratrustUser
         'username',
         'is_super',
         'is_active',
-        'under_user_id',
         'manage_branch',
         'branch_id',
         'role_id',
-        'position_id',
         'gender',
         'contact',
         'national_id_number',
@@ -72,10 +72,11 @@ class User extends Authenticatable implements LaratrustUser
         'village_code',
         'dob',
         'default_part',
+        'level_id',
         'image_path',
         'parent_user_id',
         'type',
-        'last_login'
+        'last_login',
     ];
 
     /**
@@ -91,8 +92,9 @@ class User extends Authenticatable implements LaratrustUser
         'updated_at',
         'deleted_by',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -105,13 +107,20 @@ class User extends Authenticatable implements LaratrustUser
     /**
      * Automatically hash the password when it is set.
      *
-     * @param string $value
-     * @return void
+     * @param  string  $value
      */
     // public function setPasswordAttribute($value)
     // {
     //     $this->attributes['password'] = bcrypt($value);
     // }
+
+    /**
+     * "Forgot password" email with a link to the website's reset page.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
     protected static $recordEvents = ['created', 'updated', 'deleted'];
 
@@ -148,9 +157,9 @@ class User extends Authenticatable implements LaratrustUser
     #[Scope]
     public function filter($query, array $filters)
     {
-        $query->when(!empty($filters['search']), function ($query) use ($filters) {
+        $query->when(! empty($filters['search']), function ($query) use ($filters) {
             return $query->where(function ($q) use ($filters) {
-                $searchTerm = '%' . trim($filters['search']) . '%';
+                $searchTerm = '%'.trim($filters['search']).'%';
                 // Phone numbers are typed with or without spaces
                 $digits = preg_replace('/\D/', '', $filters['search']);
 
@@ -174,17 +183,15 @@ class User extends Authenticatable implements LaratrustUser
             $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
         });
 
-        $query->when(!empty($filters['position_id']), fn($q) => $q->where('position_id', $filters['position_id']));
-        $query->when(!empty($filters['role_id']), fn($q) => $q->where('role_id', $filters['role_id']));
-        $query->when(!empty($filters['gender']), fn($q) => $q->where('gender', $filters['gender']));
-        $query->when(!empty($filters['under_user_id']), fn($q) => $q->where('under_user_id', $filters['under_user_id']));
+        $query->when(! empty($filters['role_id']), fn ($q) => $q->where('role_id', $filters['role_id']));
+        $query->when(! empty($filters['gender']), fn ($q) => $q->where('gender', $filters['gender']));
 
         // Join date range
-        $query->when(!empty($filters['join_from']), fn($q) => $q->whereDate('join_date', '>=', $filters['join_from']));
-        $query->when(!empty($filters['join_to']), fn($q) => $q->whereDate('join_date', '<=', $filters['join_to']));
+        $query->when(! empty($filters['join_from']), fn ($q) => $q->whereDate('join_date', '>=', $filters['join_from']));
+        $query->when(! empty($filters['join_to']), fn ($q) => $q->whereDate('join_date', '<=', $filters['join_to']));
 
         // Last login: today | 7 | 30 (days) | inactive_30 (not in 30 days) | never
-        $query->when(!empty($filters['last_login']), function ($query) use ($filters) {
+        $query->when(! empty($filters['last_login']), function ($query) use ($filters) {
             match ((string) $filters['last_login']) {
                 'today' => $query->whereDate('last_login', today()),
                 '7', '30' => $query->where('last_login', '>=', now()->subDays((int) $filters['last_login'])),
@@ -210,24 +217,9 @@ class User extends Authenticatable implements LaratrustUser
         return $this->belongsTo(Role::class);
     }
 
-    public function position()
-    {
-        return $this->belongsTo(Position::class);
-    }
-
     public function village()
     {
         return $this->belongsTo(Village::class);
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(\App\Models\Hr\Employee::class, 'employee_id');
-    }
-
-    public function underUser()
-    {
-        return $this->belongsTo(User::class, 'under_user_id', 'id');
     }
 
     public function userPermission()
@@ -263,4 +255,31 @@ class User extends Authenticatable implements LaratrustUser
             ->orderByDesc('created_at');
     }
 
+    // ---- Learning ----
+
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    /** The level a student chose (their lessons follow it). */
+    public function level()
+    {
+        return $this->belongsTo(\App\Models\Learning\Level::class);
+    }
+
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    public function writingSubmissions()
+    {
+        return $this->hasMany(WritingSubmission::class);
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
 }

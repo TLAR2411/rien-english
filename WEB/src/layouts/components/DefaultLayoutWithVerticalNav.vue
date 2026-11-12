@@ -4,6 +4,7 @@ import { useLayoutConfigStore } from "@layouts/stores/config";
 // Components
 import Footer from "@/layouts/components/Footer.vue";
 import NavbarBranches from "./NavbarBranches.vue";
+import NavbarStudentLevel from "./NavbarStudentLevel.vue";
 import NavBarI18n from "@core/components/I18n.vue";
 import { themeConfig } from "@themeConfig";
 
@@ -11,7 +12,12 @@ import { themeConfig } from "@themeConfig";
 import { VerticalNavLayout } from "@layouts";
 import { useRoute } from "vue-router";
 import NavbarClearAppDataButton from "./NavbarClearAppDataButton.vue";
+import { usePartStore } from "@/stores/partStore";
+import { SYSTEM_PART } from "@/composables/useSystemParts";
 const currentNavItems = useSystemPartNavItems();
+
+// Students have one branch: they get their level menu instead of the branch select
+const isStudentPart = computed(() => usePartStore().system_part === SYSTEM_PART.STUDENT);
 const configStore = useLayoutConfigStore();
 
 const isMobileNav = ref(window.innerWidth < 1280);
@@ -66,7 +72,8 @@ onUnmounted(() => {
         <VSpacer />
 
         <!-- Branch select shrinks first; the icons keep their size -->
-        <NavbarBranches class="me-2" />
+        <NavbarStudentLevel v-if="isStudentPart" class="me-2" />
+        <NavbarBranches v-else class="me-2" />
         <div class="navbar-actions">
           <NavBarI18n
             v-if="

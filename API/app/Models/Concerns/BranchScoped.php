@@ -20,7 +20,7 @@ trait BranchScoped
         static::addGlobalScope('branch', function (Builder $query) {
             $user = Auth::user();
 
-            if (!$user && app()->runningInConsole()) {
+            if (! $user && app()->runningInConsole()) {
                 return;
             }
 
@@ -33,6 +33,6 @@ trait BranchScoped
 
     protected function branchColumn(): string
     {
-        return $this->getTable() . '.branch_id';
+        return $this->getTable().'.branch_id';
     }
 }

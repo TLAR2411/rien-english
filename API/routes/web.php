@@ -5,13 +5,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json([
         'status' => true,
-        'message' => 'Devfin Tech. API', // Replace with your app name
+        'message' => config('app.name').' API',
         'version' => '1.0.0',
         'environment' => app()->environment(), // Optional: helpful for debugging dev vs prod
         'maintenance_mode' => app()->isDownForMaintenance(),
     ]);
 });
-
 
 Route::get('/img', [\App\Http\Controllers\ImageController::class, 'resize']);
 

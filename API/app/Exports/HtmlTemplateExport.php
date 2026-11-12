@@ -1,4 +1,5 @@
 <?php
+
 // app/Exports/HtmlTemplateExport.php
 
 namespace App\Exports;
@@ -9,6 +10,7 @@ use Maatwebsite\Excel\Concerns\FromView;
 class HtmlTemplateExport implements FromView
 {
     protected $html;
+
     protected $title;
 
     public function __construct($html, $title = 'Report')
@@ -21,7 +23,7 @@ class HtmlTemplateExport implements FromView
     {
         return view('exports.template', [
             'html' => $this->html,
-            'title' => $this->title
+            'title' => $this->title,
         ]);
     }
 }

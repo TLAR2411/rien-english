@@ -151,7 +151,7 @@ const icon = ref(null);
 const heading = ref(null);
 // Optional big value shown under the message (e.g. the amount being saved)
 const highlight = ref(null);
-// Small caption above it (e.g. "Loan Amount")
+// Small caption above it (e.g. "Total")
 const highlightLabel = ref(null);
 // Optional "from → to" block for a movement of money:
 // { from: { label, code, name }, to: { label, code, name }, amount }

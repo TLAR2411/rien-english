@@ -5,10 +5,7 @@ namespace App\Services;
 class TelegramService
 {
     /**
-     * Fetches and calculates detailed information for a given loan.
-     *
-     * @param int $loanId
-     * @return array
+     * Send a message to each Telegram group. Returns false if any send failed.
      */
     public function sendMessage($message, $groupIds = null, $botToken = null, $parseMode = 'Markdown')
     {
@@ -34,7 +31,7 @@ class TelegramService
             $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
             if ($response === false || $http_status !== 200) {
-                error_log("Failed to send message to group {$group}. HTTP {$http_status}, cURL: " . curl_error($ch) . ", body: " . (string)$response);
+                error_log("Failed to send message to group {$group}. HTTP {$http_status}, cURL: ".curl_error($ch).', body: '.(string) $response);
                 $sent_all_successfully = false;
             }
 

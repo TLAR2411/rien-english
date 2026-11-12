@@ -18,12 +18,12 @@ trait CompanyScoped
         static::addGlobalScope('company', function (Builder $query) {
             $user = Auth::user();
 
-            if (!$user && app()->runningInConsole()) {
+            if (! $user && app()->runningInConsole()) {
                 return;
             }
 
             $query->where(
-                $query->getModel()->getTable() . '.company_id',
+                $query->getModel()->getTable().'.company_id',
                 app(BranchContext::class)->companyId($user) ?? 0
             );
         });

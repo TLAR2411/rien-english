@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
 import { api } from "@/utils/api";
+import hasPermission from "@/utils/hasPermission";
+import { PERMISSION_BY_PART, SYSTEM_PART } from "@/composables/useSystemParts";
+
+const ADMIN_PART_PERMISSION = PERMISSION_BY_PART[SYSTEM_PART.ADMIN];
 
 export const useAppStore = defineStore("app", {
   state: () => ({
@@ -52,7 +56,9 @@ export const useAppStore = defineStore("app", {
       }
     },
     // Get All App Store
+    // Address lists are for the admin system only (students get 403)
     async getAllAppStore(forceUpdate = false) {
+      if (!hasPermission(ADMIN_PART_PERMISSION)) return;
       if (this.isHaveData === false || forceUpdate) {
         await this.getAppStore();
         this.isHaveData = true;

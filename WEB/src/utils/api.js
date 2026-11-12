@@ -210,8 +210,8 @@ api.interceptors.response.use(
 
     const { status, message } = response.data || {};
 
-    // Handle success messages
-    if (status === true && message) {
+    // Handle success messages ({ silent: true }: the page shows its own)
+    if (status === true && message && !response.config?.silent) {
       showDialog({
         title: message,
         icon: 'success',
@@ -285,8 +285,9 @@ api.interceptors.response.use(
       authStore.unAuthenticated();
     }
 
-    // Show error dialog (skip for cancelled requests)
-    if (!axios.isCancel(error) && statusCode != 401) {
+    // Show error dialog (skip for cancelled requests, and for requests sent
+    // with { silent: true } — the page shows its own message)
+    if (!axios.isCancel(error) && statusCode != 401 && !error.config?.silent) {
       const { showDialog } = useDialog();
       showDialog({
         title: errorMessage,

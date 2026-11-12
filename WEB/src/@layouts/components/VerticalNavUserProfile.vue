@@ -165,9 +165,6 @@ const allUsers = computed(() => {
             <span class="text-xs text-truncate user-name-en">
               {{ auth()?.user?.name_en ?? null }}
             </span>
-            <span class="nav-credit">
-              Powered by <span class="nav-credit-brand">Devfin.</span>
-            </span>
           </div>
         </div>
       </Transition>
@@ -268,7 +265,7 @@ const allUsers = computed(() => {
               {{ item?.name_kh }}&nbsp;
             </VListItemTitle>
             <VListItemSubtitle style="color: white">
-              {{ item?.position?.name_kh }}
+              {{ item?.role?.display_name }}
             </VListItemSubtitle>
           </VListItem>
         </template>
@@ -366,20 +363,6 @@ const allUsers = computed(() => {
 
 /* sits to the right of the English name, one step quieter than it so the
    user's own details stay the focus of the row */
-.nav-credit {
-  flex-shrink: 0;
-  margin-inline-start: 0.5rem;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  opacity: 0.5;
-}
-
-.nav-credit-brand {
-  font-weight: 600;
-}
-
 /* build metadata, not a status badge: shrunk below the name's line height so
    it stops driving the row height. Vuetify's x-small chip is still 20px tall */
 /* .v-chip is needed to outrank Vuetify's own `.v-chip.v-chip--size-x-small`,

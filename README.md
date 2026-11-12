@@ -92,6 +92,20 @@ npm run dev
 
 App runs at `http://localhost:5173` by default.
 
+## Where to change things
+
+| I want to change… | File |
+|---|---|
+| Who can open `/admin`, which role gets which permissions | `API/config/roles.php` (then run `php artisan db:seed --class="Database\Seeders\Auth\RoleSeeder"`) |
+| Levels (A1–C1), quiz pass score, upload size limits, rows per page | `API/config/learning.php` |
+| Which HTML tags are allowed in lesson text | `API/config/purify.php` → `lesson` |
+| Lesson skills, question types, draft/published (server) | `API/app/Enums/*.php` |
+| Same lists on the website (labels, icons) | `WEB/src/constants/learning.js` |
+| The grammar lesson template and its guide | `WEB/src/constants/lessonTemplates.js` |
+| Sample lessons | `API/database/seeders/Learning/sample-lessons/` (one file per lesson) |
+| Admin sidebar | `WEB/src/navigation/vertical/admin/index.js` |
+| How lesson text looks | `WEB/src/assets/styles/lesson-content.scss` |
+
 ## Build for production
 
 ```bash

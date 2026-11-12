@@ -27,7 +27,6 @@ import {
   getButtonColor,
   getButtonTitle,
   getButtonIcon,
-  getButtonDisable,
   checkPermission,
 } from "@/composables/useRowActions";
 import AppSelect from "@/@core/components/app-form-elements/AppSelect.vue";
@@ -1096,7 +1095,6 @@ defineExpose({ reload, exportToExcel });
                                 (!button.condition || button.condition(item))
                               "
                               :color="getButtonColor(button, item)"
-                              :disabled="getButtonDisable(button, item)"
                               variant="tonal"
                               size="small"
                               class="px-3"
@@ -1141,9 +1139,6 @@ defineExpose({ reload, exportToExcel });
                                   >
                                     <template #prepend
                                       ><VIcon
-                                        :disabled="
-                                          getButtonDisable(button, item)
-                                        "
                                         :icon="getButtonIcon(button, item)"
                                         size="20"
                                         class="mr-2"
@@ -1265,7 +1260,6 @@ defineExpose({ reload, exportToExcel });
                       size="small"
                       variant="text"
                       :color="getButtonColor(button, item)"
-                      :disabled="getButtonDisable(button, item)"
                       :aria-label="$t(getButtonTitle(button, item))"
                       v-if="
                         button.btn &&
@@ -1323,7 +1317,6 @@ defineExpose({ reload, exportToExcel });
                             "
                             ><template #prepend
                               ><VIcon
-                                :disabled="getButtonDisable(button, item)"
                                 :icon="getButtonIcon(button, item)"
                                 style="margin-right: 1px"
                                 size="20" /></template

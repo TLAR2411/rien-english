@@ -41,9 +41,10 @@
     37 => 'Opcodes\\LogViewer\\LogViewerServiceProvider',
     38 => 'Laratrust\\LaratrustServiceProvider',
     39 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    40 => 'Torann\\GeoIP\\GeoIPServiceProvider',
-    41 => 'App\\Providers\\AppServiceProvider',
-    42 => 'App\\Providers\\AuthServiceProvider',
+    40 => 'Stevebauman\\Purify\\PurifyServiceProvider',
+    41 => 'Torann\\GeoIP\\GeoIPServiceProvider',
+    42 => 'App\\Providers\\AppServiceProvider',
+    43 => 'App\\Providers\\AuthServiceProvider',
   ),
   'eager' => 
   array (
@@ -70,9 +71,10 @@
     20 => 'Opcodes\\LogViewer\\LogViewerServiceProvider',
     21 => 'Laratrust\\LaratrustServiceProvider',
     22 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    23 => 'Torann\\GeoIP\\GeoIPServiceProvider',
-    24 => 'App\\Providers\\AppServiceProvider',
-    25 => 'App\\Providers\\AuthServiceProvider',
+    23 => 'Stevebauman\\Purify\\PurifyServiceProvider',
+    24 => 'Torann\\GeoIP\\GeoIPServiceProvider',
+    25 => 'App\\Providers\\AppServiceProvider',
+    26 => 'App\\Providers\\AuthServiceProvider',
   ),
   'deferred' => 
   array (

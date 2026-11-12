@@ -3,14 +3,16 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Encryption\Encrypter; // Import the class
+use Illuminate\Encryption\Encrypter;
+use Illuminate\Http\Request; // Import the class
+
 // Do NOT import Facades\Crypt
 
 class EncryptResponse
 {
     /**
      * Our custom encrypter instance.
+     *
      * @var \Illuminate\Encryption\Encrypter
      */
     protected $encrypter;

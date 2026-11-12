@@ -21,6 +21,7 @@ class RoleController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -35,13 +36,14 @@ class RoleController extends Controller
                 ->get();
             $result['data'] = [
                 'role_data' => $roles,
-                'role_permission' => $rolePermission
+                'role_permission' => $rolePermission,
             ];
             // $result['data'] = $roles;
         } catch (\Throwable $th) {
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -56,6 +58,7 @@ class RoleController extends Controller
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -68,12 +71,13 @@ class RoleController extends Controller
             $role = Role::create($roleData);
             $role->syncPermissions($request->permissions);
             DB::commit();
-            $result['message'] = "Successful Created Role!";
+            $result['message'] = 'Successful Created Role!';
         } catch (\Throwable $th) {
             DB::rollBack();
             $result['status'] = 500;
             $result['message'] = $th->getMessage();
         }
+
         return response()->json($result);
     }
 
@@ -110,14 +114,15 @@ class RoleController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Successfully Updated Role!"
+                'message' => 'Successfully Updated Role!',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage(),
-                'data' => $permissions
+                'data' => $permissions,
             ]);
         }
     }

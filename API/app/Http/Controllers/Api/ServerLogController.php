@@ -9,20 +9,26 @@ use Illuminate\Support\Facades\File;
 class ServerLogController extends Controller
 {
     private $isWindows;
+
     private $isMac;
+
     private $herdLogPathWindows;
 
     // Linux/Ubuntu paths
     private $nginxLogPathLinux = '/var/log/nginx/access.log';
+
     private $apacheLogPathLinux = '/var/log/apache2/access.log';
 
     // Windows paths
     private $nginxLogPathWindows = 'C:/nginx/logs/access.log';
+
     private $apacheLogPathWindows = 'C:/Apache24/logs/access.log';
 
     // macOS paths (including Herd)
     private $herdLogPathMac;
+
     private $nginxLogPathMac = '/usr/local/var/log/nginx/access.log';
+
     private $apacheLogPathMac = '/usr/local/var/log/httpd/access_log';
 
     public function __construct()
@@ -34,10 +40,10 @@ class ServerLogController extends Controller
         // Laravel Herd log path (macOS and Windows)
         if ($this->isMac) {
             $homeDir = getenv('HOME');
-            $this->herdLogPathMac = $homeDir . '/Library/Application Support/Herd/logs/nginx/access.log';
+            $this->herdLogPathMac = $homeDir.'/Library/Application Support/Herd/logs/nginx/access.log';
         } elseif ($this->isWindows) {
             $homeDir = getenv('USERPROFILE');
-            $this->herdLogPathWindows = $homeDir . '\\AppData\\Local\\Herd\\logs\\nginx\\access.log';
+            $this->herdLogPathWindows = $homeDir.'\\AppData\\Local\\Herd\\logs\\nginx\\access.log';
         }
     }
 
@@ -51,10 +57,10 @@ class ServerLogController extends Controller
 
         // Common Herd paths on Windows (prioritize the actual location)
         $herdPaths = [
-            $homeDir . '\\.config\\herd\\config\\nginx\\logs\\access.log', // Actual Herd location
-            $homeDir . '\\AppData\\Local\\Herd\\logs\\nginx\\access.log',
-            $homeDir . '\\AppData\\Roaming\\Herd\\logs\\nginx\\access.log',
-            $homeDir . '\\.config\\herd\\logs\\nginx\\access.log',
+            $homeDir.'\\.config\\herd\\config\\nginx\\logs\\access.log', // Actual Herd location
+            $homeDir.'\\AppData\\Local\\Herd\\logs\\nginx\\access.log',
+            $homeDir.'\\AppData\\Roaming\\Herd\\logs\\nginx\\access.log',
+            $homeDir.'\\.config\\herd\\logs\\nginx\\access.log',
         ];
 
         return $herdPaths;
@@ -72,9 +78,9 @@ class ServerLogController extends Controller
 
             // Search in common directories
             $searchDirs = [
-                $homeDir . '\\AppData\\Local\\Herd',
-                $homeDir . '\\AppData\\Roaming\\Herd',
-                $homeDir . '\\.config\\herd',
+                $homeDir.'\\AppData\\Local\\Herd',
+                $homeDir.'\\AppData\\Roaming\\Herd',
+                $homeDir.'\\.config\\herd',
                 'C:\\herd',
                 'C:\\nginx',
                 'C:\\laragon',
@@ -98,16 +104,22 @@ class ServerLogController extends Controller
     private function findAccessLogs(string $directory, array &$foundLogs, int $depth = 0): void
     {
         // Limit recursion depth to avoid performance issues
-        if ($depth > 5) return;
+        if ($depth > 5) {
+            return;
+        }
 
         try {
             $items = @scandir($directory);
-            if ($items === false) return;
+            if ($items === false) {
+                return;
+            }
 
             foreach ($items as $item) {
-                if ($item === '.' || $item === '..') continue;
+                if ($item === '.' || $item === '..') {
+                    continue;
+                }
 
-                $path = $directory . DIRECTORY_SEPARATOR . $item;
+                $path = $directory.DIRECTORY_SEPARATOR.$item;
 
                 if (is_file($path) && $item === 'access.log') {
                     $foundLogs[] = $path;
@@ -127,7 +139,7 @@ class ServerLogController extends Controller
     {
         $logPath = $this->getReadableLogPath();
 
-        if (!$logPath) {
+        if (! $logPath) {
             return response()->json([
                 'error' => 'No readable Nginx, Apache, or Herd log file found.',
                 'os' => $this->getOSName(),
@@ -155,7 +167,7 @@ class ServerLogController extends Controller
                 'server_type' => $this->getServerType($logPath),
                 'log_path' => $logPath,
                 'log_entries' => [],
-                'message' => 'Log file is empty. Make some requests to your application to generate logs.'
+                'message' => 'Log file is empty. Make some requests to your application to generate logs.',
             ]);
         }
 
@@ -176,7 +188,7 @@ class ServerLogController extends Controller
     {
         $logPath = $this->getReadableLogPath();
 
-        if (!$logPath) {
+        if (! $logPath) {
             return response()->json([
                 'error' => 'No readable Nginx, Apache, or Herd log file found.',
                 'os' => $this->getOSName(),
@@ -204,7 +216,7 @@ class ServerLogController extends Controller
                 'server_type' => $this->getServerType($logPath),
                 'log_path' => $logPath,
                 'log_entries' => [],
-                'message' => 'Log file is empty. Make some requests to your application to generate logs.'
+                'message' => 'Log file is empty. Make some requests to your application to generate logs.',
             ]);
         }
 
@@ -244,14 +256,16 @@ class ServerLogController extends Controller
     {
         try {
             // Check if file is empty first
-            if (!File::exists($filePath)) {
-                \Log::error('Log file does not exist: ' . $filePath);
+            if (! File::exists($filePath)) {
+                \Log::error('Log file does not exist: '.$filePath);
+
                 return null;
             }
 
             $fileSize = File::size($filePath);
             if ($fileSize === 0) {
-                \Log::info('Log file is empty: ' . $filePath);
+                \Log::info('Log file is empty: '.$filePath);
+
                 return ''; // Return empty string for empty file
             }
 
@@ -276,13 +290,15 @@ class ServerLogController extends Controller
             $output = shell_exec($command);
 
             if ($output === null) {
-                \Log::error('shell_exec returned null for command: ' . $command);
+                \Log::error('shell_exec returned null for command: '.$command);
+
                 return null;
             }
 
             return $output;
         } catch (\Exception $e) {
-            \Log::error('Failed to read log file: ' . $e->getMessage());
+            \Log::error('Failed to read log file: '.$e->getMessage());
+
             return null;
         }
     }
@@ -376,8 +392,13 @@ class ServerLogController extends Controller
      */
     private function getOSName(): string
     {
-        if ($this->isWindows) return 'Windows';
-        if ($this->isMac) return 'macOS';
+        if ($this->isWindows) {
+            return 'Windows';
+        }
+        if ($this->isMac) {
+            return 'macOS';
+        }
+
         return 'Linux';
     }
 
@@ -399,6 +420,7 @@ class ServerLogController extends Controller
         if (stripos($path, 'laragon') !== false) {
             return 'Laragon (Nginx)';
         }
+
         return 'Unknown';
     }
 
@@ -409,7 +431,7 @@ class ServerLogController extends Controller
     {
         $logPath = $this->getReadableLogPath();
 
-        if (!$logPath) {
+        if (! $logPath) {
             return response()->json([
                 'error' => 'No readable log file found.',
             ], 404);
@@ -446,13 +468,15 @@ class ServerLogController extends Controller
                 $url = $matches[6];
                 $statusCode = (int) $matches[8];
 
-                if (!$timestamp) continue;
+                if (! $timestamp) {
+                    continue;
+                }
 
                 // Group by time period
                 $timeKey = $this->getTimeKey($timestamp, $groupBy);
                 $displayTime = $this->getDisplayTime($timestamp, $groupBy);
 
-                if (!isset($trafficByTime[$timeKey])) {
+                if (! isset($trafficByTime[$timeKey])) {
                     $trafficByTime[$timeKey] = [
                         'time' => $displayTime,
                         'timestamp' => $timeKey,
@@ -498,13 +522,13 @@ class ServerLogController extends Controller
             'group_by' => $groupBy,
             'analyzed_lines' => count($logLines),
             'traffic_by_time' => array_values($trafficByTime),
-            'status_code_distribution' => array_map(function($code, $count) {
+            'status_code_distribution' => array_map(function ($code, $count) {
                 return ['status_code' => $code, 'count' => $count];
             }, array_keys($statusCodes), $statusCodes),
-            'top_urls' => array_slice(array_map(function($url, $count) {
+            'top_urls' => array_slice(array_map(function ($url, $count) {
                 return ['url' => $url, 'count' => $count];
             }, array_keys($urls), $urls), 0, 20),
-            'http_methods' => array_map(function($method, $count) {
+            'http_methods' => array_map(function ($method, $count) {
                 return ['method' => $method, 'count' => $count];
             }, array_keys($methods), $methods),
             'summary' => [
@@ -513,7 +537,7 @@ class ServerLogController extends Controller
                 'success_requests' => array_sum(array_column($trafficByTime, 'success')),
                 'client_errors' => array_sum(array_column($trafficByTime, 'client_error')),
                 'server_errors' => array_sum(array_column($trafficByTime, 'server_error')),
-            ]
+            ],
         ]);
     }
 
@@ -530,7 +554,7 @@ class ServerLogController extends Controller
             case 'day':
                 return $timestamp->format('Y-m-d');
             case 'week':
-                return $timestamp->format('Y') . '-W' . $timestamp->format('W');
+                return $timestamp->format('Y').'-W'.$timestamp->format('W');
             case 'month':
                 return $timestamp->format('Y-m');
             default:
@@ -551,7 +575,7 @@ class ServerLogController extends Controller
             case 'day':
                 return $timestamp->format('M d'); // e.g., "Oct 13"
             case 'week':
-                return 'Week ' . $timestamp->format('W, Y'); // e.g., "Week 41, 2024"
+                return 'Week '.$timestamp->format('W, Y'); // e.g., "Week 41, 2024"
             case 'month':
                 return $timestamp->format('M Y'); // e.g., "Oct 2024"
             default:
@@ -574,20 +598,20 @@ class ServerLogController extends Controller
                     $results[$name][] = [
                         'path' => $herdPath,
                         'exists' => File::exists($herdPath),
-                        'readable' => File::exists($herdPath) && File::isReadable($herdPath)
+                        'readable' => File::exists($herdPath) && File::isReadable($herdPath),
                     ];
                 }
             } elseif ($path === 'Not configured') {
                 $results[$name] = [
                     'path' => $path,
                     'exists' => false,
-                    'readable' => false
+                    'readable' => false,
                 ];
             } else {
                 $results[$name] = [
                     'path' => $path,
                     'exists' => File::exists($path),
-                    'readable' => File::exists($path) && File::isReadable($path)
+                    'readable' => File::exists($path) && File::isReadable($path),
                 ];
             }
         }
@@ -607,9 +631,9 @@ class ServerLogController extends Controller
                     'path' => $log,
                     'exists' => File::exists($log),
                     'readable' => File::exists($log) && File::isReadable($log),
-                    'size' => File::exists($log) ? File::size($log) : 0
+                    'size' => File::exists($log) ? File::size($log) : 0,
                 ];
-            }, $scannedLogs)
+            }, $scannedLogs),
         ]);
     }
 }

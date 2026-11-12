@@ -32,16 +32,6 @@ const sections = [
         value: user.role?.display_name,
         icon: "tabler-shield-check",
       },
-      {
-        title: "Position Name",
-        value: user.position?.name_kh,
-        icon: "tabler-id-badge-2",
-      },
-      {
-        title: "Group Name",
-        value: user.under_user?.name_kh,
-        icon: "tabler-users-group",
-      },
     ],
   },
 ];
@@ -188,10 +178,10 @@ watch(
             <span class="stats__value">{{ lastLogin }}</span>
           </div>
           <div class="stats__item">
-            <VIcon icon="tabler-id-badge-2" size="18" class="stats__icon" />
-            <span class="stats__label">{{ $t("Position Name") }}</span>
+            <VIcon icon="tabler-shield-check" size="18" class="stats__icon" />
+            <span class="stats__label">{{ $t("Role Name") }}</span>
             <span class="stats__value">{{
-              user.position?.name_kh || "N/A"
+              user.role?.display_name || "N/A"
             }}</span>
           </div>
         </div>

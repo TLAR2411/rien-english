@@ -7,19 +7,9 @@ import { requiredValidator } from "@/@core/utils/validators";
 import AppCard from "@/components/AppCard.vue";
 import { api } from "@/utils/api";
 import { app } from "@/utils/app";
-import {
-  getBranches,
-  getPositions,
-  getRoles,
-  // getUnderUsers,
-  getUsers,
-} from "@/services/dataService";
-import { computed, onMounted, watch } from "vue";
-import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import formatContact from "@/utils/formater/formatContact";
+import { getBranches, getRoles } from "@/services/dataService";
+import { onMounted, ref, watch } from "vue";
 import { auth } from "@/utils/auth";
-import { useSettingStore } from "@/stores/settingStore";
 
 definePage({
   meta: {
@@ -54,7 +44,6 @@ const gender = [
 
 // System the user lands on after login (users.default_part)
 const defaultParts = [
-  { name: "HR System", value: "hr" },
   { name: "Admin System", value: "admin" },
 ];
 
@@ -71,23 +60,9 @@ const manageBranch = [
   { name: "លើកលែងសាខា", value: 4 },
 ];
 
-const route = useRoute();
-const router = useRouter();
-// Opened from a user request: the account is made for this employee
-const requestEmployee = ref(null);
-
-// The new user's branch: the employee's when made from a request, otherwise
-// the one picked in the navbar
-const settingStore = useSettingStore();
-const userBranchId = computed(
-  () => requestEmployee.value?.branch_id ?? settingStore.branch_id,
-);
-
 const isLoading = ref(false);
 const branches = ref([]);
 const roles = ref([]);
-const users = ref([]);
-const positions = ref([]);
 const provinces = ref([...app().provinces]);
 const districts = ref([]);
 const communes = ref([]);
@@ -98,11 +73,6 @@ const onSubmit = async () => {
     isLoading.value = true;
     const res = await api.post("users", formData.value);
     if (res.data.status) {
-      // From a user request: it is closed now, go back to the others
-      if (requestEmployee.value) {
-        router.push({ name: "admin-user-requests" });
-        return;
-      }
       restFormData();
     }
   } catch (error) {
@@ -113,79 +83,14 @@ const onSubmit = async () => {
 };
 
 onMounted(async () => {
-  const [dataBranches, dataRoles, dataPositions] =
-    await Promise.all([
-      getBranches(),
-      getRoles(),
-      getPositions(),
-    ]);
+  const [dataBranches, dataRoles] = await Promise.all([
+    getBranches(),
+    getRoles(),
+  ]);
 
   roles.value = dataRoles;
-  positions.value = dataPositions;
   branches.value = dataBranches;
-  // users.value = dataUsers;
-
-  await fillFromEmployee();
 });
-
-// ?employee_id=…: start the form from the employee's details and send the
-// id along, so the new account is linked to the employee and the request closed
-const fillFromEmployee = async () => {
-  const employeeId = route.query.employee_id;
-  if (!employeeId) return;
-
-  try {
-    isLoading.value = true;
-    const res = await api.get("user-access-requests-employee", {
-      params: { employee_id: employeeId },
-    });
-    const employee = res.data?.data;
-    if (!res.data?.status || !employee) return;
-
-    requestEmployee.value = employee;
-    formData.value = {
-      ...formData.value,
-      employee_id: employee.id,
-      name_kh: employee.name_kh,
-      name_en: employee.name_en,
-      gender: employee.gender || "male",
-      dob: employee.dob,
-      contact: employee.contact,
-      national_id_number: employee.national_id_number,
-      national_id_issue_date: employee.national_id_issue_date,
-      join_date: employee.hired_date,
-      position_id: employee.position_id,
-    };
-  } catch (error) {
-    console.error("Failed to load the employee:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const getUnderUsers = async () => {
-  try {
-    const res = await api.get("users-all-under-users", {
-      params: {
-        choose_branch_id: userBranchId.value,
-      },
-    });
-
-    if (res.data.status) {
-      users.value = res.data.data;
-    }
-  } catch (error) {}
-};
-
-watch(
-  userBranchId,
-  (newVal) => {
-    if (newVal) {
-      getUnderUsers();
-    }
-  },
-  { immediate: true },
-);
 
 // Address Watch
 watch(
@@ -263,22 +168,10 @@ watch(
     title="Create User"
     title-icon="tabler-user-circle"
     is-submit
-    :is-check-branch="!requestEmployee"
+    is-check-branch
     :loading="isLoading"
     @on-submit="onSubmit"
   >
-    <!-- Made for an employee (from a user request) -->
-    <VAlert
-      v-if="requestEmployee"
-      type="info"
-      variant="tonal"
-      density="compact"
-      icon="tabler-user-plus"
-      class="mb-4"
-    >
-      {{ $t("Creating a user for employee") }}:
-      <b>{{ requestEmployee.name_kh }}</b> ({{ requestEmployee.code }})
-    </VAlert>
     <VRow>
       <!--------Personal Information---------->
       <AppLabel title="Personal Information" />
@@ -417,55 +310,6 @@ watch(
           label="Default System"
           autocomplete="off"
         />
-      </VCol>
-      <VCol cols="12" lg="3" md="4" sm="6">
-        <AppAutocomplete
-          v-model="formData.position_id"
-          label="Positions"
-          :items="positions"
-          :item-title="
-            (item) => {
-              return `${item.name_kh} (${item.abbr})`;
-            }
-          "
-          item-value="id"
-          autocomplete="off"
-        />
-      </VCol>
-      <VCol cols="12" lg="3" md="4" sm="6">
-        <AppAutocomplete
-          v-model="formData.under_user_id"
-          label="Under User"
-          :items="users"
-          :item-title="
-            (item) => {
-              return item.role_abbr
-                ? `${item.name_kh} (${item.role_abbr})`
-                : item.name_kh;
-            }
-          "
-          item-value="id"
-          autocomplete="off"
-          :disabled="!userBranchId"
-        >
-          <template #item="{ props, item }">
-            <VListItem
-              v-bind="props"
-              :title="`${item?.raw?.name_kh}  (${item?.raw?.role_abbr})`"
-              :subtitle="`${formatContact(item?.raw.contact)}`"
-            >
-              <template #prepend>
-                <AppAvatar
-                  :title="item?.raw?.name_kh"
-                  :image="item?.raw?.image_path"
-                  :size="40"
-                  :is-show-full-image="false"
-                />
-                &nbsp;&nbsp;
-              </template>
-            </VListItem>
-          </template>
-        </AppAutocomplete>
       </VCol>
       <VCol cols="12" lg="3" md="4" sm="6">
         <AppDateTimePicker

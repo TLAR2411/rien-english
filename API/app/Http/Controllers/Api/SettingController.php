@@ -57,10 +57,14 @@ class SettingController extends Controller
 
             foreach ($request->values as $key => $value) {
                 $setting = $settings->get($key);
-                if (!$setting) continue;
+                if (! $setting) {
+                    continue;
+                }
 
                 // Empty secret = keep the current one
-                if ($this->isSecret($key) && ($value === null || $value === '')) continue;
+                if ($this->isSecret($key) && ($value === null || $value === '')) {
+                    continue;
+                }
 
                 $setting->value = $this->normalize($setting, $value);
                 $setting->save();
@@ -70,7 +74,9 @@ class SettingController extends Controller
             DB::commit();
 
             // Values cached by the login alert / user screens
-            foreach (self::CACHE_KEYS as $cacheKey) Cache::forget($cacheKey);
+            foreach (self::CACHE_KEYS as $cacheKey) {
+                Cache::forget($cacheKey);
+            }
 
             activity('settings')
                 ->withProperties(['keys' => $changed]) // keys only, never values
@@ -84,13 +90,14 @@ class SettingController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $code = $th instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface ? $th->getStatusCode() : 500;
+
             return response()->json(['status' => false, 'message' => $th->getMessage()], $code);
         }
     }
 
     private function isSecret(string $key): bool
     {
-        return (bool)preg_match(self::SECRET_PATTERN, $key);
+        return (bool) preg_match(self::SECRET_PATTERN, $key);
     }
 
     /**
@@ -104,32 +111,55 @@ class SettingController extends Controller
 
         switch ($setting->type) {
             case 'int':
-                if (!is_numeric($value) || (int)$value != $value) abort(422, "{$label}: must be a whole number");
-                return (string)(int)$value;
+                if (! is_numeric($value) || (int) $value != $value) {
+                    abort(422, "{$label}: must be a whole number");
+                }
+
+                return (string) (int) $value;
             case 'decimal':
-                if (!is_numeric($value)) abort(422, "{$label}: must be a number");
-                return (string)$value;
+                if (! is_numeric($value)) {
+                    abort(422, "{$label}: must be a number");
+                }
+
+                return (string) $value;
             case 'bool':
                 return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
             case 'date':
-                if (!strtotime((string)$value)) abort(422, "{$label}: must be a date");
+                if (! strtotime((string) $value)) {
+                    abort(422, "{$label}: must be a date");
+                }
+
                 return date('Y-m-d', strtotime($value));
             case 'time':
-                if (!preg_match('/^\d{2}:\d{2}(:\d{2})?$/', (string)$value)) abort(422, "{$label}: must be a time (HH:MM)");
-                return (string)$value;
+                if (! preg_match('/^\d{2}:\d{2}(:\d{2})?$/', (string) $value)) {
+                    abort(422, "{$label}: must be a time (HH:MM)");
+                }
+
+                return (string) $value;
             case 'json':
                 $encoded = is_string($value) ? $value : json_encode($value);
                 json_decode($encoded);
-                if (json_last_error() !== JSON_ERROR_NONE) abort(422, "{$label}: must be valid JSON");
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    abort(422, "{$label}: must be valid JSON");
+                }
+
                 return $encoded;
             case 'enum':
-                $options = json_decode((string)$setting->enum_value, true) ?: [];
-                if (!in_array($value, $options, true)) abort(422, "{$label}: must be one of " . implode(', ', $options));
-                return (string)$value;
+                $options = json_decode((string) $setting->enum_value, true) ?: [];
+                if (! in_array($value, $options, true)) {
+                    abort(422, "{$label}: must be one of ".implode(', ', $options));
+                }
+
+                return (string) $value;
             default: // string
-                if ((string)$value === '') abort(422, "{$label}: is required");
-                if (mb_strlen((string)$value) > 2000) abort(422, "{$label}: is too long");
-                return (string)$value;
+                if ((string) $value === '') {
+                    abort(422, "{$label}: is required");
+                }
+                if (mb_strlen((string) $value) > 2000) {
+                    abort(422, "{$label}: is too long");
+                }
+
+                return (string) $value;
         }
     }
 }

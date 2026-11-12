@@ -3,14 +3,15 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Encryption\Encrypter;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Encryption\Encrypter;
+use Illuminate\Http\Request;
 
 class DecryptRequest
 {
     /**
      * Our custom encrypter instance.
+     *
      * @var \Illuminate\Encryption\Encrypter
      */
     protected $encrypter;
@@ -55,9 +56,9 @@ class DecryptRequest
             }
 
         } catch (DecryptException $e) {
-            return response()->json(['error' => 'Unauthorized: Invalid payload. ' . $e->getMessage()], 401);
+            return response()->json(['error' => 'Unauthorized: Invalid payload. '.$e->getMessage()], 401);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Decryption error: ' . $e->getMessage()], 400);
+            return response()->json(['error' => 'Decryption error: '.$e->getMessage()], 400);
         }
 
         return $next($request);

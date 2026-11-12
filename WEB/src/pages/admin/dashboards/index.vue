@@ -1,9 +1,9 @@
 <script setup>
-import AdminDashboard from "@/views/admin/dashboards/AdminDashboard.vue";
+import LearningDashboard from "@/views/admin/dashboards/LearningDashboard.vue";
 
 definePage({
   meta: {
-    title: "Dashboards",
+    title: "Dashboard",
     layout: "default",
     subject: "Auth",
     requiresAuth: true,
@@ -12,5 +12,5 @@ definePage({
 </script>
 
 <template>
-  <AdminDashboard />
+  <LearningDashboard />
 </template>

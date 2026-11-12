@@ -33,10 +33,6 @@ export default defineConfig(mode => {
             .toLowerCase()
         },
 
-        // beforeWriteFiles: root => {
-        //   root.insert('/loans/index.vue', '/src/pages/loans/index.vue')
-        //   root.insert('test.vue', '/src/pages/test.vue')
-        // },
       }),
       vue({
         template: {
@@ -56,16 +52,16 @@ export default defineConfig(mode => {
         selfDestroying: true,
         manifest: {
           name: env.VITE_APP_TITLE_NAME || 'Learning English',
-          short_name: env.VITE_APP_SHORT_NAME || 'Devfin',
+          short_name: env.VITE_APP_SHORT_NAME || 'Learning English',
           description: env.VITE_APP_TITLE_NAME || 'Learning English',
           start_url: '/',                  // important for scope
           scope: '/',                      // make SW control whole app
           display: 'standalone',
           background_color: '#ffffff',
-          theme_color: '#636363ff',
+          theme_color: env.VITE_PRIMARY_COLOR || '#2563EB',
           icons: [
-            { src: `/logo/${env.VITE_BASE_COMPANY}/logo-192.webp`, sizes: '192x192', type: 'image/webp' },
-            { src: `/logo/${env.VITE_BASE_COMPANY}/logo-512.webp`, sizes: '512x512', type: 'image/webp' },
+            { src: `/logo/${env.VITE_BASE_COMPANY}/logo-192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `/logo/${env.VITE_BASE_COMPANY}/logo-512.png`, sizes: '512x512', type: 'image/png' },
           ],
         },
         workbox: {

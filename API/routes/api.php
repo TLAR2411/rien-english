@@ -1,38 +1,64 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\CacheController;
 use App\Http\Controllers\Api\LogViewerController;
 use App\Http\Controllers\ExportController;
 use App\Models\Core\Company;
+use App\Support\AccessGroup;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => '/web'], function () {
 
-    Route::post('login', [AuthController::class, "login"]);
+    Route::post('login', [AuthController::class, 'login']);
 
-    Route::post("refresh", [AuthController::class, "refresh"]);
+    // Student sign-up (public). Few tries per minute per IP: stops spam bots.
+    Route::post('register', [AuthController::class, 'register'])
+        ->middleware('throttle:'.config('roles.signup_per_minute').',1');
+
+    // Forgot password (public): email a reset link, then set a new password
+    Route::middleware('throttle:'.config('roles.password_reset_per_minute').',1')->group(function () {
+        Route::post('forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('reset-password', [PasswordResetController::class, 'reset']);
+    });
+
+    Route::post('refresh', [AuthController::class, 'refresh']);
 
     Route::get('/img', [\App\Http\Controllers\ImageController::class, 'resize']);
 
     Route::get('app-name', fn () => response()->json(['status' => true, 'data' => Company::orderBy('id')->value('name_kh')]));
 
+    // Public website, no login: /api/web/site/...
+    Route::prefix('site')->name('site.')->middleware('throttle:120,1')->group(base_path('routes/modules/learning-site.route.php'));
+
+    // Student features: /api/web/student/... (config/roles.php → groups.student_area)
+    Route::prefix('student')->name('student.')
+        ->middleware(['auth:api', AccessGroup::middleware(AccessGroup::STUDENT_AREA)])
+        ->group(base_path('routes/modules/learning-student.route.php'));
+
     // Session routes skip branch.access: right after a user switch the app still
     // sends the previous user's branch.
     Route::group(['middleware' => ['auth:api']], function () {
-        Route::get('bootstrap', [AuthController::class, "bootstrap"]);
-        Route::post("change-user", [AuthController::class, "changeUser"]);
-        Route::post("logout", [AuthController::class, "logout"]);
+        Route::get('bootstrap', [AuthController::class, 'bootstrap']);
+        Route::post('change-user', [AuthController::class, 'changeUser']);
+        Route::post('logout', [AuthController::class, 'logout']);
     });
 
-    Route::group(['middleware' => ['auth:api', 'branch.access']], function () {
-        Route::post("log-viewer-list", [LogViewerController::class, "list"])->middleware('permission:view-activity-log');
+    // Admin area: admin + teacher (config/roles.php → groups.admin_area)
+    Route::middleware(['auth:api', 'branch.access', AccessGroup::middleware(AccessGroup::ADMIN_AREA)])->group(function () {
+        Route::post('export-excel', [ExportController::class, 'exportExcel'])->middleware('permission:view-settings');
+        Route::group([], base_path('routes/modules/address.route.php'));
 
-        Route::post("export-excel", [ExportController::class, "exportExcel"])->middleware('permission:view-settings');
-        Route::post("cache-clear", [CacheController::class, "clear"])->middleware('permission:edit-settings');
+        // Learning content: /api/web/admin/...
+        Route::prefix('admin')->name('admin.')->group(base_path('routes/modules/learning-admin.route.php'));
 
-        include 'modules/address.route.php';
-        include 'modules/admin.route.php';
-        include 'modules/hr.route.php';
+        // System management: admin only (groups.admin_only)
+        Route::middleware(AccessGroup::middleware(AccessGroup::ADMIN_ONLY))->group(function () {
+            Route::post('log-viewer-list', [LogViewerController::class, 'list'])->middleware('permission:view-activity-log');
+            Route::post('cache-clear', [CacheController::class, 'clear'])->middleware('permission:edit-settings');
+
+            Route::group([], base_path('routes/modules/admin.route.php'));
+        });
     });
 });

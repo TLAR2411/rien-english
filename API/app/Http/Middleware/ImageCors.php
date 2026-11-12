@@ -13,6 +13,7 @@ class ImageCors
         $resp->headers->set('Access-Control-Allow-Methods', 'GET, OPTIONS');
         $resp->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         $resp->headers->set('Access-Control-Allow-Credentials', 'false');
+
         return $resp;
     }
 }
